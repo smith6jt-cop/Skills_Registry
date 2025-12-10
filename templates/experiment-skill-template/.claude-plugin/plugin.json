@@ -1,0 +1,10 @@
+{
+  "name": "TEMPLATE_NAME",
+  "version": "1.0.0",
+  "description": "Specific trigger conditions: (1) scenario one, (2) scenario two. Verified on [model/environment].",
+  "author": {
+    "name": "Your Name"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith-cop/Skills_Registry"
+}

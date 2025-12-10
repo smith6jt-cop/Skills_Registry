@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git remote add:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nInitial setup of Skills Registry\n\n- Add CLAUDE.md with /advise and /retrospective commands\n- Create plugin template structure in templates/\n- Add validation scripts (validate_plugins.py, generate_marketplace.py)\n- Add GitHub Actions workflow for PR validation\n- Include example-skill as seed plugin demonstrating the format\n- Generate initial marketplace.json\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n)\")"
+    ]
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "name": "example-skill",
+  "version": "1.0.0",
+  "description": "Example skill demonstrating registry structure. Trigger: (1) setting up a new skills registry, (2) learning the skill format.",
+  "author": {
+    "name": "Skills Registry Team"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith-cop/Skills_Registry"
+}

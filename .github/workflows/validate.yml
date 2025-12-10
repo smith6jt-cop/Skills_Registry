@@ -1,0 +1,46 @@
+name: Validate Plugins
+
+on:
+  pull_request:
+    paths: ['plugins/**']
+  push:
+    branches: [main]
+    paths: ['plugins/**']
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Check plugin structure
+        run: |
+          for dir in plugins/*/*; do
+            if [ -d "$dir/.claude-plugin" ]; then
+              jq -e '.name and .description and .skills' \
+                "$dir/.claude-plugin/plugin.json" > /dev/null || \
+                { echo "Invalid plugin.json in $dir"; exit 1; }
+
+              find "$dir/skills" -name "SKILL.md" | grep -q . || \
+                { echo "Missing SKILL.md in $dir"; exit 1; }
+
+              echo "OK $dir"
+            fi
+          done
+
+      - name: Run Python validation
+        run: python scripts/validate_plugins.py
+
+      - name: Generate marketplace.json
+        run: python scripts/generate_marketplace.py
+
+      - name: Upload marketplace artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: marketplace
+          path: marketplace.json

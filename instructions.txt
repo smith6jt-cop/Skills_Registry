@@ -1,0 +1,157 @@
+This blog post describes a "skills registry" system for Claude Code that enables team knowledge sharing across sessions. Here's how to implement it:
+
+## Repository Structure
+
+Create a GitHub repository with this structure:
+
+```
+your-org/research-skills/
+├── plugins/
+│   └── training/
+│       └── your-first-experiment/
+│           ├── .claude-plugin/
+│           │   └── plugin.json
+│           ├── skills/your-first-experiment/
+│           │   └── SKILL.md
+│           ├── references/
+│           │   └── experiment-log.md
+│           └── scripts/
+├── templates/
+│   └── experiment-skill-template/
+├── scripts/
+│   ├── validate_plugins.py
+│   └── generate_marketplace.py
+├── marketplace.json
+└── CLAUDE.md
+```
+
+## Key Files
+
+**CLAUDE.md** at repository root defines custom slash commands. Claude Code reads this file automatically when operating in the repository:
+
+```markdown
+# Research Skills Registry
+
+## Commands
+
+### /advise
+Search the skills registry for relevant experiments before starting new work.
+1. Read the user's goal
+2. Search plugins/ for related skills by scanning description fields
+3. Summarize relevant findings: what worked, what failed, recommended parameters
+
+### /retrospective  
+Save learnings from the current session as a new skill.
+1. Summarize key findings from the conversation
+2. Create a new plugin folder using templates/experiment-skill-template/
+3. Fill in SKILL.md with: goal, what worked, what failed, final parameters
+4. Create a branch and open a PR to main
+
+## Skill Template
+Use templates/experiment-skill-template/ as the base for new skills.
+
+## Rules
+- Every skill needs a specific description field with trigger conditions
+- Always include a "Failed Attempts" table
+- Include exact hyperparameters, not vague advice
+```
+
+**plugin.json** for each skill:
+
+```json
+{
+  "name": "experiment-name",
+  "version": "1.0.0",
+  "description": "Specific trigger conditions: (1) scenario one, (2) scenario two. Verified on [model/environment].",
+  "author": {
+    "name": "Your Name"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/your-org/research-skills"
+}
+```
+
+**SKILL.md** template structure:
+
+```markdown
+---
+name: experiment-name
+description: "Specific description with trigger conditions"
+author: Your Name
+date: YYYY-MM-DD
+---
+
+# experiment-name - Research Notes
+
+## Experiment Overview
+| Item | Details |
+|------|---------|
+| **Date** | YYYY-MM-DD |
+| **Goal** | What you were trying to achieve |
+| **Environment** | Hardware, software versions |
+
+## Verified Workflow
+[Step-by-step instructions with code blocks]
+
+## Failed Attempts (Critical)
+| Attempt | Why it Failed | Lesson Learned |
+|---------|---------------|----------------|
+| ... | ... | ... |
+
+## Final Parameters
+[Exact, copy-pasteable configurations]
+```
+
+## GitHub Actions
+
+Add `.github/workflows/validate.yml`:
+
+```yaml
+name: Validate Plugins
+
+on:
+  pull_request:
+    paths: ['plugins/**']
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Check plugin structure
+        run: |
+          for dir in plugins/*/*; do
+            if [ -d "$dir/.claude-plugin" ]; then
+              jq -e '.name and .description and .skills' \
+                "$dir/.claude-plugin/plugin.json" > /dev/null || \
+                { echo "❌ Invalid plugin.json in $dir"; exit 1; }
+              
+              find "$dir/skills" -name "SKILL.md" | grep -q . || \
+                { echo "❌ Missing SKILL.md in $dir"; exit 1; }
+              
+              echo "✅ $dir"
+            fi
+          done
+```
+
+## Installation in Claude Code
+
+After pushing the repository to GitHub:
+
+```bash
+/plugin marketplace add your-org/research-skills
+/plugin install all-skills@research-skills
+```
+
+## Practical Considerations
+
+1. The author provides a GitHub Gist with the complete minimal setup: https://gist.github.com/sigridjineth/2f0ef5d1d56e884a84f1580de21db597
+
+2. The `/plugin` command interface shown in the blog post relies on Claude Code's plugin system. The exact command syntax may vary depending on your Claude Code version.
+
+3. The system requires seeding with initial skills before `/advise` returns useful results. Start by manually creating 3-4 skills documenting recent experiments.
+
+4. The critical value comes from documenting failures. The "Failed Attempts" table is referenced more than any other section according to the authors.
+
+For your spatial biology pipelines, you could structure skills around topics like QuPath scripting patterns, InstanSeg configuration, coordinate system handling, and memory management strategies for large Xenium datasets.
