@@ -1,0 +1,10 @@
+{
+  "name": "windows-cupy-nvrtc",
+  "version": "1.0.0",
+  "description": "Fix CuPy NVRTC compilation errors on Windows. Trigger: (1) NVRTC_ERROR_BUILTIN_OPERATION_FAILURE, (2) nvrtc-builtins64_xxx.dll not found, (3) CuPy JIT compilation fails on Windows.",
+  "author": {
+    "name": "KINTSUGI Team"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith6jt-cop/KINTSUGI"
+}

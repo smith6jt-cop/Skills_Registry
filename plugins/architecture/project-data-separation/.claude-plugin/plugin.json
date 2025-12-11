@@ -1,0 +1,10 @@
+{
+  "name": "project-data-separation",
+  "version": "1.0.0",
+  "description": "Pattern for separating repository code from user data and notebooks. Trigger: (1) organizing scientific pipelines, (2) separating code from data, (3) creating project management frameworks.",
+  "author": {
+    "name": "KINTSUGI Team"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith6jt-cop/KINTSUGI"
+}

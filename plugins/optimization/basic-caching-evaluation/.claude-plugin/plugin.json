@@ -1,0 +1,10 @@
+{
+  "name": "basic-caching-evaluation",
+  "version": "1.0.0",
+  "description": "Evaluation of BaSiC illumination correction caching strategies. Trigger: (1) optimizing BaSiC performance, (2) considering caching for illumination correction, (3) sparse marker handling in microscopy.",
+  "author": {
+    "name": "KINTSUGI Team"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith6jt-cop/KINTSUGI"
+}

@@ -1,0 +1,10 @@
+{
+  "name": "dependency-deprecation",
+  "version": "1.0.0",
+  "description": "Pattern for deprecating external dependencies while maintaining backward compatibility. Trigger: (1) removing Java/FIJI/MATLAB dependencies, (2) deprecating optional dependencies, (3) migrating to pure Python implementations.",
+  "author": {
+    "name": "KINTSUGI Team"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith6jt-cop/KINTSUGI"
+}
