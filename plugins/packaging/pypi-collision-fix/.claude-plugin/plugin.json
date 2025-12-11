@@ -1,0 +1,10 @@
+{
+  "name": "pypi-collision-fix",
+  "version": "1.0.0",
+  "description": "Fix PyPI package name collisions when local package name exists on PyPI. Trigger: (1) pip installs wrong package version, (2) 'pip install package[extra]' downloads from PyPI instead of using local, (3) editable install gets overwritten.",
+  "author": {
+    "name": "KINTSUGI Team"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith6jt-cop/KINTSUGI"
+}

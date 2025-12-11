@@ -1,17 +1,71 @@
 {
   "version": "1.0.0",
-  "generated_at": "2024-12-10T00:00:00Z",
-  "repository": "https://github.com/smith-cop/Skills_Registry",
+  "generated_at": "2025-12-11T00:00:00Z",
+  "repository": "https://github.com/smith6jt-cop/Skills_Registry",
   "plugins": [
     {
       "name": "example-skill",
       "version": "1.0.0",
       "description": "Example skill demonstrating registry structure. Trigger: (1) setting up a new skills registry, (2) learning the skill format.",
-      "author": {
-        "name": "Skills Registry Team"
-      },
+      "author": {"name": "Skills Registry Team"},
       "category": "training",
       "path": "plugins/training/example-skill"
+    },
+    {
+      "name": "windows-cupy-nvrtc",
+      "version": "1.0.0",
+      "description": "Fix CuPy NVRTC compilation errors on Windows. Trigger: (1) NVRTC_ERROR_BUILTIN_OPERATION_FAILURE, (2) nvrtc-builtins64_xxx.dll not found, (3) CuPy JIT compilation fails on Windows.",
+      "author": {"name": "KINTSUGI Team"},
+      "category": "gpu",
+      "path": "plugins/gpu/windows-cupy-nvrtc"
+    },
+    {
+      "name": "project-data-separation",
+      "version": "1.0.0",
+      "description": "Pattern for separating repository code from user data and notebooks. Trigger: (1) organizing scientific pipelines, (2) separating code from data, (3) creating project management frameworks.",
+      "author": {"name": "KINTSUGI Team"},
+      "category": "architecture",
+      "path": "plugins/architecture/project-data-separation"
+    },
+    {
+      "name": "dependency-deprecation",
+      "version": "1.0.0",
+      "description": "Pattern for deprecating external dependencies while maintaining backward compatibility. Trigger: (1) removing Java/FIJI/MATLAB dependencies, (2) deprecating optional dependencies, (3) migrating to pure Python implementations.",
+      "author": {"name": "KINTSUGI Team"},
+      "category": "architecture",
+      "path": "plugins/architecture/dependency-deprecation"
+    },
+    {
+      "name": "basic-caching-evaluation",
+      "version": "1.0.0",
+      "description": "Evaluation of BaSiC illumination correction caching strategies. Trigger: (1) optimizing BaSiC performance, (2) considering caching for illumination correction, (3) sparse marker handling in microscopy.",
+      "author": {"name": "KINTSUGI Team"},
+      "category": "optimization",
+      "path": "plugins/optimization/basic-caching-evaluation"
+    },
+    {
+      "name": "pypi-collision-fix",
+      "version": "1.0.0",
+      "description": "Fix PyPI package name collisions when local package name exists on PyPI. Trigger: (1) pip installs wrong package version, (2) 'pip install package[extra]' downloads from PyPI instead of using local, (3) editable install gets overwritten.",
+      "author": {"name": "KINTSUGI Team"},
+      "category": "packaging",
+      "path": "plugins/packaging/pypi-collision-fix"
+    },
+    {
+      "name": "type-checking-pattern",
+      "version": "1.0.0",
+      "description": "Fix F821 undefined name errors for optional dependencies using TYPE_CHECKING pattern. Trigger: (1) ruff F821 errors for type hints, (2) undefined name in type annotation, (3) optional dependency type hints.",
+      "author": {"name": "KINTSUGI Team"},
+      "category": "linting",
+      "path": "plugins/linting/type-checking-pattern"
+    },
+    {
+      "name": "conda-multi-account-hipergator",
+      "version": "1.0.0",
+      "description": "Set up conda with multiple group storage locations on HiPerGator. Trigger: (1) conda envs on shared storage, (2) multiple conda installations, (3) HiPerGator environment setup, (4) shared group conda environments.",
+      "author": {"name": "KINTSUGI Team"},
+      "category": "environment",
+      "path": "plugins/environment/conda-multi-account-hipergator"
     }
   ]
 }
