@@ -1,0 +1,8 @@
+{
+  "name": "symbol-selection-statistical",
+  "version": "1.0.0",
+  "description": "Statistical symbol selection for algorithmic trading. Triggers: (1) selecting stocks/crypto for mean-reversion or momentum strategies, (2) finding assets compatible with GARCH volatility models, (3) building diversified trading portfolios, (4) evaluating Hurst exponent or half-life characteristics",
+  "author": { "name": "Claude Code" },
+  "skills": "./skills",
+  "repository": "https://github.com/smith-cop/Skills_Registry"
+}
