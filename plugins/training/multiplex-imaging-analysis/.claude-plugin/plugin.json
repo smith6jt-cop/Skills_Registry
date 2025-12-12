@@ -1,0 +1,10 @@
+{
+  "name": "multiplex-imaging-analysis",
+  "version": "1.0.0",
+  "description": "Specific trigger conditions: (1) improving multiplex immunofluorescence segmentation or feature extraction, (2) optimizing SOM/FlowSOM clustering for cell phenotyping, (3) adding spatial analysis to imaging workflows, (4) integrating ECM features with cell compartment analysis. Verified on KINTSUGI v1.2.0 with InstanSeg, pyFlowSOM, scanpy, scimap.",
+  "author": {
+    "name": "smith6jt"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith6jt-cop/Skills_Registry"
+}
