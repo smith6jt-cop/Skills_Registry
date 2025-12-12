@@ -1,0 +1,10 @@
+{
+  "name": "python-performance-patterns",
+  "version": "1.0.0",
+  "description": "Low-risk Python performance optimizations. Trigger: (1) performance audit findings, (2) slow file operations, (3) O(n^2) loops, (4) repeated function calls, (5) sequential I/O bottlenecks.",
+  "author": {
+    "name": "KINTSUGI Team"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith6jt-cop/Skills_Registry"
+}

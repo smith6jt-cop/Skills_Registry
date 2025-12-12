@@ -1,0 +1,10 @@
+{
+  "name": "skills-registry-organization",
+  "version": "1.0.0",
+  "description": "Organize Skills Registry for cross-project reuse. Trigger: (1) setting up skills registry as submodule, (2) deciding project-specific vs shared skills, (3) reorganizing skills for multiple repos.",
+  "author": {
+    "name": "KINTSUGI Team"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith6jt-cop/Skills_Registry"
+}

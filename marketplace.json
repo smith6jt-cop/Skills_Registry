@@ -1,6 +1,6 @@
 {
-  "version": "1.1.0",
-  "generated_at": "2025-12-12T00:00:00Z",
+  "version": "1.2.0",
+  "generated_at": "2025-12-12T14:30:00Z",
   "repository": "https://github.com/smith6jt-cop/Skills_Registry",
   "categories": {
     "general": "Cross-project Python/development skills",
@@ -40,6 +40,22 @@
       "author": {"name": "KINTSUGI Team"},
       "category": "general",
       "path": "plugins/general/dependency-deprecation"
+    },
+    {
+      "name": "skills-registry-organization",
+      "version": "1.0.0",
+      "description": "Organize Skills Registry for cross-project reuse. Trigger: (1) setting up skills registry as submodule, (2) deciding project-specific vs shared skills, (3) reorganizing skills for multiple repos.",
+      "author": {"name": "KINTSUGI Team"},
+      "category": "general",
+      "path": "plugins/general/skills-registry-organization"
+    },
+    {
+      "name": "python-performance-patterns",
+      "version": "1.0.0",
+      "description": "Low-risk Python performance optimizations. Trigger: (1) performance audit findings, (2) slow file operations, (3) O(n^2) loops, (4) repeated function calls, (5) sequential I/O bottlenecks.",
+      "author": {"name": "KINTSUGI Team"},
+      "category": "general",
+      "path": "plugins/general/python-performance-patterns"
     },
     {
       "name": "project-data-separation",
