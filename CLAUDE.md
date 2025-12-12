@@ -32,14 +32,18 @@ Use templates/experiment-skill-template/ as the base for new skills. Copy the en
 ```
 Skills_Registry/
 ├── plugins/
-│   └── training/
-│       └── your-experiment-name/
-│           ├── .claude-plugin/
-│           │   └── plugin.json
-│           ├── skills/your-experiment-name/
-│           │   └── SKILL.md
-│           ├── references/
-│           └── scripts/
+│   ├── general/              # Cross-project Python/dev skills
+│   │   ├── pypi-collision-fix/
+│   │   ├── type-checking-pattern/
+│   │   ├── conda-multi-account-hipergator/
+│   │   └── dependency-deprecation/
+│   ├── scientific/           # Scientific computing & GPU patterns
+│   │   ├── project-data-separation/
+│   │   └── windows-cupy-nvrtc/
+│   ├── kintsugi/             # KINTSUGI-specific skills
+│   │   └── basic-caching-evaluation/
+│   └── templates/            # Skill templates & examples
+│       └── example-skill/
 ├── templates/
 │   └── experiment-skill-template/
 ├── scripts/
@@ -48,3 +52,9 @@ Skills_Registry/
 ├── marketplace.json
 └── CLAUDE.md
 ```
+
+## Category Guidelines
+- **general/**: Skills applicable to any Python project (packaging, linting, environments)
+- **scientific/**: Scientific computing patterns (GPU, data pipelines, architecture)
+- **kintsugi/**: KINTSUGI-specific image processing skills (won't trigger for other projects)
+- **templates/**: Example skills and templates for creating new skills
