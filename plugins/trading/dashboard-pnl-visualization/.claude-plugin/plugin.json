@@ -1,0 +1,8 @@
+{
+  "name": "dashboard-pnl-visualization",
+  "version": "1.0.0",
+  "description": "Trading dashboard P&L visualization with profit tracker integration. Triggers: (1) adding win-rate overlays to P&L panels, (2) splitting realized vs unrealized P&L, (3) displaying R-multiples for positions, (4) integrating broker equity history, (5) configurable dashboard runtime settings",
+  "author": { "name": "Claude Code" },
+  "skills": "./skills",
+  "repository": "https://github.com/smith-cop/Skills_Registry"
+}

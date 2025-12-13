@@ -1,0 +1,8 @@
+{
+  "name": "backtest-datetime-visualization",
+  "version": "1.0.0",
+  "description": "Converting backtest visualizations from bar indices to actual datetime axes. Triggers: (1) plots showing 'Bar' or 'Timestep' instead of dates, (2) equity curve x-axis showing integers, (3) drawdown plots using range(len(data)), (4) trade P&L charts using trade numbers instead of entry times",
+  "author": { "name": "Claude Code" },
+  "skills": "./skills",
+  "repository": "https://github.com/smith-cop/Skills_Registry"
+}

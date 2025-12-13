@@ -1,0 +1,8 @@
+{
+  "name": "markov-regime-features",
+  "version": "1.0.0",
+  "description": "Debugging and implementing dynamic Markov regime features in RL observations. Triggers: (1) Markov features appear constant in observation heatmaps, (2) uniform priors [0.33, 0.34, 0.33] instead of actual regime probabilities, (3) InferenceObservationBuilder not updating states, (4) HMM regime detection not reflecting market conditions",
+  "author": { "name": "Claude Code" },
+  "skills": "./skills",
+  "repository": "https://github.com/smith-cop/Skills_Registry"
+}

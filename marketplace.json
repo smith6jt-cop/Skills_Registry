@@ -6,6 +6,7 @@
     "general": "Cross-project Python/development skills",
     "scientific": "Scientific computing and GPU patterns",
     "kintsugi": "KINTSUGI-specific image processing skills",
+    "trading": "Algorithmic trading and backtesting skills",
     "templates": "Skill templates and examples"
   },
   "plugins": [
@@ -80,6 +81,38 @@
       "author": {"name": "KINTSUGI Team"},
       "category": "kintsugi",
       "path": "plugins/kintsugi/basic-caching-evaluation"
+    },
+    {
+      "name": "symbol-selection-statistical",
+      "version": "1.0.0",
+      "description": "Statistical symbol selection for algorithmic trading. Triggers: (1) selecting stocks/crypto for mean-reversion or momentum strategies, (2) finding assets compatible with GARCH volatility models, (3) building diversified trading portfolios, (4) evaluating Hurst exponent or half-life characteristics",
+      "author": {"name": "Claude Code"},
+      "category": "trading",
+      "path": "plugins/trading/symbol-selection-statistical"
+    },
+    {
+      "name": "markov-regime-features",
+      "version": "1.0.0",
+      "description": "Debugging and implementing dynamic Markov regime features in RL observations. Triggers: (1) Markov features appear constant in observation heatmaps, (2) uniform priors [0.33, 0.34, 0.33] instead of actual regime probabilities, (3) InferenceObservationBuilder not updating states, (4) HMM regime detection not reflecting market conditions",
+      "author": {"name": "Claude Code"},
+      "category": "trading",
+      "path": "plugins/trading/markov-regime-features"
+    },
+    {
+      "name": "dashboard-pnl-visualization",
+      "version": "1.0.0",
+      "description": "Trading dashboard P&L visualization with profit tracker integration. Triggers: (1) adding win-rate overlays to P&L panels, (2) splitting realized vs unrealized P&L, (3) displaying R-multiples for positions, (4) integrating broker equity history, (5) configurable dashboard runtime settings",
+      "author": {"name": "Claude Code"},
+      "category": "trading",
+      "path": "plugins/trading/dashboard-pnl-visualization"
+    },
+    {
+      "name": "backtest-datetime-visualization",
+      "version": "1.0.0",
+      "description": "Converting backtest visualizations from bar indices to actual datetime axes. Triggers: (1) plots showing 'Bar' or 'Timestep' instead of dates, (2) equity curve x-axis showing integers, (3) drawdown plots using range(len(data)), (4) trade P&L charts using trade numbers instead of entry times",
+      "author": {"name": "Claude Code"},
+      "category": "trading",
+      "path": "plugins/trading/backtest-datetime-visualization"
     },
     {
       "name": "example-skill",
