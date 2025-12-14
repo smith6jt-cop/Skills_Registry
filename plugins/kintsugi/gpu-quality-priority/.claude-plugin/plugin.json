@@ -1,0 +1,10 @@
+{
+  "name": "gpu-quality-priority",
+  "version": "1.0.0",
+  "description": "KINTSUGI processing principles: (1) Never sacrifice quality for speed, (2) Always use GPU when available - no CPU fallback, (3) Adding 'fast mode' options that reduce quality. Trigger: performance optimization, CPU/GPU choice, fast mode, quality vs speed tradeoff.",
+  "author": {
+    "name": "KINTSUGI Team"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith6jt-cop/Skills_Registry"
+}
