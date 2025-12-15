@@ -83,6 +83,38 @@
       "path": "plugins/kintsugi/basic-caching-evaluation"
     },
     {
+      "name": "gpu-quality-priority",
+      "version": "1.0.0",
+      "description": "KINTSUGI processing principles: (1) Never sacrifice quality for speed, (2) Always use GPU when available - no CPU fallback, (3) Adding 'fast mode' options that reduce quality. Trigger: performance optimization, CPU/GPU choice, fast mode, quality vs speed tradeoff.",
+      "author": {"name": "KINTSUGI Team"},
+      "category": "kintsugi",
+      "path": "plugins/kintsugi/gpu-quality-priority"
+    },
+    {
+      "name": "tile-snake-pattern-stitching",
+      "version": "1.0.0",
+      "description": "KINTSUGI tile acquisition patterns for stitching: (1) SNAKE pattern - even rows L→R, odd rows R→L, (2) RASTER pattern - all rows L→R. Trigger: stitching, tile order, acquisition pattern, SNAKE vs RASTER, tile coordinates, image mosaic, grid pattern.",
+      "author": {"name": "KINTSUGI Team"},
+      "category": "kintsugi",
+      "path": "plugins/kintsugi/tile-snake-pattern-stitching"
+    },
+    {
+      "name": "gpu-memory-cleanup",
+      "version": "1.0.0",
+      "description": "CuPy GPU memory cleanup to prevent Jupyter cell hangs: (1) Explicit memory pool cleanup after GPU processing, (2) Preventing lazy cleanup hangs. Trigger: cell hanging, GPU memory, CuPy cleanup, Jupyter hang, processing complete but cell still running.",
+      "author": {"name": "KINTSUGI Team"},
+      "category": "kintsugi",
+      "path": "plugins/kintsugi/gpu-memory-cleanup"
+    },
+    {
+      "name": "channel-name-parsing",
+      "version": "1.0.0",
+      "description": "Multi-format channel name parsing for KINTSUGI: (1) Simple list format (one per line), (2) Cycle-prefixed formats (colon, tab, CSV). Trigger: CHANNELNAMES.txt, channel names, marker names, parsing channel file, channel metadata.",
+      "author": {"name": "KINTSUGI Team"},
+      "category": "kintsugi",
+      "path": "plugins/kintsugi/channel-name-parsing"
+    },
+    {
       "name": "symbol-selection-statistical",
       "version": "1.0.0",
       "description": "Statistical symbol selection for algorithmic trading. Triggers: (1) selecting stocks/crypto for mean-reversion or momentum strategies, (2) finding assets compatible with GARCH volatility models, (3) building diversified trading portfolios, (4) evaluating Hurst exponent or half-life characteristics",

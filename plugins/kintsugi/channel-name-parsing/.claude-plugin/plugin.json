@@ -1,0 +1,10 @@
+{
+  "name": "channel-name-parsing",
+  "version": "1.0.0",
+  "description": "Multi-format channel name parsing for KINTSUGI: (1) Simple list format (one per line), (2) Cycle-prefixed formats (colon, tab, CSV). Trigger: CHANNELNAMES.txt, channel names, marker names, parsing channel file, channel metadata.",
+  "author": {
+    "name": "KINTSUGI Team"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith6jt-cop/Skills_Registry"
+}

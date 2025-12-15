@@ -1,0 +1,10 @@
+{
+  "name": "gpu-memory-cleanup",
+  "version": "1.0.0",
+  "description": "CuPy GPU memory cleanup to prevent Jupyter cell hangs: (1) Explicit memory pool cleanup after GPU processing, (2) Preventing lazy cleanup hangs. Trigger: cell hanging, GPU memory, CuPy cleanup, Jupyter hang, processing complete but cell still running.",
+  "author": {
+    "name": "KINTSUGI Team"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith6jt-cop/Skills_Registry"
+}
