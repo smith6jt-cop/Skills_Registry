@@ -1,0 +1,10 @@
+{
+  "name": "gpu-parallel-scheduling",
+  "version": "1.0.0",
+  "description": "GPU-safe parallel processing for KINTSUGI: (1) Queue-based GPU allocation to prevent OOM, (2) Avoiding nested ThreadPoolExecutor, (3) Main-thread progress output for Jupyter. Trigger: kernel crash during parallel processing, OOM error, nested ThreadPoolExecutor, multi-GPU scheduling, CuPy thread safety.",
+  "author": {
+    "name": "KINTSUGI Team"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith6jt-cop/Skills_Registry"
+}
