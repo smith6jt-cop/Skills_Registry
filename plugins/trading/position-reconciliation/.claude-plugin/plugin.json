@@ -1,0 +1,10 @@
+{
+  "name": "position-reconciliation",
+  "version": "1.0.0",
+  "description": "Broker position reconciliation pattern: (1) syncing internal state with broker, (2) handling order execution misses, (3) manual intervention detection. Verified on Alpaca API.",
+  "author": {
+    "name": "Claude Code"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith-cop/Skills_Registry"
+}

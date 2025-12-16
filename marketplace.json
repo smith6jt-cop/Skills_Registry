@@ -115,6 +115,30 @@
       "path": "plugins/trading/backtest-datetime-visualization"
     },
     {
+      "name": "backtest-capital-accounting",
+      "version": "1.0.0",
+      "description": "Critical fix for backtest capital accounting. Triggers: (1) implementing position entry/exit cash flows, (2) debugging inflated equity curves, (3) fixing meaningless drawdown metrics, (4) capital not deducted on position entry",
+      "author": {"name": "Claude Code"},
+      "category": "trading",
+      "path": "plugins/trading/backtest-capital-accounting"
+    },
+    {
+      "name": "drawdown-guardrails-pattern",
+      "version": "1.0.0",
+      "description": "Consistent drawdown control pattern across trading systems. Triggers: (1) implementing max drawdown halts, (2) warning zone position scaling, (3) training fitness penalties for drawdown, (4) enforcing risk limits in backtest/live/training",
+      "author": {"name": "Claude Code"},
+      "category": "trading",
+      "path": "plugins/trading/drawdown-guardrails-pattern"
+    },
+    {
+      "name": "position-reconciliation",
+      "version": "1.0.0",
+      "description": "Broker position reconciliation pattern for live trading. Triggers: (1) syncing internal state with broker, (2) handling order execution misses, (3) detecting manual interventions, (4) state drift in live trading systems",
+      "author": {"name": "Claude Code"},
+      "category": "trading",
+      "path": "plugins/trading/position-reconciliation"
+    },
+    {
       "name": "example-skill",
       "version": "1.0.0",
       "description": "Example skill demonstrating registry structure. Trigger: (1) setting up a new skills registry, (2) learning the skill format.",
