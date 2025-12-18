@@ -1,0 +1,10 @@
+{
+  "name": "repo-project-sync-workflow",
+  "version": "1.0.0",
+  "description": "KINTSUGI repo-to-project sync workflow: Always edit main repo (/blue/maigan/smith6jt/KINTSUGI/) first, then sync to project folders. Trigger: editing Kdecon, Kstitch, Kreg, Kview2 modules; fix not working after edit; syncing between repos; KINTSUGI_Projects folder edits.",
+  "author": {
+    "name": "KINTSUGI Team"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith6jt-cop/Skills_Registry"
+}
