@@ -1,0 +1,10 @@
+{
+  "name": "network-architecture-sizing",
+  "version": "1.0.0",
+  "description": "PPO network architecture sizing for trading models. Trigger: (1) model files are unexpectedly small/large, (2) choosing hidden_dims for training, (3) balancing model capacity vs inference speed.",
+  "author": {
+    "name": "Claude Code"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith-cop/Skills_Registry"
+}
