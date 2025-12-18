@@ -1,0 +1,10 @@
+{
+  "name": "dataclass-optimization",
+  "version": "1.0.0",
+  "description": "Python dataclass best practices for memory and performance. Trigger: (1) reviewing dataclasses, (2) memory optimization, (3) config classes, (4) immutable data structures, (5) dataclass validation.",
+  "author": {
+    "name": "Claude Code"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith6jt-cop/Skills_Registry"
+}
