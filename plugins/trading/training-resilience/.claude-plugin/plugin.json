@@ -1,0 +1,10 @@
+{
+  "name": "training-resilience",
+  "version": "1.0.0",
+  "description": "Fix PPO training early-stop issues: (1) training stops with impossible drawdown values like 1017.8%, (2) training stops too early on drawdown threshold, (3) need adaptive recovery instead of hard stop. Includes drawdown calculation fix and retry mechanism.",
+  "author": {
+    "name": "Claude Code"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith6jt-cop/Alpaca_trading"
+}
