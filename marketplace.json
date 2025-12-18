@@ -1,158 +1,217 @@
 {
-  "version": "1.2.0",
-  "generated_at": "2025-12-12T14:30:00Z",
-  "repository": "https://github.com/smith6jt-cop/Skills_Registry",
-  "categories": {
-    "general": "Cross-project Python/development skills",
-    "scientific": "Scientific computing and GPU patterns",
-    "kintsugi": "KINTSUGI-specific image processing skills",
-    "trading": "Algorithmic trading and backtesting skills",
-    "templates": "Skill templates and examples"
-  },
+  "version": "1.0.0",
+  "generated_at": "2025-12-18T15:28:57.517971Z",
+  "repository": "https://github.com/smith-cop/Skills_Registry",
   "plugins": [
     {
-      "name": "pypi-collision-fix",
+      "name": "windows-cupy-nvrtc",
       "version": "1.0.0",
-      "description": "Fix PyPI package name collisions when local package name exists on PyPI. Trigger: (1) pip installs wrong package version, (2) 'pip install package[extra]' downloads from PyPI instead of using local, (3) editable install gets overwritten.",
-      "author": {"name": "KINTSUGI Team"},
-      "category": "general",
-      "path": "plugins/general/pypi-collision-fix"
-    },
-    {
-      "name": "type-checking-pattern",
-      "version": "1.0.0",
-      "description": "Fix F821 undefined name errors for optional dependencies using TYPE_CHECKING pattern. Trigger: (1) ruff F821 errors for type hints, (2) undefined name in type annotation, (3) optional dependency type hints.",
-      "author": {"name": "KINTSUGI Team"},
-      "category": "general",
-      "path": "plugins/general/type-checking-pattern"
-    },
-    {
-      "name": "conda-multi-account-hipergator",
-      "version": "1.0.0",
-      "description": "Set up conda with multiple group storage locations on HiPerGator. Trigger: (1) conda envs on shared storage, (2) multiple conda installations, (3) HiPerGator environment setup, (4) shared group conda environments.",
-      "author": {"name": "KINTSUGI Team"},
-      "category": "general",
-      "path": "plugins/general/conda-multi-account-hipergator"
-    },
-    {
-      "name": "dependency-deprecation",
-      "version": "1.0.0",
-      "description": "Pattern for deprecating external dependencies while maintaining backward compatibility. Trigger: (1) removing Java/FIJI/MATLAB dependencies, (2) deprecating optional dependencies, (3) migrating to pure Python implementations.",
-      "author": {"name": "KINTSUGI Team"},
-      "category": "general",
-      "path": "plugins/general/dependency-deprecation"
-    },
-    {
-      "name": "skills-registry-organization",
-      "version": "1.0.0",
-      "description": "Organize Skills Registry for cross-project reuse. Trigger: (1) setting up skills registry as submodule, (2) deciding project-specific vs shared skills, (3) reorganizing skills for multiple repos.",
-      "author": {"name": "KINTSUGI Team"},
-      "category": "general",
-      "path": "plugins/general/skills-registry-organization"
-    },
-    {
-      "name": "python-performance-patterns",
-      "version": "1.0.0",
-      "description": "Low-risk Python performance optimizations. Trigger: (1) performance audit findings, (2) slow file operations, (3) O(n^2) loops, (4) repeated function calls, (5) sequential I/O bottlenecks.",
-      "author": {"name": "KINTSUGI Team"},
-      "category": "general",
-      "path": "plugins/general/python-performance-patterns"
+      "description": "Fix CuPy NVRTC compilation errors on Windows. Trigger: (1) NVRTC_ERROR_BUILTIN_OPERATION_FAILURE, (2) nvrtc-builtins64_xxx.dll not found, (3) CuPy JIT compilation fails on Windows.",
+      "author": {
+        "name": "KINTSUGI Team"
+      },
+      "category": "scientific",
+      "path": "plugins/scientific/windows-cupy-nvrtc"
     },
     {
       "name": "project-data-separation",
       "version": "1.0.0",
       "description": "Pattern for separating repository code from user data and notebooks. Trigger: (1) organizing scientific pipelines, (2) separating code from data, (3) creating project management frameworks.",
-      "author": {"name": "KINTSUGI Team"},
+      "author": {
+        "name": "KINTSUGI Team"
+      },
       "category": "scientific",
       "path": "plugins/scientific/project-data-separation"
-    },
-    {
-      "name": "windows-cupy-nvrtc",
-      "version": "1.0.0",
-      "description": "Fix CuPy NVRTC compilation errors on Windows. Trigger: (1) NVRTC_ERROR_BUILTIN_OPERATION_FAILURE, (2) nvrtc-builtins64_xxx.dll not found, (3) CuPy JIT compilation fails on Windows.",
-      "author": {"name": "KINTSUGI Team"},
-      "category": "scientific",
-      "path": "plugins/scientific/windows-cupy-nvrtc"
-    },
-    {
-      "name": "basic-caching-evaluation",
-      "version": "1.0.0",
-      "description": "Evaluation of BaSiC illumination correction caching strategies. Trigger: (1) optimizing BaSiC performance, (2) considering caching for illumination correction, (3) sparse marker handling in microscopy.",
-      "author": {"name": "KINTSUGI Team"},
-      "category": "kintsugi",
-      "path": "plugins/kintsugi/basic-caching-evaluation"
-    },
-    {
-      "name": "gpu-quality-priority",
-      "version": "1.0.0",
-      "description": "KINTSUGI processing principles: (1) Never sacrifice quality for speed, (2) Always use GPU when available - no CPU fallback, (3) Adding 'fast mode' options that reduce quality. Trigger: performance optimization, CPU/GPU choice, fast mode, quality vs speed tradeoff.",
-      "author": {"name": "KINTSUGI Team"},
-      "category": "kintsugi",
-      "path": "plugins/kintsugi/gpu-quality-priority"
-    },
-    {
-      "name": "tile-snake-pattern-stitching",
-      "version": "1.0.0",
-      "description": "KINTSUGI tile acquisition patterns for stitching: (1) SNAKE pattern - even rows L→R, odd rows R→L, (2) RASTER pattern - all rows L→R. Trigger: stitching, tile order, acquisition pattern, SNAKE vs RASTER, tile coordinates, image mosaic, grid pattern.",
-      "author": {"name": "KINTSUGI Team"},
-      "category": "kintsugi",
-      "path": "plugins/kintsugi/tile-snake-pattern-stitching"
-    },
-    {
-      "name": "gpu-memory-cleanup",
-      "version": "1.0.0",
-      "description": "CuPy GPU memory cleanup to prevent Jupyter cell hangs: (1) Explicit memory pool cleanup after GPU processing, (2) Preventing lazy cleanup hangs. Trigger: cell hanging, GPU memory, CuPy cleanup, Jupyter hang, processing complete but cell still running.",
-      "author": {"name": "KINTSUGI Team"},
-      "category": "kintsugi",
-      "path": "plugins/kintsugi/gpu-memory-cleanup"
-    },
-    {
-      "name": "channel-name-parsing",
-      "version": "1.0.0",
-      "description": "Multi-format channel name parsing for KINTSUGI: (1) Simple list format (one per line), (2) Cycle-prefixed formats (colon, tab, CSV). Trigger: CHANNELNAMES.txt, channel names, marker names, parsing channel file, channel metadata.",
-      "author": {"name": "KINTSUGI Team"},
-      "category": "kintsugi",
-      "path": "plugins/kintsugi/channel-name-parsing"
-    },
-    {
-      "name": "symbol-selection-statistical",
-      "version": "1.0.0",
-      "description": "Statistical symbol selection for algorithmic trading. Triggers: (1) selecting stocks/crypto for mean-reversion or momentum strategies, (2) finding assets compatible with GARCH volatility models, (3) building diversified trading portfolios, (4) evaluating Hurst exponent or half-life characteristics",
-      "author": {"name": "Claude Code"},
-      "category": "trading",
-      "path": "plugins/trading/symbol-selection-statistical"
-    },
-    {
-      "name": "markov-regime-features",
-      "version": "1.0.0",
-      "description": "Debugging and implementing dynamic Markov regime features in RL observations. Triggers: (1) Markov features appear constant in observation heatmaps, (2) uniform priors [0.33, 0.34, 0.33] instead of actual regime probabilities, (3) InferenceObservationBuilder not updating states, (4) HMM regime detection not reflecting market conditions",
-      "author": {"name": "Claude Code"},
-      "category": "trading",
-      "path": "plugins/trading/markov-regime-features"
-    },
-    {
-      "name": "dashboard-pnl-visualization",
-      "version": "1.0.0",
-      "description": "Trading dashboard P&L visualization with profit tracker integration. Triggers: (1) adding win-rate overlays to P&L panels, (2) splitting realized vs unrealized P&L, (3) displaying R-multiples for positions, (4) integrating broker equity history, (5) configurable dashboard runtime settings",
-      "author": {"name": "Claude Code"},
-      "category": "trading",
-      "path": "plugins/trading/dashboard-pnl-visualization"
     },
     {
       "name": "backtest-datetime-visualization",
       "version": "1.0.0",
       "description": "Converting backtest visualizations from bar indices to actual datetime axes. Triggers: (1) plots showing 'Bar' or 'Timestep' instead of dates, (2) equity curve x-axis showing integers, (3) drawdown plots using range(len(data)), (4) trade P&L charts using trade numbers instead of entry times",
-      "author": {"name": "Claude Code"},
+      "author": {
+        "name": "Claude Code"
+      },
       "category": "trading",
       "path": "plugins/trading/backtest-datetime-visualization"
+    },
+    {
+      "name": "dashboard-pnl-visualization",
+      "version": "1.0.0",
+      "description": "Trading dashboard P&L visualization with profit tracker integration. Triggers: (1) adding win-rate overlays to P&L panels, (2) splitting realized vs unrealized P&L, (3) displaying R-multiples for positions, (4) integrating broker equity history, (5) configurable dashboard runtime settings",
+      "author": {
+        "name": "Claude Code"
+      },
+      "category": "trading",
+      "path": "plugins/trading/dashboard-pnl-visualization"
+    },
+    {
+      "name": "markov-regime-features",
+      "version": "1.0.0",
+      "description": "Debugging and implementing dynamic Markov regime features in RL observations. Triggers: (1) Markov features appear constant in observation heatmaps, (2) uniform priors [0.33, 0.34, 0.33] instead of actual regime probabilities, (3) InferenceObservationBuilder not updating states, (4) HMM regime detection not reflecting market conditions",
+      "author": {
+        "name": "Claude Code"
+      },
+      "category": "trading",
+      "path": "plugins/trading/markov-regime-features"
+    },
+    {
+      "name": "symbol-selection-statistical",
+      "version": "1.0.0",
+      "description": "Statistical symbol selection for algorithmic trading. Triggers: (1) selecting stocks/crypto for mean-reversion or momentum strategies, (2) finding assets compatible with GARCH volatility models, (3) building diversified trading portfolios, (4) evaluating Hurst exponent or half-life characteristics",
+      "author": {
+        "name": "Claude Code"
+      },
+      "category": "trading",
+      "path": "plugins/trading/symbol-selection-statistical"
+    },
+    {
+      "name": "python-performance-patterns",
+      "version": "1.0.0",
+      "description": "Low-risk Python performance optimizations. Trigger: (1) performance audit findings, (2) slow file operations, (3) O(n^2) loops, (4) repeated function calls, (5) sequential I/O bottlenecks.",
+      "author": {
+        "name": "KINTSUGI Team"
+      },
+      "category": "general",
+      "path": "plugins/general/python-performance-patterns"
+    },
+    {
+      "name": "pypi-collision-fix",
+      "version": "1.0.0",
+      "description": "Fix PyPI package name collisions when local package name exists on PyPI. Trigger: (1) pip installs wrong package version, (2) 'pip install package[extra]' downloads from PyPI instead of using local, (3) editable install gets overwritten.",
+      "author": {
+        "name": "KINTSUGI Team"
+      },
+      "category": "general",
+      "path": "plugins/general/pypi-collision-fix"
+    },
+    {
+      "name": "hpc-dev-testing-workflow",
+      "version": "1.0.0",
+      "description": "Efficient development testing workflow for HPC environments with VS Code tunneling. Trigger: testing code changes on HPC, development workflow with external data directories, VS Code Remote SSH development",
+      "author": {
+        "name": "KINTSUGI Team"
+      },
+      "category": "general",
+      "path": "plugins/general/hpc-dev-testing-workflow"
+    },
+    {
+      "name": "conda-multi-account-hipergator",
+      "version": "1.0.0",
+      "description": "Set up conda with multiple group storage locations on HiPerGator. Trigger: (1) conda envs on shared storage, (2) multiple conda installations, (3) HiPerGator environment setup, (4) shared group conda environments.",
+      "author": {
+        "name": "KINTSUGI Team"
+      },
+      "category": "general",
+      "path": "plugins/general/conda-multi-account-hipergator"
+    },
+    {
+      "name": "skills-registry-organization",
+      "version": "1.0.0",
+      "description": "Organize Skills Registry for cross-project reuse. Trigger: (1) setting up skills registry as submodule, (2) deciding project-specific vs shared skills, (3) reorganizing skills for multiple repos.",
+      "author": {
+        "name": "KINTSUGI Team"
+      },
+      "category": "general",
+      "path": "plugins/general/skills-registry-organization"
+    },
+    {
+      "name": "dependency-deprecation",
+      "version": "1.0.0",
+      "description": "Pattern for deprecating external dependencies while maintaining backward compatibility. Trigger: (1) removing Java/FIJI/MATLAB dependencies, (2) deprecating optional dependencies, (3) migrating to pure Python implementations.",
+      "author": {
+        "name": "KINTSUGI Team"
+      },
+      "category": "general",
+      "path": "plugins/general/dependency-deprecation"
+    },
+    {
+      "name": "type-checking-pattern",
+      "version": "1.0.0",
+      "description": "Fix F821 undefined name errors for optional dependencies using TYPE_CHECKING pattern. Trigger: (1) ruff F821 errors for type hints, (2) undefined name in type annotation, (3) optional dependency type hints.",
+      "author": {
+        "name": "KINTSUGI Team"
+      },
+      "category": "general",
+      "path": "plugins/general/type-checking-pattern"
     },
     {
       "name": "example-skill",
       "version": "1.0.0",
       "description": "Example skill demonstrating registry structure. Trigger: (1) setting up a new skills registry, (2) learning the skill format.",
-      "author": {"name": "Skills Registry Team"},
+      "author": {
+        "name": "Skills Registry Team"
+      },
       "category": "templates",
       "path": "plugins/templates/example-skill"
+    },
+    {
+      "name": "gpu-parallel-scheduling",
+      "version": "1.0.0",
+      "description": "GPU-safe parallel processing for KINTSUGI: (1) Queue-based GPU allocation to prevent OOM, (2) Avoiding nested ThreadPoolExecutor, (3) Main-thread progress output for Jupyter. Trigger: kernel crash during parallel processing, OOM error, nested ThreadPoolExecutor, multi-GPU scheduling, CuPy thread safety.",
+      "author": {
+        "name": "KINTSUGI Team"
+      },
+      "category": "kintsugi",
+      "path": "plugins/kintsugi/gpu-parallel-scheduling"
+    },
+    {
+      "name": "gpu-memory-cleanup",
+      "version": "1.0.0",
+      "description": "CuPy GPU memory cleanup to prevent Jupyter cell hangs: (1) Explicit memory pool cleanup after GPU processing, (2) Preventing lazy cleanup hangs. Trigger: cell hanging, GPU memory, CuPy cleanup, Jupyter hang, processing complete but cell still running.",
+      "author": {
+        "name": "KINTSUGI Team"
+      },
+      "category": "kintsugi",
+      "path": "plugins/kintsugi/gpu-memory-cleanup"
+    },
+    {
+      "name": "basic-caching-evaluation",
+      "version": "1.0.0",
+      "description": "Evaluation of BaSiC illumination correction caching strategies. Trigger: (1) optimizing BaSiC performance, (2) considering caching for illumination correction, (3) sparse marker handling in microscopy.",
+      "author": {
+        "name": "KINTSUGI Team"
+      },
+      "category": "kintsugi",
+      "path": "plugins/kintsugi/basic-caching-evaluation"
+    },
+    {
+      "name": "repo-project-sync-workflow",
+      "version": "1.0.0",
+      "description": "KINTSUGI repo-to-project sync workflow: Always edit main repo (/blue/maigan/smith6jt/KINTSUGI/) first, then sync to project folders. Trigger: editing Kdecon, Kstitch, Kreg, Kview2 modules; fix not working after edit; syncing between repos; KINTSUGI_Projects folder edits.",
+      "author": {
+        "name": "KINTSUGI Team"
+      },
+      "category": "kintsugi",
+      "path": "plugins/kintsugi/repo-project-sync-workflow"
+    },
+    {
+      "name": "channel-name-parsing",
+      "version": "1.0.0",
+      "description": "Multi-format channel name parsing for KINTSUGI: (1) Simple list format (one per line), (2) Cycle-prefixed formats (colon, tab, CSV). Trigger: CHANNELNAMES.txt, channel names, marker names, parsing channel file, channel metadata.",
+      "author": {
+        "name": "KINTSUGI Team"
+      },
+      "category": "kintsugi",
+      "path": "plugins/kintsugi/channel-name-parsing"
+    },
+    {
+      "name": "tile-snake-pattern-stitching",
+      "version": "1.0.0",
+      "description": "KINTSUGI tile acquisition patterns for stitching: (1) SNAKE pattern - even rows L\u2192R, odd rows R\u2192L, (2) RASTER pattern - all rows L\u2192R. Trigger: stitching, tile order, acquisition pattern, SNAKE vs RASTER, tile coordinates, image mosaic, grid pattern.",
+      "author": {
+        "name": "KINTSUGI Team"
+      },
+      "category": "kintsugi",
+      "path": "plugins/kintsugi/tile-snake-pattern-stitching"
+    },
+    {
+      "name": "gpu-quality-priority",
+      "version": "1.0.0",
+      "description": "KINTSUGI processing principles: (1) Never sacrifice quality for speed, (2) Always use GPU when available - no CPU fallback, (3) Adding 'fast mode' options that reduce quality. Trigger: performance optimization, CPU/GPU choice, fast mode, quality vs speed tradeoff.",
+      "author": {
+        "name": "KINTSUGI Team"
+      },
+      "category": "kintsugi",
+      "path": "plugins/kintsugi/gpu-quality-priority"
     }
   ]
 }
