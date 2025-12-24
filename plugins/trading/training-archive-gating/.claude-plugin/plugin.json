@@ -1,0 +1,10 @@
+{
+  "name": "training-archive-gating",
+  "version": "1.0.0",
+  "description": "Mandatory training archive with model gating (APPROVED/REVIEW/DROP). Trigger when: (1) training run completes, (2) need to decide which models to deploy, (3) want historical training reference, (4) need checkpoint recommendations for overfitting.",
+  "author": {
+    "name": "Claude Code"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith-cop/Skills_Registry"
+}
