@@ -1,0 +1,10 @@
+{
+  "name": "data-source-priority",
+  "version": "1.0.0",
+  "description": "Ensure Alpaca API is used for quality data, not yfinance fallback. Trigger when: (1) crypto volume filter fails unexpectedly, (2) zero-volume bars in data, (3) 'Alpaca data enabled: False' in logs, (4) API key configuration issues.",
+  "author": {
+    "name": "Claude Code"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith-cop/Skills_Registry"
+}
