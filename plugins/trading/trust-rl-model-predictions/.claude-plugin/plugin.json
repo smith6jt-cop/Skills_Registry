@@ -1,0 +1,10 @@
+{
+  "name": "trust-rl-model-predictions",
+  "version": "1.0.0",
+  "description": "Remove pattern filters that second-guess RL model predictions. Trigger when: (1) signals show past threshold but status is HOLD, (2) pattern filter blocks model signals, (3) external gates contradict trained model, (4) dashboard shows disconnect between signal strength and action.",
+  "author": {
+    "name": "Claude Code"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith-cop/Skills_Registry"
+}
