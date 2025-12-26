@@ -1,0 +1,10 @@
+{
+  "name": "dashboard-parallel-lists",
+  "version": "1.0.0",
+  "description": "Dashboard symbol_signals uses parallel lists not dict-by-symbol. Trigger when: (1) 'list' object has no attribute 'get' error, (2) iterating over symbol_signals with .items(), (3) expecting symbol_signals[symbol] access pattern.",
+  "author": {
+    "name": "Claude Code"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith-cop/Skills_Registry"
+}

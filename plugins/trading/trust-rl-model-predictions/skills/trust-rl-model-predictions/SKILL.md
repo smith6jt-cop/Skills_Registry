@@ -39,7 +39,7 @@ The model is trained with a **6-component reward function**:
 | Exploration bonus | Try uncertain actions |
 | Slippage penalty | Don't overtrade |
 
-**Observation space (53 features)**: The model sees price action, regime probabilities (12 Markov features), technical indicators (14), calendar effects, and multi-window metrics.
+**Observation space (56 features in v2.4)**: The model sees price action, regime probabilities (12 Markov features), technical indicators (14), calendar effects, multi-window metrics, and account state (P&L %, win rate, drawdown %).
 
 **What the model does NOT learn**:
 - Historical pattern win rates (VWAP reversion 68%, momentum 71%)
@@ -183,4 +183,4 @@ This helps users understand what the model is doing, rather than a misleading pa
 ## References
 - `scripts/live_trader.py`: Signal processing at lines 1288-1350
 - `alpaca_trading/gpu/vectorized_env.py`: Reward function at lines 650-750
-- `alpaca_trading/gpu/inference_obs_builder.py`: 53-feature observation space
+- `alpaca_trading/gpu/inference_obs_builder.py`: 56-feature observation space (v2.4)
