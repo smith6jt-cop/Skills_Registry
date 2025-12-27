@@ -5,7 +5,7 @@ author: Claude Code
 date: 2024-12-24
 ---
 
-# Training Archive & Model Gating System (v2.3.5)
+# Training Archive & Model Gating System (v2.4.1)
 
 ## Experiment Overview
 | Item | Details |
@@ -29,11 +29,15 @@ The solution: `TrainingArchiveManager` with automatic gating based on fitness, p
 
 ### Model Gating Thresholds
 
+**NOTE (v2.4.1):** Thresholds are calibrated for `reward_scale=0.001`. MaxDD is a **proxy metric** reflecting reward volatility during validation, not actual equity drawdown. With conservative reward scaling:
+- 8% proxy MaxDD = rewards staying mostly positive
+- 15% proxy MaxDD = occasional negative reward streaks
+
 | Classification | Fitness | PF | Consistency | MaxDD | Action |
 |---------------|---------|-----|-------------|-------|--------|
-| **APPROVED** | >= 0.85 | >= 2.0 | >= 90% | <= 20% | Deploy to production |
-| **REVIEW** | 0.70-0.85 | 1.5-2.0 | 70-90% | 20-30% | Manual review required |
-| **DROP** | < 0.70 | < 1.5 | < 70% | > 30% | Do not deploy |
+| **APPROVED** | >= 0.70 | >= 1.8 | >= 85% | <= 8% | Deploy to production |
+| **REVIEW** | 0.50-0.70 | 1.3-1.8 | 65-85% | 8-15% | Manual review required |
+| **DROP** | < 0.50 | < 1.3 | < 65% | > 15% | Do not deploy |
 
 ### Overfitting Detection
 
@@ -81,21 +85,21 @@ training_archives/
 ```python
 from alpaca_trading.training import ModelGatingConfig
 
-# Custom thresholds (stricter)
+# Custom thresholds (stricter than v2.4.1 defaults)
 config = ModelGatingConfig(
-    approved_min_fitness=0.90,     # Default: 0.85
-    approved_min_pf=2.5,           # Default: 2.0
-    approved_min_consistency=0.95, # Default: 0.90
-    approved_max_drawdown=0.15,    # Default: 0.20
+    approved_min_fitness=0.80,     # Default: 0.70
+    approved_min_pf=2.0,           # Default: 1.8
+    approved_min_consistency=0.90, # Default: 0.85
+    approved_max_drawdown=0.05,    # Default: 0.08 (5% proxy MaxDD)
 )
 
 # Use custom config
 classification, flags, use_checkpoint, best_idx = assess_model_quality(
-    final_fitness=0.88,
-    final_pf=2.3,
-    final_consistency=0.92,
-    final_max_dd=0.18,
-    fitness_history=[0.80, 0.85, 0.90, 0.88],
+    final_fitness=0.75,
+    final_pf=1.9,
+    final_consistency=0.88,
+    final_max_dd=0.06,  # 6% proxy MaxDD
+    fitness_history=[0.70, 0.75, 0.78, 0.75],
     config=config,
 )
 ```
