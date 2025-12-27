@@ -1,0 +1,10 @@
+{
+  "name": "notebook-module-refactoring",
+  "version": "1.0.0",
+  "description": "Safe notebook-to-module refactoring: When extracting functions from Jupyter notebooks into Python modules, preserve variable definitions and cell dependencies. Trigger: extracting functions to module, creating Kio/Kutils modules, refactoring notebook cells, 'moved to module' changes.",
+  "author": {
+    "name": "KINTSUGI Team"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith6jt-cop/Skills_Registry"
+}
