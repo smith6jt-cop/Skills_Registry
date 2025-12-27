@@ -1,0 +1,10 @@
+{
+  "name": "lightsheet-psf-deconvolution",
+  "version": "1.0.0",
+  "description": "KINTSUGI deconvolution: True lightsheet PSF requires coordinate swap and dual-NA calculation. Horizontal banding artifacts indicate widefield PSF was used instead of lightsheet. Trigger: deconvolution artifacts, horizontal banding, PSF issues, fcyl, slitwidth, lightsheet microscopy, LsDeconv.",
+  "author": {
+    "name": "KINTSUGI Team"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith6jt-cop/Skills_Registry"
+}
