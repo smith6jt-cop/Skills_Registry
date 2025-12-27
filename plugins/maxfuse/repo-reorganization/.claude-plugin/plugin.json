@@ -1,0 +1,10 @@
+{
+  "name": "repo-reorganization",
+  "version": "1.0.0",
+  "description": "Specific trigger conditions: (1) reorganizing a Python project with nested packages, (2) pyproject.toml inside package directory, (3) merging multiple packages into one. Verified on Python 3.12 with hatchling.",
+  "author": {
+    "name": "smith6jt"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith6jt-cop/Skills_Registry"
+}
