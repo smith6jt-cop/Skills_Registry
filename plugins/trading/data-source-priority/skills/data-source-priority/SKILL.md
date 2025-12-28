@@ -66,7 +66,7 @@ FIX OPTIONS:
      - APCA_API_SECRET_KEY = your_secret
 
   2. Set API_KEYS_FILE in previous cell:
-     API_KEYS_FILE = "/content/drive/MyDrive/API_key.txt"
+     API_KEYS_FILE = "/content/Alpaca_trading/API_key_500Paper.txt"
 
   3. Disable crypto and train only equities:
      selection_config.crypto.enabled = False
@@ -102,8 +102,8 @@ FIX OPTIONS:
 # Cell 14: Option 1 - Environment variables (recommended)
 # Keys are read from Colab Secrets automatically
 
-# Cell 14: Option 2 - Keys file
-API_KEYS_FILE = '/content/drive/MyDrive/API_key.txt'
+# Cell 15: Option 2 - Keys file (after unzipping repo)
+API_KEYS_FILE = '/content/Alpaca_trading/API_key_500Paper.txt'
 ```
 
 ### For Local Development
