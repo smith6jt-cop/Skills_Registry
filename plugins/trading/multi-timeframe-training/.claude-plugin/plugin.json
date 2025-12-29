@@ -1,0 +1,10 @@
+{
+  "name": "multi-timeframe-training",
+  "version": "1.0.0",
+  "description": "Train RL models across multiple timeframes with data resampling. Trigger when: (1) training on multiple timeframes, (2) resampling data from base timeframe, (3) creating models for 1Hour, 4Hour, etc., (4) multi-TF model deployment.",
+  "author": {
+    "name": "Claude Code"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith-cop/Skills_Registry"
+}

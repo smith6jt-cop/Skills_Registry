@@ -1,0 +1,10 @@
+{
+  "name": "alpaca-algo-plus-data",
+  "version": "1.0.0",
+  "description": "Use Alpaca Algo Trader Plus subscription for 4+ years of historical data. Trigger when: (1) increasing training lookback beyond 2 years, (2) configuring LOOKBACK_DAYS, (3) data source selection, (4) yfinance vs Alpaca comparison.",
+  "author": {
+    "name": "Claude Code"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith-cop/Skills_Registry"
+}
