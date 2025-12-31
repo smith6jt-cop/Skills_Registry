@@ -1,0 +1,10 @@
+{
+  "name": "private-function-shim-export",
+  "version": "1.0.0",
+  "description": "Fix compatibility shims that fail to export private functions. Trigger when: (1) import errors for _prefixed functions after module reorganization, (2) 'cannot import name' errors from shim files, (3) creating backwards-compat shims for moved modules.",
+  "author": {
+    "name": "Claude Code"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith-cop/Skills_Registry"
+}
