@@ -1,0 +1,10 @@
+{
+  "name": "codebase-consolidation-pattern",
+  "version": "1.0.0",
+  "description": "Reorganize scattered modules into subpackages while maintaining backwards compatibility. Trigger when: (1) too many root-level files, (2) need to group related functionality, (3) cleaning up codebase structure without breaking imports.",
+  "author": {
+    "name": "Claude Code"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith-cop/Skills_Registry"
+}

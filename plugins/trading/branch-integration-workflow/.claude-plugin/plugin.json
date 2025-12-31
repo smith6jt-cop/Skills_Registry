@@ -1,0 +1,10 @@
+{
+  "name": "branch-integration-workflow",
+  "version": "1.0.0",
+  "description": "Safely review and merge remote branches into stable. Trigger when: (1) reviewing open PRs, (2) integrating feature branches, (3) merging stale branches that may have conflicts.",
+  "author": {
+    "name": "Claude Code"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith-cop/Skills_Registry"
+}
