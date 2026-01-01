@@ -105,7 +105,32 @@ def extract_texture_features(image, labels, distances=[1, 3], angles=[0, np.pi/4
         mask = labels == label_id
         region = image[mask].reshape(-1)
         # Compute GLCM and properties
-        # ... implementation
+        # Extract the region as a square patch (bounding box) for GLCM
+        coords = np.argwhere(mask)
+        if coords.size == 0:
+            continue
+        minr, minc = coords.min(axis=0)
+        maxr, maxc = coords.max(axis=0) + 1
+        patch = image[minr:maxr, minc:maxc]
+        patch_mask = mask[minr:maxr, minc:maxc]
+        # Mask out background in patch
+        patch = np.where(patch_mask, patch, 0)
+        # Rescale patch to 8-bit if needed
+        if patch.max() > 255 or patch.dtype != np.uint8:
+            patch = ((patch - patch.min()) / (patch.ptp() + 1e-8) * 255).astype(np.uint8)
+        # Compute GLCM
+        glcm = graycomatrix(patch, 
+                            distances=distances, 
+                            angles=angles, 
+                            levels=256, 
+                            symmetric=True, 
+                            normed=True)
+        # Extract properties
+        features[label_id] = {}
+        for prop in props:
+            val = graycoprops(glcm, prop)
+            # Average over distances and angles
+            features[label_id][prop] = val.mean()
     return features
 
 # Nuclear-cytoplasmic ratio (important for cell state)
