@@ -1,11 +1,15 @@
 ---
 name: selection-data-caching
-description: "Cache data during symbol selection for instant repeat runs. Trigger when: (1) selection takes too long on repeat runs, (2) API rate limits during selection, (3) want consistent data between selection and training."
+description: "SUPERSEDED by persistent-cache-gap-filling (v2.8.0). Cache data during symbol selection for instant repeat runs."
 author: Claude Code
 date: 2024-12-28
 ---
 
 # Selection Data Caching (v2.5.1)
+
+> **SUPERSEDED**: This skill documents the v2.5.1 time-based cache expiry approach.
+> See **persistent-cache-gap-filling** for the v2.8.0 improvement that removes
+> time-based expiry and uses gap-filling instead.
 
 ## Experiment Overview
 | Item | Details |
@@ -13,7 +17,7 @@ date: 2024-12-28
 | **Date** | 2024-12-28 |
 | **Goal** | Make universe selection use cached data like training does |
 | **Environment** | notebooks/training.ipynb |
-| **Status** | Success |
+| **Status** | Superseded by v2.8.0 |
 
 ## Context
 
@@ -164,3 +168,23 @@ notebooks/training.ipynb:
 - `notebooks/training.ipynb`: Implementation
 - `alpaca_trading/data/fetcher.py`: Base DataFetcher
 - Skill: `data-source-priority` - Related data fetching patterns
+- Skill: `persistent-cache-gap-filling` - v2.8.0 replacement
+
+---
+
+## v2.8.0 Update: Why Time-Based Expiry Was Wrong
+
+The v2.5.1 approach used time-based cache expiry (3-7 days), but this caused problems:
+
+| Issue | Impact |
+|-------|--------|
+| Cache expired overnight | Re-downloaded complete 4-year history |
+| Historical data is immutable | Past candles never change, so re-fetching wastes API calls |
+| Different expiry per use case | Confusing configuration |
+
+**v2.8.0 Solution**: Persistent cache with gap-filling
+- Cache never expires (historical data is immutable)
+- Only fetches new bars since last cache update
+- Single cache location for both selection and training
+
+See skill: **persistent-cache-gap-filling** for full details.
