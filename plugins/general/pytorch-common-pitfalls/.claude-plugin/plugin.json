@@ -1,0 +1,10 @@
+{
+  "name": "pytorch-common-pitfalls",
+  "version": "1.0.0",
+  "description": "Fix common PyTorch bugs: (1) percentile calculation with kthvalue vs quantile, (2) LayerNorm dimension mismatch with Conv1d outputs, (3) buffer edge cases for last transitions. Trigger when: writing PyTorch code for RL, neural networks, or data processing.",
+  "author": {
+    "name": "Claude Code"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith6jt-cop/Skills_Registry"
+}
