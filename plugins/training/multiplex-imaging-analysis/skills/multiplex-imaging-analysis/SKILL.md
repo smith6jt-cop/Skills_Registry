@@ -135,7 +135,7 @@ def extract_texture_features(image, labels, distances=[1, 3], angles=[0, np.pi/4
 
 # Nuclear-cytoplasmic ratio (important for cell state)
 nc_ratio = nuclear_df['nuclear_number_of_pixels'] / cell_df['cell_number_of_pixels']
-intensity_nc_ratio = nuclear_df['nuclear_DAPI_mean'] / cell_df['cell_DAPI_mean']
+dapi_nc_intensity_ratio = nuclear_df['nuclear_DAPI_mean'] / cell_df['cell_DAPI_mean']
 ```
 
 ### 2. Improved SOM Clustering (FuseSOM or minisom)
