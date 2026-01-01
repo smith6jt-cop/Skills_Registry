@@ -176,7 +176,7 @@ diversity_bonus = self._compute_diversity(samples)
 | `LayerNorm(channels)` on Conv1d output | Normalizes wrong dimension (time instead of channels) | Create wrapper that transposes before/after LayerNorm |
 | `obs[indices + 1]` without bounds check | Index out of bounds for last transition | Always handle edge case or filter invalid indices |
 | Silent failures returning zeros | Bugs hidden, hard to debug | Raise `ValueError` with informative message |
-| `any` type hint | Python `any` != `typing.Any` | Use `from typing import Any` |
+| Using `x: any = ...` without import | Built-in `any` is not the same as `typing.Any`; not a valid type hint | Use `from typing import Any` and annotate as `x: Any = ...` |
 
 ## Key Insights
 
