@@ -1,0 +1,10 @@
+{
+  "name": "github-copilot-pr-review",
+  "version": "1.0.0",
+  "description": "Review and apply GitHub Copilot suggestions on pull requests. Trigger when: (1) reviewing PRs with Copilot suggestions, (2) merging multiple PRs with overlapping suggestions, (3) setting up gh CLI for private repos.",
+  "author": {
+    "name": "Claude Code"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith6jt-cop/Skills_Registry"
+}
