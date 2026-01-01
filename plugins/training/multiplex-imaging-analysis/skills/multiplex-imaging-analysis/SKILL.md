@@ -182,9 +182,12 @@ ecm_boundary = (ecm_label > 0).astype(int)
 cell_ecm_distance = distance_transform_edt(~ecm_boundary)
 
 # Per-cell ECM distance
+cell_to_min_ecm_dist = {}
 for cell_id in np.unique(marker_label)[1:]:
     cell_mask = marker_label == cell_id
     min_ecm_dist = cell_ecm_distance[cell_mask].min()
+    cell_to_min_ecm_dist[cell_id] = min_ecm_dist
+# cell_to_min_ecm_dist now maps each cell_id to its minimum ECM distance
 ```
 
 ## Final Parameters
