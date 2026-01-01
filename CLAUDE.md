@@ -36,12 +36,16 @@ Skills_Registry/
 │   │   ├── pypi-collision-fix/
 │   │   ├── type-checking-pattern/
 │   │   ├── conda-multi-account-hipergator/
-│   │   └── dependency-deprecation/
+│   │   ├── dependency-deprecation/
+│   │   ├── hpc-dev-testing-workflow/
+│   │   ├── python-performance-patterns/
+│   │   └── skills-registry-organization/
 │   ├── scientific/           # Scientific computing & GPU patterns
 │   │   ├── project-data-separation/
 │   │   └── windows-cupy-nvrtc/
 │   ├── kintsugi/             # KINTSUGI-specific skills
-│   │   └── basic-caching-evaluation/
+│   │   ├── basic-caching-evaluation/
+│   │   └── gpu-quality-priority/
 │   └── templates/            # Skill templates & examples
 │       └── example-skill/
 ├── templates/

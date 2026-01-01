@@ -1,0 +1,10 @@
+{
+  "name": "model-version-protocol",
+  "version": "1.0.0",
+  "description": "Model-trader version compatibility protocol (v2.7.0): Embed version metadata in checkpoints, validate at load time. Trigger when: (1) training changes break live trading, (2) models incompatible with trader, (3) need version-specific action interpretation.",
+  "author": {
+    "name": "Claude Code"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith-cop/Skills_Registry"
+}

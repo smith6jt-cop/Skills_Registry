@@ -1,0 +1,10 @@
+{
+  "name": "persistence-layer-audit",
+  "version": "1.0.0",
+  "description": "Audit SQLite persistence layer for unused tables, missing methods, and broken integrations. Trigger when: (1) checking database usage, (2) cleaning up schema, (3) finding methods called but not implemented, (4) aligning database with actual codebase features.",
+  "author": {
+    "name": "Claude Code"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith-cop/Skills_Registry"
+}

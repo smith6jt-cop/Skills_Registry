@@ -1,0 +1,10 @@
+{
+  "name": "hpc-dev-testing-workflow",
+  "version": "1.0.0",
+  "description": "Efficient development testing workflow for HPC environments with VS Code tunneling. Trigger: testing code changes on HPC, development workflow with external data directories, VS Code Remote SSH development",
+  "author": {
+    "name": "KINTSUGI Team"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith6jt-cop/KINTSUGI"
+}

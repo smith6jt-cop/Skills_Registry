@@ -1,0 +1,10 @@
+{
+  "name": "position-sizing-action-space",
+  "version": "1.0.0",
+  "description": "Position sizing action space (v2.7.0): 7 actions (HOLD + 3 BUY sizes + 3 SELL sizes) with account simulation. Trigger when: (1) model needs to learn position sizing, (2) training for small accounts, (3) obs_dim changes from 5600 to 5900, (4) 56 to 59 feature upgrade.",
+  "author": {
+    "name": "Claude Code"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith-cop/Skills_Registry"
+}

@@ -1,0 +1,10 @@
+{
+  "name": "backtest-persistence",
+  "version": "1.0.0",
+  "description": "Save backtest results to SQLite database for comparison and tracking. Trigger when: (1) adding backtest history tracking, (2) comparing model performance across runs, (3) querying best performing backtests, (4) adding --save-to-db flag.",
+  "author": {
+    "name": "Claude Code"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith-cop/Skills_Registry"
+}

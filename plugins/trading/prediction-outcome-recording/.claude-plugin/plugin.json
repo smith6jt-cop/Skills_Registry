@@ -1,0 +1,10 @@
+{
+  "name": "prediction-outcome-recording",
+  "version": "1.0.0",
+  "description": "Record prediction outcomes when positions close to complete the prediction lifecycle. Trigger when: (1) predictions are logged but outcomes not recorded, (2) calculating prediction accuracy, (3) tracking model performance over time, (4) position closes need to update prediction tables.",
+  "author": {
+    "name": "Claude Code"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith-cop/Skills_Registry"
+}

@@ -29,15 +29,19 @@ Scientific pipelines often mix repository code with user data and modified noteb
 ```
 Repository (KINTSUGI/)           User Project (MyExperiment/)
 ├── src/kintsugi/                ├── data/
-│   └── project.py               │   ├── raw/           <- Input images
-├── notebooks/                   │   └── processed/     <- Outputs
-│   └── 1_Processing.ipynb       │       ├── stitched/
-└── ...                          │       ├── corrected/
-                                 │       └── registered/
-                                 ├── notebooks/         <- Working copies
-                                 ├── configs/           <- Project configs
-                                 ├── meta/              <- Metadata
-                                 ├── logs/              <- Processing logs
+│   └── project.py               │   ├── raw/              <- Input images
+├── notebooks/                   │   └── processed/        <- Outputs
+│   └── 1_Processing.ipynb       │       ├── stitched/     <- Stitched + illumination corrected
+└── ...                          │       ├── deconvolved/  <- Deconvolved images
+                                 │       ├── edf/          <- Extended depth of focus
+                                 │       ├── registered/   <- Multi-cycle registered
+                                 │       ├── signal_isolated/ <- Autofluorescence removed
+                                 │       ├── segmented/    <- Segmentation masks
+                                 │       └── analysis/     <- Analysis outputs
+                                 ├── notebooks/            <- Working copies
+                                 ├── configs/              <- Project configs
+                                 ├── meta/                 <- Metadata
+                                 ├── logs/                 <- Processing logs
                                  └── kintsugi_project.json
 ```
 
@@ -60,10 +64,17 @@ class ProjectPaths:
     raw: Path
     processed: Path
     stitched: Path
+    deconvolved: Path
+    edf: Path
+    registered: Path
+    signal_isolated: Path
+    segmented: Path
+    analysis: Path
     notebooks: Path
     configs: Path
     meta: Path
     logs: Path
+    cache: Path
 
     @classmethod
     def from_root(cls, root: Path) -> "ProjectPaths":
@@ -73,16 +84,23 @@ class ProjectPaths:
             raw=root / "data" / "raw",
             processed=root / "data" / "processed",
             stitched=root / "data" / "processed" / "stitched",
+            deconvolved=root / "data" / "processed" / "deconvolved",
+            edf=root / "data" / "processed" / "edf",
+            registered=root / "data" / "processed" / "registered",
+            signal_isolated=root / "data" / "processed" / "signal_isolated",
+            segmented=root / "data" / "processed" / "segmented",
+            analysis=root / "data" / "processed" / "analysis",
             notebooks=root / "notebooks",
             configs=root / "configs",
             meta=root / "meta",
             logs=root / "logs",
+            cache=root / ".cache",
         )
 
     def create_all(self) -> None:
-        for path in [self.raw, self.processed, self.stitched,
-                     self.notebooks, self.configs, self.meta, self.logs]:
-            path.mkdir(parents=True, exist_ok=True)
+        for name, path in self.__dict__.items():
+            if isinstance(path, Path) and name != "root":
+                path.mkdir(parents=True, exist_ok=True)
 
 
 class Project:
@@ -177,6 +195,7 @@ base_dir = str(project.root.parent)
 | No backward compatibility | Broke all existing notebook code | Map to legacy variable names |
 | Complex config schema | Overkill for simple projects | Start simple, add complexity later |
 | Auto-detecting repo path | Failed in various install scenarios | Use explicit detection with fallbacks |
+| Different folder names in notebooks vs project.py | Created duplicate/inconsistent folder structures (`BaSiC_Stitched` vs `stitched`) | Always use canonical paths from `ProjectPaths`; never override with custom strings |
 
 ## Key Insights
 
@@ -186,6 +205,7 @@ base_dir = str(project.root.parent)
 - **Create all dirs upfront**: Avoid FileNotFoundError during processing
 - **JSON config**: Simple, human-readable, easy to version control
 - **Copy, don't link**: Notebooks should be copies users can modify freely
+- **Canonical paths only**: Always use `project.paths.*` - never create ad-hoc paths with custom strings
 
 ## Configuration File Format
 

@@ -1,0 +1,7 @@
+{
+  "name": "selection-data-caching",
+  "version": "1.0.0",
+  "description": "Cache data during symbol selection for instant repeat runs. Trigger when: (1) selection takes too long on repeat runs, (2) API rate limits during selection, (3) want consistent data between selection and training.",
+  "author": "Claude Code",
+  "skills": ["selection-data-caching"]
+}
