@@ -73,7 +73,7 @@ gh pr view 36 --repo owner/repo --json mergeable
 gh api repos/owner/repo/pulls/36/comments
 
 # Filter for Copilot suggestions (look for user.login = "github-copilot[bot]")
-gh api repos/owner/repo/pulls/36/comments --jq '.[] | select(.user.login == "copilot") | {path, body, line}'
+gh api repos/owner/repo/pulls/36/comments --jq '.[] | select(.user.login == "github-copilot[bot]") | {path, body, line}'
 ```
 
 **Example Copilot suggestion format:**
