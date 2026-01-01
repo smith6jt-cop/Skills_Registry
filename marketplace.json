@@ -222,6 +222,16 @@
       },
       "category": "trading",
       "path": "plugins/trading/persistent-cache-gap-filling"
+    },
+    {
+      "name": "selection-diversity-validation",
+      "version": "1.0.0",
+      "description": "FAIL LOUDLY pattern for selection constraints. Trigger when: (1) correlated stocks selected together despite max_correlation, (2) min_crypto_positions ignored, (3) selection constraints violated silently.",
+      "author": {
+        "name": "Claude Code"
+      },
+      "category": "trading",
+      "path": "plugins/trading/selection-diversity-validation"
     }
   ]
 }

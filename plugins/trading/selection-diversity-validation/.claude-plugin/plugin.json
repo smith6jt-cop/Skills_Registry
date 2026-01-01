@@ -1,0 +1,16 @@
+{
+  "name": "selection-diversity-validation",
+  "version": "1.0.0",
+  "description": "FAIL LOUDLY pattern for selection constraints. Trigger when: (1) correlated stocks selected together, (2) min_crypto_positions ignored, (3) constraints violated silently.",
+  "author": "Claude Code",
+  "keywords": ["selection", "diversity", "validation", "correlation", "crypto", "constraints", "fail-loudly"],
+  "triggers": [
+    "selection constraint violated",
+    "MSFT and GOOGL selected together",
+    "correlated stocks in portfolio",
+    "min_crypto_positions not working",
+    "crypto not selected despite config",
+    "silent failure in selection",
+    "max_correlation ignored"
+  ]
+}
