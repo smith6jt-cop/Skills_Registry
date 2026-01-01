@@ -51,7 +51,7 @@ threshold = torch.quantile(errors.view(-1), q)
 # BUG: LayerNorm(channels) applied to wrong dimension
 self.norm = nn.LayerNorm(num_channels)
 x = self.conv(x)  # (batch, channels, time)
-x = self.norm(x)  # Normalizes over time dimension, not channels!
+x = self.norm(x)  # Normalizes over the last dim (time) for each channel, not across channels as intended
 ```
 
 **Correct:**
