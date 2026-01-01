@@ -185,7 +185,7 @@ gh pr view {pr_number} --repo owner/repo --json files --jq '.files[].path'
 ## Key Insights
 
 - **gh CLI is essential for private repos**: WebFetch returns 404
-- **Copilot suggestions are in PR comments**: Filter by `user.login`
+- **Copilot suggestions are in PR review comments on code lines**: These are GitHub "review comments" (from `pulls/{pr_number}/comments`), not general PR discussion comments; filter by `user.login`.
 - **Categorize before fixing**: Create a table to track all suggestions
 - **One target PR**: When multiple PRs overlap, pick one and close others
 - **Commit messages matter**: Reference the specific fix for traceability
