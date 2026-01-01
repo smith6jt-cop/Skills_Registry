@@ -1,0 +1,10 @@
+{
+  "name": "crypto-pair-fee-optimization",
+  "version": "1.0.0",
+  "description": "Crypto-to-crypto vs crypto-to-USD fee analysis for Alpaca. Triggers: (1) comparing crypto trading pair strategies, (2) optimizing fees for crypto portfolio rebalancing, (3) evaluating stablecoin vs fiat pairs, (4) implementing crypto-to-crypto trading support.",
+  "author": {
+    "name": "Claude Code"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith-cop/Skills_Registry"
+}
