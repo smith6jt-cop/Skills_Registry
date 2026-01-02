@@ -1,0 +1,10 @@
+{
+  "name": "account-aware-training",
+  "version": "1.0.0",
+  "description": "Account-aware RL training (v2.4): Add P&L, win rate, drawdown to observations + drawdown penalty. Trigger when: (1) model needs account state awareness, (2) training to avoid drawdowns, (3) obs_dim changes from 5300 to 5600, (4) 53 to 56 feature upgrade.",
+  "author": {
+    "name": "Claude Code"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith-cop/Skills_Registry"
+}

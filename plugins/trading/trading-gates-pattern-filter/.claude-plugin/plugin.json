@@ -1,0 +1,10 @@
+{
+  "name": "trading-gates-pattern-filter",
+  "version": "1.0.0",
+  "description": "Trading gates pattern: (1) pattern filter normalization for predator/prey dominance ratios, (2) multi-gate order entry requirements, (3) dashboard gate status display. Fixes pattern filter that was using raw Lotka-Volterra values instead of normalized dominance ratios.",
+  "author": {
+    "name": "Claude Code"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith-cop/Skills_Registry"
+}

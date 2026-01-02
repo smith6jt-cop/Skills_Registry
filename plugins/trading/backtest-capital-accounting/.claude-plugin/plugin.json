@@ -1,0 +1,10 @@
+{
+  "name": "backtest-capital-accounting",
+  "version": "1.0.0",
+  "description": "Critical fix for backtest capital accounting: (1) implementing position entry/exit cash flows, (2) debugging inflated equity curves, (3) fixing meaningless drawdown metrics. Verified on Python 3.10 backtesting engine.",
+  "author": {
+    "name": "Claude Code"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith-cop/Skills_Registry"
+}

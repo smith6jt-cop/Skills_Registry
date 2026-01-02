@@ -1,0 +1,10 @@
+{
+  "name": "broker-order-limitations",
+  "version": "1.0.0",
+  "description": "Alpaca broker order limitations: crypto shorts blocked, stock shorts allowed. Trigger when: (1) SELL signals blocked unexpectedly, (2) crypto vs equity order behavior differs, (3) shorting gate confusion.",
+  "author": {
+    "name": "Claude Code"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith-cop/Skills_Registry"
+}

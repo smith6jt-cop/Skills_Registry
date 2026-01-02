@@ -1,0 +1,10 @@
+{
+  "name": "gpu-aware-training-config",
+  "version": "1.0.0",
+  "description": "GPU-aware RL training configuration. Trigger: (1) slow GPU training, (2) low GPU utilization, (3) configuring PPO for A100/H100, (4) training mode configuration, (5) FPS below expected.",
+  "author": {
+    "name": "Claude Code"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith6jt-cop/Skills_Registry"
+}

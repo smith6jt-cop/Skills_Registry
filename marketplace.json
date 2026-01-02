@@ -212,6 +212,46 @@
       },
       "category": "kintsugi",
       "path": "plugins/kintsugi/gpu-quality-priority"
+    },
+    {
+      "name": "persistent-cache-gap-filling",
+      "version": "1.0.0",
+      "description": "Persistent data cache with gap-filling for historical market data. Trigger when: (1) cache re-downloads complete data unnecessarily, (2) time-based cache expiry wastes API calls, (3) historical data needs incremental updates only.",
+      "author": {
+        "name": "Claude Code"
+      },
+      "category": "trading",
+      "path": "plugins/trading/persistent-cache-gap-filling"
+    },
+    {
+      "name": "selection-diversity-validation",
+      "version": "1.0.0",
+      "description": "FAIL LOUDLY pattern for selection constraints. Trigger when: (1) correlated stocks selected together despite max_correlation, (2) min_crypto_positions ignored, (3) selection constraints violated silently.",
+      "author": {
+        "name": "Claude Code"
+      },
+      "category": "trading",
+      "path": "plugins/trading/selection-diversity-validation"
+    },
+    {
+      "name": "symbol-database-selection",
+      "version": "1.0.0",
+      "description": "Database-driven symbol selection using snapshot API for fast pre-filtering. Trigger when: (1) selection scans only ~100 symbols instead of 12k, (2) historical data download takes hours for full universe, (3) API key lookup fails to find config/ files, (4) need empirical volume/price thresholds.",
+      "author": {
+        "name": "Claude Code"
+      },
+      "category": "trading",
+      "path": "plugins/trading/symbol-database-selection"
+    },
+    {
+      "name": "windows-console-unicode",
+      "version": "1.0.0",
+      "description": "Fix UnicodeEncodeError on Windows console when printing emojis. Trigger when: (1) charmap codec error with cp1252, (2) script works on Linux/Mac but crashes on Windows, (3) print() fails with special Unicode characters.",
+      "author": {
+        "name": "Claude Code"
+      },
+      "category": "general",
+      "path": "plugins/general/windows-console-unicode"
     }
   ]
 }

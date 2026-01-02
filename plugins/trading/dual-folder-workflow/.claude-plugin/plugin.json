@@ -1,0 +1,10 @@
+{
+  "name": "dual-folder-workflow",
+  "version": "1.0.0",
+  "description": "Workflow for private repos + Colab training: (1) need to train on Colab but repo is private, (2) want to separate development from production code, (3) risk of accidentally using untested code in production. Uses two local folders with different branches.",
+  "author": {
+    "name": "Claude Code"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith6jt-cop/Alpaca_trading"
+}

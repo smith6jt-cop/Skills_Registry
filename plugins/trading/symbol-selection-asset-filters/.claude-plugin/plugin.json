@@ -1,0 +1,10 @@
+{
+  "name": "symbol-selection-asset-filters",
+  "version": "1.0.0",
+  "description": "Fix symbol selection failing due to wrong asset-type filters. Trigger when: (1) '0/N passed hard filter', (2) crypto selection fails, (3) min_price or min_volume filtering wrong assets.",
+  "author": {
+    "name": "Claude Code"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith-cop/Skills_Registry"
+}

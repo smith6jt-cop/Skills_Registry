@@ -1,0 +1,17 @@
+{
+  "name": "reward-scaling-calibration",
+  "version": "1.0.0",
+  "description": "Fix phantom MaxDD values in training by calibrating reward_scale (0.1->0.001). Trigger when validation shows 35-80% MaxDD that doesn't correlate with training quality.",
+  "author": "Claude Code",
+  "category": "trading",
+  "tags": ["training", "validation", "maxdd", "reward-scaling", "gating-thresholds"],
+  "skills": ["reward-scaling-calibration"],
+  "triggers": [
+    "validation MaxDD 35-80%",
+    "phantom drawdown",
+    "unrealistic MaxDD",
+    "gating thresholds too strict",
+    "gating thresholds too lenient",
+    "reward_scale calibration"
+  ]
+}

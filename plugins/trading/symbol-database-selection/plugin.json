@@ -1,0 +1,16 @@
+{
+  "name": "symbol-database-selection",
+  "version": "1.0.0",
+  "description": "Database-driven symbol selection using snapshot API for fast pre-filtering of 12k+ symbols",
+  "tags": ["selection", "database", "snapshot", "performance", "alpaca"],
+  "status": "validated",
+  "created": "2026-01-02",
+  "context": "Universe selection was slow because it downloaded historical data for ALL symbols",
+  "outcome": "SUCCESS - 12k symbols scanned in ~2 min using snapshot API, then pre-filtered before downloading history",
+  "key_insight": "Separate fast metadata collection (snapshots) from expensive historical data download",
+  "files": [
+    "alpaca_trading/selection/symbol_database.py",
+    "alpaca_trading/selection/empirical_config.py",
+    "notebooks/training.ipynb"
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "name": "persistent-cache-gap-filling",
+  "version": "1.0.0",
+  "description": "Persistent data cache with gap-filling for historical market data. Trigger when: (1) cache re-downloads complete data unnecessarily, (2) time-based cache expiry wastes API calls, (3) historical data needs incremental updates only.",
+  "author": {
+    "name": "Claude Code"
+  },
+  "category": "trading",
+  "skills": [
+    "persistent-cache-gap-filling"
+  ]
+}

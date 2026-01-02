@@ -1,0 +1,24 @@
+{
+  "name": "multi-agent-integration",
+  "version": "1.0.0",
+  "description": "Integrate Claude agents into training and live trading (v3.0). Trigger when: (1) setting up multi-agent training, (2) adding agent consultation to live trading, (3) configuring orchestrator, (4) understanding agent roles and safety mechanisms.",
+  "author": "Claude Code",
+  "skills": [
+    {
+      "name": "multi-agent-integration",
+      "path": "skills/multi-agent-integration"
+    }
+  ],
+  "triggers": [
+    "multi-agent",
+    "agent integration",
+    "orchestrator",
+    "claude agents",
+    "trading agents",
+    "training agents",
+    "selection agents",
+    "agent safety",
+    "advisory mode",
+    "autonomous mode"
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "name": "training-improvements-v245",
+  "version": "1.0.0",
+  "description": "Training improvements: LR warmup (first 5%), validation intervals (10x per run), reward weight adjustments. Trigger when training is unstable early, need more visibility, or model is too conservative.",
+  "author": "Claude Code",
+  "category": "trading",
+  "tags": ["training", "lr-warmup", "validation", "reward-weights", "ppo"],
+  "skills": ["training-improvements-v245"],
+  "triggers": [
+    "training unstable early",
+    "lr warmup",
+    "validation interval",
+    "model too conservative",
+    "low reward magnitude",
+    "reward weights"
+  ]
+}

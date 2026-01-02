@@ -1,0 +1,10 @@
+{
+  "name": "drawdown-guardrails-pattern",
+  "version": "1.0.0",
+  "description": "Consistent drawdown control pattern across backtest, live trading, and training: (1) implementing max drawdown halts, (2) warning zone position scaling, (3) training fitness penalties. Verified on Python 3.10 trading system.",
+  "author": {
+    "name": "Claude Code"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith-cop/Skills_Registry"
+}

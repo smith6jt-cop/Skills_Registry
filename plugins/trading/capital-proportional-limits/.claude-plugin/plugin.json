@@ -1,0 +1,10 @@
+{
+  "name": "capital-proportional-limits",
+  "version": "1.0.0",
+  "description": "Use percentage-based capital limits, not hard-coded dollar amounts. Trigger when: (1) trades blocked on small accounts, (2) min_cash_buffer is absolute dollars, (3) capital allocation doesn't scale with account size, (4) fixed dollar thresholds in risk code.",
+  "author": {
+    "name": "Claude Code"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith-cop/Skills_Registry"
+}

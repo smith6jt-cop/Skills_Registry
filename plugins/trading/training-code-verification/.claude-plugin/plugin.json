@@ -1,0 +1,10 @@
+{
+  "name": "training-code-verification",
+  "version": "1.0.0",
+  "description": "Checklist for editing training code. Trigger when: (1) modifying training notebook, (2) changing GPUEnvConfig, (3) changing reward functions, (4) ANY training-related code changes.",
+  "author": {
+    "name": "Claude Code"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith-cop/Skills_Registry"
+}
