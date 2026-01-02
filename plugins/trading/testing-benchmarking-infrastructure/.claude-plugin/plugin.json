@@ -1,0 +1,10 @@
+{
+  "name": "testing-benchmarking-infrastructure",
+  "version": "1.0.0",
+  "description": "Testing suite improvements with pytest-benchmark for version-to-version performance comparison: (1) shared fixtures with GPU mocking fallback, (2) benchmark tests across feature engineering, GPU, inference, and validation, (3) feature regression tests for version compatibility, (4) integration tests for training/inference pipelines. Verified on Python 3.10/3.11 trading system with pytest 8.4.",
+  "author": {
+    "name": "Claude Code"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith-cop/Skills_Registry"
+}
