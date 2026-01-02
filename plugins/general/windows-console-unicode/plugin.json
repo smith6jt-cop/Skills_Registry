@@ -1,0 +1,11 @@
+{
+  "name": "windows-console-unicode",
+  "version": "1.0.0",
+  "description": "Fix UnicodeEncodeError on Windows console when printing emojis or special characters",
+  "tags": ["windows", "unicode", "console", "encoding", "cp1252"],
+  "status": "validated",
+  "created": "2026-01-02",
+  "context": "Python scripts crash with UnicodeEncodeError when printing emojis on Windows cmd/PowerShell",
+  "outcome": "SUCCESS - Replace emojis with ASCII text equivalents",
+  "key_insight": "Windows console uses cp1252 encoding which cannot display Unicode emojis"
+}

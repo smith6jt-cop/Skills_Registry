@@ -242,6 +242,16 @@
       },
       "category": "trading",
       "path": "plugins/trading/symbol-database-selection"
+    },
+    {
+      "name": "windows-console-unicode",
+      "version": "1.0.0",
+      "description": "Fix UnicodeEncodeError on Windows console when printing emojis. Trigger when: (1) charmap codec error with cp1252, (2) script works on Linux/Mac but crashes on Windows, (3) print() fails with special Unicode characters.",
+      "author": {
+        "name": "Claude Code"
+      },
+      "category": "general",
+      "path": "plugins/general/windows-console-unicode"
     }
   ]
 }
