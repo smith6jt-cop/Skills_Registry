@@ -232,6 +232,16 @@
       },
       "category": "trading",
       "path": "plugins/trading/selection-diversity-validation"
+    },
+    {
+      "name": "symbol-database-selection",
+      "version": "1.0.0",
+      "description": "Database-driven symbol selection using snapshot API for fast pre-filtering. Trigger when: (1) selection scans only ~100 symbols instead of 12k, (2) historical data download takes hours for full universe, (3) API key lookup fails to find config/ files, (4) need empirical volume/price thresholds.",
+      "author": {
+        "name": "Claude Code"
+      },
+      "category": "trading",
+      "path": "plugins/trading/symbol-database-selection"
     }
   ]
 }
