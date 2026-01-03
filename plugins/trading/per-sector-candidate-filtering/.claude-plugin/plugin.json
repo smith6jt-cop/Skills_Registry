@@ -1,0 +1,10 @@
+{
+  "name": "per-sector-candidate-filtering",
+  "version": "1.0.0",
+  "description": "Per-sector candidate limits for universe selection using yfinance sector data and SQL window functions. Reduces ~4k candidates to ~1.5k while maintaining sector diversity. Trigger when: (1) too many candidates from initial filtering, (2) historical data download takes too long, (3) sector diversity needed in candidate pool.",
+  "author": {
+    "name": "Claude Code"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith-cop/Skills_Registry"
+}
