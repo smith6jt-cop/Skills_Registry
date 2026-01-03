@@ -1,0 +1,26 @@
+{
+  "name": "dynamic-universe-management",
+  "version": "1.0.0",
+  "description": "Integrate dynamic universe management for automatic model discovery and performance-based symbol rotation (v3.0). Trigger when: (1) setting up automatic model detection, (2) implementing performance-based eviction, (3) adding universe expansion from new models, (4) configuring advisory vs execution mode.",
+  "author": "Claude Code",
+  "skills": [
+    {
+      "name": "dynamic-universe-management",
+      "path": "skills/dynamic-universe-management"
+    }
+  ],
+  "triggers": [
+    "dynamic universe",
+    "universe management",
+    "model detection",
+    "model discovery",
+    "symbol eviction",
+    "symbol rotation",
+    "performance tracking",
+    "advisory mode",
+    "execution mode",
+    "hot-loading models",
+    "universe expansion",
+    "universe contraction"
+  ]
+}
