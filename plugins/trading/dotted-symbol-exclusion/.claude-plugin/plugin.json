@@ -1,0 +1,10 @@
+{
+  "name": "dotted-symbol-exclusion",
+  "version": "1.0.0",
+  "description": "Exclude ALL dotted symbols (.WS, .PR*, .A, .B, .V, .U, .R, .W) from yfinance sector lookups. Trigger when: (1) yfinance sector check fails on warrants/units/class shares, (2) training notebook errors on excluded symbols, (3) symbol filtering misses special security types.",
+  "author": {
+    "name": "Claude Code"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith-cop/Skills_Registry"
+}
