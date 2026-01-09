@@ -1,0 +1,10 @@
+{
+  "name": "persistent-sector-caching",
+  "version": "1.0.0",
+  "description": "Cache yfinance sector data permanently to avoid rate limits. Trigger when: (1) yfinance 401 errors during sector updates, (2) sector fetching takes too long, (3) need to refresh sector data for specific symbols.",
+  "author": {
+    "name": "Claude Code"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith-cop/Skills_Registry"
+}
