@@ -1,0 +1,10 @@
+{
+  "name": "empirical-config-builder",
+  "version": "1.0.0",
+  "description": "Derive selection thresholds from market data instead of hardcoding. Trigger when: (1) reviewing hardcoded parameters, (2) volume/price thresholds seem arbitrary, (3) selection returns too many/few candidates, (4) adapting to market conditions.",
+  "author": {
+    "name": "Claude Code"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith-cop/Skills_Registry"
+}
