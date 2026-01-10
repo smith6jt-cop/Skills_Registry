@@ -1,0 +1,10 @@
+{
+  "name": "plotly-figurewidget-interactive",
+  "version": "1.0.0",
+  "description": "Fix for Plotly FigureWidget KeyError: 'uid' bug when updating shapes interactively. Trigger: (1) Plotly interactive dashboard not working, (2) KeyError: 'uid' in FigureWidget, (3) batch_update() causing errors with shapes",
+  "author": {
+    "name": "Claude Code"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith-cop/Skills_Registry"
+}

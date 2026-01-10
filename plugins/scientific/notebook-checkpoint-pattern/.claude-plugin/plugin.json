@@ -1,0 +1,10 @@
+{
+  "name": "notebook-checkpoint-pattern",
+  "version": "1.0.0",
+  "description": "Pattern for connecting Jupyter notebooks via checkpoint files. Trigger: (1) notebooks should be connected, (2) save outputs between notebooks, (3) pipeline with multiple notebooks",
+  "author": {
+    "name": "Claude Code"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith-cop/Skills_Registry"
+}

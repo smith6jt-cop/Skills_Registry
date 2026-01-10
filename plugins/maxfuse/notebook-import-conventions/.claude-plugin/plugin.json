@@ -1,0 +1,10 @@
+{
+  "name": "notebook-import-conventions",
+  "version": "1.0.0",
+  "description": "Specific trigger conditions: (1) fixing notebook imports in maxfuse project, (2) updating paths from mario-py to maxfuse.mario, (3) standardizing data file paths in notebooks. Verified on maxfuse package with src/maxfuse/ layout.",
+  "author": {
+    "name": "smith6jt"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith6jt-cop/Skills_Registry"
+}
