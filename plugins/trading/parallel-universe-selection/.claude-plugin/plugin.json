@@ -1,0 +1,10 @@
+{
+  "name": "parallel-universe-selection",
+  "version": "1.0.0",
+  "description": "Parallel processing for universe selection with 3-4x speedup. Trigger when: (1) selection takes too long, (2) 'No data returned' warnings for cached symbols, (3) need to process 100+ candidates.",
+  "author": {
+    "name": "Claude Code"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith-cop/Skills_Registry"
+}
