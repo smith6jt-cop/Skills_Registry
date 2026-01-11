@@ -101,6 +101,34 @@ for symbol in failed_symbols:
 | Re-fetch 'other' sectors | Same symbols fail repeatedly | Some symbols just don't have sector data |
 | Retry on 401 with backoff | Still fails, wastes time | 401 means "blocked", not "retry" |
 
+## Bug Fix: INSERT OR REPLACE Wipes Sector Cache (2026-01-11)
+
+**Problem:** After implementing persistent caching, sector data was STILL being re-fetched every run.
+
+**Root Cause:** `update_equities()` and `update_crypto()` used `INSERT OR REPLACE` which deletes the entire row before inserting. This wiped out `sector` and `sector_last_updated` columns because they weren't included in the INSERT statement.
+
+**Fix:** Changed to `INSERT ... ON CONFLICT(symbol) DO UPDATE SET ...` which only updates specified columns, preserving sector data.
+
+```python
+# BEFORE (broken): Wipes sector columns
+cursor.execute('''
+    INSERT OR REPLACE INTO symbols (symbol, asset_type, price, ...)
+    VALUES (?, ?, ?, ...)
+''', ...)
+
+# AFTER (fixed): Preserves sector columns
+cursor.execute('''
+    INSERT INTO symbols (symbol, asset_type, price, ...)
+    VALUES (?, ?, ?, ...)
+    ON CONFLICT(symbol) DO UPDATE SET
+        asset_type = excluded.asset_type,
+        price = excluded.price,
+        ...  -- sector and sector_last_updated NOT listed, so preserved
+''', ...)
+```
+
+**Lesson Learned:** SQLite's `INSERT OR REPLACE` is actually `DELETE` + `INSERT`. Use `INSERT ON CONFLICT DO UPDATE` to preserve columns not in the statement.
+
 ## Key Insights
 
 1. **Yahoo rate limits by IP** - No amount of delays or reduced parallelism helps once blocked
