@@ -1,0 +1,10 @@
+{
+  "name": "selection-progress-reporting",
+  "version": "1.0.0",
+  "description": "Progress reporting for universe selection phases. Trigger when: (1) selection appears to stall/hang, (2) no output after data fetching, (3) need visibility into hard filter or scoring phases.",
+  "author": {
+    "name": "Claude Code"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith6jt-cop/Alpaca_trading"
+}
