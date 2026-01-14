@@ -1,0 +1,110 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "kintsugi-skills-registry",
+  "description": "KINTSUGI Skills Registry - Research learnings and experimental knowledge for Claude Code sessions",
+  "owner": {
+    "name": "KINTSUGI Team",
+    "email": "smith6jt@ufl.edu"
+  },
+  "plugins": [
+    {
+      "name": "repo-project-sync-workflow",
+      "description": "KINTSUGI repo-to-project sync workflow: Always edit main repo first, then sync to project folders",
+      "version": "1.0.0",
+      "author": {"name": "KINTSUGI Team"},
+      "source": "./plugins/kintsugi/repo-project-sync-workflow",
+      "category": "kintsugi",
+      "skills": ["./skills"]
+    },
+    {
+      "name": "gpu-memory-cleanup",
+      "description": "GPU memory management patterns for CuPy/PyTorch",
+      "version": "1.0.0",
+      "author": {"name": "KINTSUGI Team"},
+      "source": "./plugins/kintsugi/gpu-memory-cleanup",
+      "category": "kintsugi",
+      "skills": ["./skills"]
+    },
+    {
+      "name": "lightsheet-psf-deconvolution",
+      "description": "Light sheet microscopy PSF generation and deconvolution parameters",
+      "version": "1.0.0",
+      "author": {"name": "KINTSUGI Team"},
+      "source": "./plugins/kintsugi/lightsheet-psf-deconvolution",
+      "category": "kintsugi",
+      "skills": ["./skills"]
+    },
+    {
+      "name": "tile-snake-pattern-stitching",
+      "description": "Tile ordering and snake pattern for image stitching",
+      "version": "1.0.0",
+      "author": {"name": "KINTSUGI Team"},
+      "source": "./plugins/kintsugi/tile-snake-pattern-stitching",
+      "category": "kintsugi",
+      "skills": ["./skills"]
+    },
+    {
+      "name": "gpu-quality-priority",
+      "description": "GPU selection priority: quality over speed",
+      "version": "1.0.0",
+      "author": {"name": "KINTSUGI Team"},
+      "source": "./plugins/kintsugi/gpu-quality-priority",
+      "category": "kintsugi",
+      "skills": ["./skills"]
+    },
+    {
+      "name": "channel-name-parsing",
+      "description": "Parsing channel names from microscopy metadata",
+      "version": "1.0.0",
+      "author": {"name": "KINTSUGI Team"},
+      "source": "./plugins/kintsugi/channel-name-parsing",
+      "category": "kintsugi",
+      "skills": ["./skills"]
+    },
+    {
+      "name": "notebook-module-refactoring",
+      "description": "Refactoring Jupyter notebook modules to Python packages",
+      "version": "1.0.0",
+      "author": {"name": "KINTSUGI Team"},
+      "source": "./plugins/kintsugi/notebook-module-refactoring",
+      "category": "kintsugi",
+      "skills": ["./skills"]
+    },
+    {
+      "name": "gpu-parallel-scheduling",
+      "description": "Multi-GPU parallel task scheduling patterns",
+      "version": "1.0.0",
+      "author": {"name": "KINTSUGI Team"},
+      "source": "./plugins/kintsugi/gpu-parallel-scheduling",
+      "category": "kintsugi",
+      "skills": ["./skills"]
+    },
+    {
+      "name": "basic-caching-evaluation",
+      "description": "BaSiC illumination correction caching strategies",
+      "version": "1.0.0",
+      "author": {"name": "KINTSUGI Team"},
+      "source": "./plugins/kintsugi/basic-caching-evaluation",
+      "category": "kintsugi",
+      "skills": ["./skills"]
+    },
+    {
+      "name": "project-data-separation",
+      "description": "Pattern for separating repository code from user data",
+      "version": "1.0.0",
+      "author": {"name": "KINTSUGI Team"},
+      "source": "./plugins/scientific/project-data-separation",
+      "category": "scientific",
+      "skills": ["./skills"]
+    },
+    {
+      "name": "windows-cupy-nvrtc",
+      "description": "Fix CuPy NVRTC compilation errors on Windows",
+      "version": "1.0.0",
+      "author": {"name": "KINTSUGI Team"},
+      "source": "./plugins/scientific/windows-cupy-nvrtc",
+      "category": "scientific",
+      "skills": ["./skills"]
+    }
+  ]
+}
