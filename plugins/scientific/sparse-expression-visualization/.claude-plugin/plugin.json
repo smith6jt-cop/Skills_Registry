@@ -1,0 +1,10 @@
+{
+  "name": "sparse-expression-visualization",
+  "version": "1.0.0",
+  "description": "Visualization patterns for sparse single-cell gene expression data. Trigger: (1) boxplots showing flat lines at zero, (2) single-cell RNA expression visualization, (3) sparse count data visualization, (4) boxplot y-axis scaling issues",
+  "author": {
+    "name": "Claude Code"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith-cop/Skills_Registry"
+}
