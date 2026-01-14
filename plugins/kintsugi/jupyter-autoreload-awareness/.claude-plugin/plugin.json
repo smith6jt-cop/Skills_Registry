@@ -1,0 +1,10 @@
+{
+  "name": "jupyter-autoreload-awareness",
+  "version": "1.0.0",
+  "description": "Jupyter autoreload makes kernel restarts unnecessary. Trigger: (1) about to tell user to restart kernel, (2) about to tell user to reload notebook, (3) after editing Python modules imported by notebook.",
+  "author": {
+    "name": "KINTSUGI Team"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith-cop/Skills_Registry"
+}
