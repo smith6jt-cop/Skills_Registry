@@ -1,0 +1,10 @@
+{
+  "name": "deconvolution-intensity-scaling",
+  "version": "1.0.0",
+  "description": "KINTSUGI deconvolution: Output scaling must preserve original intensity relationships. Trigger: deconvolution saturates at 65535, channel intensity ratios inverted, quantitative marker analysis broken, hist_clip scaling issues, deconvolved images clipped.",
+  "author": {
+    "name": "KINTSUGI Team"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith6jt-cop/Skills_Registry"
+}
