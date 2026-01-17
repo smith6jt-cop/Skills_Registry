@@ -1,0 +1,14 @@
+{
+  "name": "stitched-image-qc",
+  "version": "1.0.0",
+  "description": "Quality control for detecting and fixing problematic stitched images (saturation, tile grid patterns)",
+  "skills": [
+    {
+      "name": "stitched-image-qc",
+      "path": "skills/stitched-image-qc",
+      "trigger": "Detecting or fixing blank white images, saturated images, tile grid patterns, visible seams in stitched microscopy images"
+    }
+  ],
+  "category": "kintsugi",
+  "tags": ["qc", "stitching", "basic", "illumination-correction", "image-quality"]
+}
