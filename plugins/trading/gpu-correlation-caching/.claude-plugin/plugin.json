@@ -1,0 +1,8 @@
+{
+  "name": "gpu-correlation-caching",
+  "version": "1.0.0",
+  "description": "GPU-accelerated correlation matrix computation with persistent caching. Triggers: (1) correlation calculation is slow or hanging, (2) rolling correlation bottleneck, (3) portfolio diversification taking too long, (4) optimizing selection pipeline performance",
+  "author": { "name": "Claude Code" },
+  "skills": "./skills",
+  "repository": "https://github.com/smith-cop/Skills_Registry"
+}
