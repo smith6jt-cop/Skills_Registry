@@ -1,0 +1,19 @@
+{
+  "name": "stitching-stripe-artifacts",
+  "version": "1.0.0",
+  "description": "Diagnosis and fix for vertical stripe artifacts in stitched microscopy images. Key finding: stripes are NOT from raw data - they are introduced during stitching by buggy code.",
+  "category": "kintsugi",
+  "skills": [
+    {
+      "name": "stitching-stripe-artifacts",
+      "description": "Diagnose and fix vertical stripe patterns in stitched CODEX/microscopy images"
+    }
+  ],
+  "triggers": [
+    "stripe pattern",
+    "vertical stripes",
+    "30-pixel stripes",
+    "stitched image stripes",
+    "stripe artifacts"
+  ]
+}
