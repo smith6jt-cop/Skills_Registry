@@ -1,0 +1,7 @@
+{
+  "name": "large-cell-ratio-matching",
+  "version": "1.0.0",
+  "description": "MaxFuse parameter tuning for datasets with large protein:RNA cell ratios (>100:1). Triggers: (1) protein cells >> RNA cells (e.g., 1.7M vs 1.2k), (2) matching_ratio causing cell loss, (3) pivot filter removing too many matches, (4) low RNA coverage after integration",
+  "author": {"name": "smith6jt"},
+  "skills": "./skills"
+}

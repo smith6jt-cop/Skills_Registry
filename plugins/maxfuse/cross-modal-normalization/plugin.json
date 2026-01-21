@@ -1,0 +1,21 @@
+{
+  "name": "cross-modal-normalization",
+  "version": "1.0.0",
+  "description": "Scale alignment for RNA-protein integration - both modalities must have matched scales",
+  "triggers": [
+    "scale mismatch",
+    "variance mismatch",
+    "normalization",
+    "z-score",
+    "protein normalization",
+    "rna protein scale",
+    "matching quality",
+    "integration quality"
+  ],
+  "skills": [
+    {
+      "name": "cross-modal-normalization",
+      "path": "skills/cross-modal-normalization/SKILL.md"
+    }
+  ]
+}

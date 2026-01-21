@@ -1,0 +1,11 @@
+{
+  "name": "notebook-cell-references",
+  "description": "How to refer to Jupyter notebook cells without using cell numbers",
+  "triggers": [
+    "jupyter notebook",
+    "notebook cell",
+    ".ipynb",
+    "cell number"
+  ],
+  "category": "scientific"
+}

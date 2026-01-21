@@ -1,0 +1,20 @@
+{
+  "name": "maxfuse-parameter-scaling",
+  "version": "1.0.0",
+  "description": "MaxFuse parameter tuning for different protein panel sizes (26 vs 59+ markers)",
+  "triggers": [
+    "maxfuse parameters",
+    "cca components",
+    "svd components",
+    "protein panel size",
+    "marker count",
+    "overfitting cca",
+    "integration parameters"
+  ],
+  "skills": [
+    {
+      "name": "parameter-scaling",
+      "path": "skills/parameter-scaling/SKILL.md"
+    }
+  ]
+}
