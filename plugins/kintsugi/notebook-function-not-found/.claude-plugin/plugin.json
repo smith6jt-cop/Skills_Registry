@@ -1,0 +1,10 @@
+{
+  "name": "notebook-function-not-found",
+  "version": "1.0.0",
+  "description": "Troubleshooting NameError for functions defined in notebook cells. Trigger: (1) NameError: name 'function_name' is not defined, (2) run_deconvolution not found, (3) function works in one cell but not another, (4) cell execution order issues.",
+  "author": {
+    "name": "KINTSUGI Team"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith6jt-cop/Skills_Registry"
+}
