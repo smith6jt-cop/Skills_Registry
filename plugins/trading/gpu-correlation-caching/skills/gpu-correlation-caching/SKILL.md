@@ -57,6 +57,61 @@ class GPUCorrelationCalculator:
 - `torch.corrcoef()` is vectorized BLAS operation
 - Batching prevents GPU OOM on large datasets
 
+### Memory-Efficient Stability Computation (Critical Fix)
+
+The original approach stored ALL rolling correlation windows, causing OOM:
+- 500 symbols × 1000 windows × 500² floats = 250GB RAM!
+
+**Solution**: Use Welford's online algorithm to compute variance incrementally:
+
+```python
+# Instead of storing all correlations:
+# rolling_correlations.append(corr)  # BAD - OOM!
+
+# Use Welford's online algorithm for incremental variance:
+for each_window:
+    corr = torch.corrcoef(window_data)
+    for i, j in pairs:
+        # Update running statistics (O(1) memory per pair)
+        pair_count[idx] += 1
+        delta = corr[i,j] - pair_mean[idx]
+        pair_mean[idx] += delta / pair_count[idx]
+        delta2 = corr[i,j] - pair_mean[idx]
+        pair_m2[idx] += delta * delta2
+
+# Final variance = pair_m2 / (count - 1)
+```
+
+**Memory**: O(n_pairs) = O(n²) instead of O(n_windows × n²)
+
+### Vectorized Welford's Algorithm (Performance Critical Fix)
+
+The nested Python loops for Welford's updates caused stalls with large symbol sets:
+- 1281 symbols × (1281-1)/2 = 819,840 pair updates PER WINDOW
+- With ~1000 windows = 820 million Python loop iterations = STALL
+
+**Solution**: Use `torch.triu_indices` to vectorize all pair updates:
+
+```python
+# Pre-compute upper triangular indices ONCE
+triu_row, triu_col = torch.triu_indices(n_symbols, n_symbols, offset=1, device=device)
+
+for each_window:
+    corr = torch.corrcoef(window_data)
+
+    # VECTORIZED - extract ALL upper triangular values at once
+    x = corr[triu_row, triu_col]  # (n_pairs,) - all 819,840 correlations!
+
+    # Welford's update - vectorized for all pairs simultaneously
+    pair_count += 1
+    delta = x - pair_mean
+    pair_mean += delta / pair_count
+    delta2 = x - pair_mean
+    pair_m2 += delta * delta2
+```
+
+**Performance**: O(1) tensor operations per window instead of O(n²) Python loops
+
 ### 2. Persistent SQLite Caching
 
 **File**: `alpaca_trading/selection/portfolio/correlation_cache.py`
@@ -129,7 +184,9 @@ def calculate_correlation_matrix_optimized(
 | Attempt | Why it Failed | Lesson Learned |
 |---------|---------------|----------------|
 | Using `torch.roll()` for sliding windows | Creates copies, not views - slow and memory-hungry | Use `unfold()` for efficient sliding windows |
-| Processing all windows at once | GPU OOM on >500 windows | Process in batches of 100 |
+| Processing all windows at once | GPU OOM on >500 windows | Process in batches of 50 |
+| **Storing all rolling correlations** | **Crashed A100 High-RAM Colab (500 symbols × 1000 windows × 500² = 250GB)** | **Use Welford's online algorithm - compute stability incrementally** |
+| **Nested Python loops for Welford's** | **Stalled at "Correlations (rolling): 2/3" with 1281 symbols (820M iterations)** | **Use `torch.triu_indices` for vectorized extraction - O(1) per window** |
 | Caching with pickle file per correlation | Filesystem overhead, orphaned files | SQLite single file is cleaner |
 | MD5 for cache key | Collision risk with many symbols | SHA256 is safer |
 | Using return Series index as date | Some series had integer indices | Explicitly extract min/max from index |
@@ -152,6 +209,7 @@ def calculate_correlation_matrix_optimized(
 ## Key Insights
 
 - **`torch.unfold()` is the key**: Creates sliding window views in O(1), not copies
+- **`torch.triu_indices()` for vectorization**: Extract all upper triangular values at once, eliminating O(n²) Python loops
 - **Batching prevents OOM**: Process 100 windows at a time, not all at once
 - **Cache key must be symbol-order-independent**: Sort symbols before hashing
 - **CPU fallback is essential**: Not all environments have CUDA
