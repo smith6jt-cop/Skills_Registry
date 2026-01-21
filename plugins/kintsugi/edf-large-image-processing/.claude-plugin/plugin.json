@@ -1,0 +1,10 @@
+{
+  "name": "edf-large-image-processing",
+  "version": "1.0.0",
+  "description": "Specific trigger conditions: (1) EDF visualization images not found, (2) EDF smoothing too coarse, (3) GPU OutOfMemoryError during EDF processing, (4) load_stack_parallel not defined error. Verified on KINTSUGI with 13515x12666 px images.",
+  "author": {
+    "name": "Claude Code"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith6jt-cop/Skills_Registry"
+}
