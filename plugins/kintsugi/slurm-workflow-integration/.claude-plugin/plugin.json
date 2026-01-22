@@ -1,0 +1,10 @@
+{
+  "name": "slurm-workflow-integration",
+  "version": "1.0.0",
+  "description": "Integrating SLURM job submission with kintsugi init. Trigger: (1) adding HPC/SLURM support to projects, (2) auto-detecting cluster settings, (3) CLI workflow for batch job submission. Verified on HiperGator.",
+  "author": {
+    "name": "Claude Code"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith-cop/Skills_Registry"
+}
