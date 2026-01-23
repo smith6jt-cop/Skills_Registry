@@ -38,13 +38,23 @@ For 59 markers with 26 shared features:
 
 ### Parameter Scaling Table
 
-| Parameter | 26 Markers | 59 Markers | Scaling Rule |
-|-----------|-----------|-----------|--------------|
-| CCA Components | 25 | **7** | `sqrt(n_prot_active) + 1` |
-| SVD for CCA (RNA) | 40 | **50** | +25% with more protein info |
-| SVD for CCA (Protein) | None (all) | **35** | ~60% of features |
-| SVD for Graphs (Protein) | 15 | **30** | ~50% of features |
-| SVD for Initial Pivots | 25/20 | **20/18** | Reduce for weak linkage |
+| Parameter | 26 Markers | 59 Markers | 19 Markers | Scaling Rule |
+|-----------|-----------|-----------|------------|--------------|
+| CCA Components | 25 | 7 | **10** | `min(n_shared - 1, 10)` for small panels |
+| SVD for CCA (RNA) | 40 | 50 | 50 | RNA has many features |
+| SVD for CCA (Protein) | None | 35 | **15** | `min(15, n_prot - 1)` |
+| SVD for Graphs (Protein) | 15 | 30 | **15** | `min(15, n_prot - 1)` |
+| SVD for Initial Pivots | 25/20 | 20/18 | **15/15** | `min(15, n_shared - 1)` |
+| Metacell Size | 2 | 2 | **1** | Disable for <25 features |
+
+**Critical rule**: All SVD components MUST be < n_features - 1.
+
+### Small Panel (<25 markers) Considerations
+
+When protein_active == protein_shared (all markers are shared):
+- The sqrt rule for CCA components breaks (`n_prot_active = 0`)
+- Use simpler rule: `cca_components = min(n_shared - 1, 10)`
+- Metacell size of 2 provides minimal benefit - use `metacell_size=1` (disabled)
 
 ### Implementation Code
 
