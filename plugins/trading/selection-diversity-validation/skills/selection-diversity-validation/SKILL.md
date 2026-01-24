@@ -120,6 +120,7 @@ def select_compatible_universe(...) -> Tuple[List[str], UniverseSelectionResult]
 | Search ranked_symbols for crypto | Crypto may not rank high by trainability | Search ALL symbols that passed hard filters |
 | MAX_EQUITIES = 200 limit | Arbitrary limit missed good candidates | Default to None (scan all ~11k) |
 | Silent constraint checks | Failures go unnoticed until production | ALWAYS fail loudly on violations |
+| Crash live trader on CRYPTO VIOLATION | No crypto models = can't trade at all | Live trader needs graceful fallback |
 
 ## Test Suite for Constraints
 
@@ -209,6 +210,20 @@ assert not (both_msft_and_googl_selected), "Correlation constraint violated!"
 ### 4. Don't Override Selection Results
 If the selection system returns a diversity-optimized portfolio, USE IT. Don't re-sort or filter afterwards - that defeats the optimization.
 
+### 5. Graceful Fallback in Live Trader (v3.3.1)
+The FAIL LOUDLY pattern is correct for selection/training, but the **live trader** needs graceful handling. If no crypto models were trained:
+- Don't crash with CRYPTO VIOLATION
+- Detect available models and adjust `min_crypto_positions` accordingly
+- Trade with what you have, not what you wish you had
+
+```python
+# In live_trader.py - graceful fallback
+crypto_models = [s for s in model_symbols if s.endswith('USD') or '/' in s]
+min_crypto = 1 if len(crypto_models) > 0 else 0  # Adjust based on reality
+```
+
+See skill: `crypto-database-population` for the full fix.
+
 ## Files Modified
 
 ```
@@ -235,3 +250,4 @@ tests/test_selection_diversity.py: (NEW)
 - `tests/test_selection_diversity.py`: Constraint enforcement tests
 - `.skills/plugins/trading/symbol-selection-statistical/`: Statistical selection guide
 - `.skills/plugins/trading/drawdown-guardrails-pattern/`: Similar "fail loudly" pattern
+- `.skills/plugins/trading/crypto-database-population/`: Graceful live trader fallback when no crypto models

@@ -1,0 +1,8 @@
+{
+  "name": "crypto-database-population",
+  "version": "1.0.0",
+  "description": "Populate symbol database with crypto symbols before training. Trigger when: (1) live trader fails with 'CRYPTO VIOLATION', (2) no crypto models in models/rl_symbols/, (3) db.get_candidates(asset_types=['crypto']) returns 0, (4) starting fresh training without crypto.",
+  "author": { "name": "Claude Code" },
+  "skills": "./skills",
+  "repository": "https://github.com/smith-cop/Alpaca_trading"
+}
