@@ -1,0 +1,33 @@
+{
+  "name": "ccxt-multi-exchange",
+  "version": "1.0.0",
+  "description": "CCXT multi-exchange crypto broker integration for better liquidity during after-hours capital shift. Use when: implementing crypto trading across multiple exchanges, need better liquidity than Alpaca provides, routing trades to optimal exchange based on balance/fees.",
+  "author": "Claude Code",
+  "category": "trading",
+  "tags": ["crypto", "ccxt", "multi-exchange", "liquidity", "capital-shift", "after-hours"],
+  "triggers": [
+    "crypto liquidity",
+    "ccxt",
+    "multi-exchange",
+    "exchange routing",
+    "capital shift crypto",
+    "after hours crypto",
+    "coinbase api",
+    "kraken api",
+    "binance us"
+  ],
+  "skills": [
+    {
+      "name": "ccxt-multi-exchange",
+      "path": "skills/ccxt-multi-exchange/SKILL.md"
+    }
+  ],
+  "dependencies": {
+    "ccxt": ">=4.0.0"
+  },
+  "relatedSkills": [
+    "position-reconciliation",
+    "capital-proportional-limits",
+    "crypto-pair-fee-optimization"
+  ]
+}
