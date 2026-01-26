@@ -1,0 +1,32 @@
+{
+  "name": "extended-hours-trading",
+  "version": "1.0.0",
+  "description": "Extended hours trading support for pre-market (4 AM - 9:30 AM ET) and after-hours (4 PM - 8 PM ET) sessions via Alpaca. Use when: need to trade outside regular market hours, want to react to pre-market earnings/news, or maximize trading time coverage.",
+  "author": "Claude Code",
+  "category": "trading",
+  "tags": ["extended-hours", "pre-market", "after-hours", "alpaca", "limit-orders", "trading-sessions"],
+  "triggers": [
+    "extended hours",
+    "pre-market",
+    "after hours",
+    "before market opens",
+    "after market closes",
+    "trading sessions",
+    "4am trading",
+    "8pm trading",
+    "earnings trading",
+    "extended session"
+  ],
+  "skills": [
+    {
+      "name": "extended-hours-trading",
+      "path": "skills/extended-hours-trading/SKILL.md"
+    }
+  ],
+  "dependencies": {},
+  "relatedSkills": [
+    "ccxt-multi-exchange",
+    "capital-proportional-limits",
+    "broker-order-limitations"
+  ]
+}
