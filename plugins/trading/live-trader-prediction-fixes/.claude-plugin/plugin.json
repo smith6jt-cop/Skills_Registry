@@ -1,0 +1,8 @@
+{
+  "name": "live-trader-prediction-fixes",
+  "version": "1.0.0",
+  "description": "Fix live trader prediction issues: zeros returned, excessive data fetching, insufficient bars. Trigger when: (1) all predictions show signal=0 and confidence=0.0, (2) live trader continuously fetches thousands of bars, (3) 'Insufficient data' warnings in prediction logs, (4) Markov features show uniform priors [0.33, 0.34, 0.33].",
+  "author": { "name": "Claude Code" },
+  "skills": "./skills",
+  "repository": "https://github.com/smith-cop/Alpaca_trading"
+}
