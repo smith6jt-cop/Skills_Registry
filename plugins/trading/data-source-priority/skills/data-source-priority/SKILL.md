@@ -1,11 +1,32 @@
 ---
 name: data-source-priority
-description: "Ensure Alpaca API is used for quality data, not yfinance fallback. Trigger when: (1) crypto volume filter fails unexpectedly, (2) zero-volume bars in data, (3) API key configuration issues."
+description: "CRITICAL: Alpaca API is MANDATORY for all OHLCV data. yfinance is NOT a valid fallback - EVER. Trigger when: (1) any code attempts yfinance for price/volume data, (2) crypto volume filter fails, (3) zero-volume bars detected, (4) API key configuration issues, (5) fallback behavior proposed."
 author: Claude Code
 date: 2024-12-28
+updated: 2026-01-30
 ---
 
-# Data Source Priority - Alpaca vs yfinance (v2.5.0)
+# Data Source Priority - Alpaca API MANDATORY (v3.6.0)
+
+## CRITICAL POLICY
+
+**Alpaca API is the ONLY valid source for OHLCV (price/volume) data.**
+
+**yfinance is NEVER a valid fallback for market data.** Any code that falls back to yfinance for price or volume data is a BUG that must be fixed.
+
+### Permitted yfinance Usage (ONLY)
+| Use Case | Permitted? | Notes |
+|----------|------------|-------|
+| OHLCV data (price/volume) | **NO - NEVER** | Use Alpaca API only |
+| Sector/Industry lookup | Yes | Equity symbols only, not crypto |
+| Company info | Yes | For display purposes only |
+| Dotted symbols (.WS, .PR) | **NO** | Exclude from yfinance entirely |
+
+### Why This Policy Exists
+- yfinance crypto data has ~50% zero-volume bars
+- yfinance equity data has gaps and unreliable volume
+- Training on bad data produces bad models
+- Silent fallbacks waste debugging time
 
 ## Experiment Overview
 | Item | Details |
@@ -129,11 +150,12 @@ else:
 
 ## Key Insights
 
-1. **Don't work around bad data** - Fix the data source
-2. **Fail fast, fail loud** - Silent fallbacks waste debugging time
-3. **yfinance is equities-only** - Acceptable for stocks, unusable for crypto
+1. **Alpaca API is MANDATORY** - No exceptions, no fallbacks
+2. **yfinance is NOT a fallback** - It's only for sector lookups on equity symbols
+3. **Fail fast, fail loud** - Silent fallbacks waste debugging time and produce bad models
 4. **Environment variables are best** - Work everywhere, no path issues
-5. **Check logs for "yfinance fetched"** - This means you're using bad data
+5. **Check logs for "yfinance fetched"** - This indicates a BUG that must be fixed
+6. **Any fallback code is a bug** - If you see code falling back to yfinance for OHLCV, fix it
 
 ## Files Modified (v2.5.0)
 
@@ -146,8 +168,34 @@ alpaca_trading/selection/filters/hard_filters.py:
   - apply_hard_filters(): Simplified crypto path (skip yfinance-specific checks)
 ```
 
+## MCP Server Configuration
+
+The project uses Alpaca's official MCP server for AI-assisted trading operations:
+
+```json
+// .mcp.json
+{
+  "mcpServers": {
+    "alpaca": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": ["--with", "pytz", "alpaca-mcp-server", "serve"],
+      "env": {
+        "ALPACA_API_KEY": "your_key",
+        "ALPACA_SECRET_KEY": "your_secret",
+        "ALPACA_PAPER_TRADE": "True"
+      }
+    }
+  }
+}
+```
+
+**Note:** The `--with pytz` flag is required to fix a missing dependency in the alpaca-mcp-server package.
+
 ## References
 - `alpaca_trading/data/fetcher.py`: DataFetcher implementation
 - `notebooks/training.ipynb`: Training notebook with fail-fast check
+- `.mcp.json`: MCP server configuration
 - Alpaca API docs: https://docs.alpaca.markets/docs/
+- Alpaca MCP Server: https://github.com/alpacahq/alpaca-mcp-server
 - Skill: `reward-function-hold-bias` - Related v2.5.0 fix

@@ -1,0 +1,23 @@
+{
+  "name": "mcp-server-configuration",
+  "version": "1.0.0",
+  "description": "MCP (Model Context Protocol) server configuration for Claude Code integration with trading platform. Trigger when: (1) setting up MCP servers, (2) alpaca-mcp-server issues, (3) adding new MCP integrations, (4) uvx dependency errors, (5) .mcp.json configuration.",
+  "author": {
+    "name": "Claude Code"
+  },
+  "skills": "./skills",
+  "triggers": [
+    "mcp server",
+    "mcp configuration",
+    ".mcp.json",
+    "alpaca-mcp-server",
+    "uvx",
+    "model context protocol",
+    "claude code integration"
+  ],
+  "tags": ["mcp", "configuration", "claude-code", "integration"],
+  "relatedSkills": [
+    "data-source-priority",
+    "alpaca-algo-plus-data"
+  ]
+}
