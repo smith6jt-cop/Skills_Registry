@@ -1,7 +1,7 @@
 {
   "name": "colab-unzip-workflow",
-  "version": "1.0.0",
-  "description": "Colab file paths after unzipping repo. Trigger when: (1) API key file not found, (2) file path errors in Colab, (3) configuring notebook paths, (4) 'yfinance fallback' despite keys existing.",
+  "version": "2.0.0",
+  "description": "Colab notebook setup pattern. Trigger when: (1) Creating new Colab notebooks, (2) API key file not found, (3) file path errors in Colab, (4) repository extraction fails, (5) 'yfinance fallback' despite keys existing.",
   "author": {
     "name": "Claude Code"
   },

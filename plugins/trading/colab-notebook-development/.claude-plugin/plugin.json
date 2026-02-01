@@ -1,0 +1,10 @@
+{
+  "name": "colab-notebook-development",
+  "version": "1.0.0",
+  "description": "Pattern for creating new Colab notebooks. Trigger when: (1) Creating a new notebook for experiments, (2) Adding notebook-based functionality, (3) Agent or validation notebooks, (4) Any notebook that uses GPU training infrastructure.",
+  "author": {
+    "name": "Claude Code"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith-cop/Skills_Registry"
+}

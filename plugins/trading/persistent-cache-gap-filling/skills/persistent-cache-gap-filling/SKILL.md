@@ -1,11 +1,11 @@
 ---
 name: persistent-cache-gap-filling
-description: "Persistent data cache with gap-filling for historical market data. Trigger when: (1) cache re-downloads complete data unnecessarily, (2) time-based cache expiry wastes API calls, (3) historical data needs incremental updates only."
+description: "Persistent data cache with gap-filling for historical market data. Trigger when: (1) cache re-downloads complete data unnecessarily, (2) time-based cache expiry wastes API calls, (3) historical data needs incremental updates only, (4) gap-fill warnings appear when cache is sufficient."
 author: Claude Code
-date: 2026-01-01
+date: 2026-02-01
 ---
 
-# Persistent Cache with Gap-Filling (v2.8.0)
+# Persistent Cache with Gap-Filling (v3.7.0)
 
 ## Experiment Overview
 | Item | Details |
@@ -123,12 +123,39 @@ stats = fetcher.get_cache_stats()
 # }
 ```
 
+## v3.7.0 Update: gap_fill_threshold_days
+
+**Problem:** Gap-fill attempts were logging alarming 401 warnings even when cache had sufficient data for training. A 3-day-old cache with 4,318 bars is perfectly fine for training, but the 2-hour tolerance triggered unnecessary API calls.
+
+**Solution:** Added `gap_fill_threshold_days` parameter (default: 7 days)
+
+```python
+# CachingDataFetcher now accepts gap_fill_threshold_days
+fetcher = CachingDataFetcher(
+    cache_dir='/path/to/cache',
+    gap_fill_threshold_days=7,  # Only gap-fill if cache > 7 days old
+)
+```
+
+**Behavior:**
+- Cache < 7 days old: Return cached data immediately, no API call
+- Cache >= 7 days old: Attempt gap-fill (may show warnings if API fails)
+- Cache with sufficient bars: Always returned regardless of age
+
+**Output Messages (v3.7.0):**
+| Message | Meaning |
+|---------|---------|
+| `[CACHE] AAPL: 4,318 bars (3d old)` | Cache is recent enough, no gap-fill attempted |
+| `[CACHE] AAPL: 4,318 bars (complete)` | Cache fully covers requested range |
+| `[GAP-FILL] AAPL: Fetching...` | Cache is stale, attempting to fetch new bars |
+
 ## Failed Attempts
 
 | Approach | Result | Why It Failed |
 |----------|--------|---------------|
 | Increase TTL to 30 days | Worked but fragile | Still expires eventually, arbitrary cutoff |
 | Check file modification time | Partial | Doesn't verify data completeness |
+| 2-hour tolerance for gap-fill | Unnecessary warnings | Cache 3 days old is fine for training |
 
 ## Key Insights
 
