@@ -1,23 +1,36 @@
 ---
 name: gpu-quality-priority
-description: "KINTSUGI processing principles: Never sacrifice quality for speed, always use GPU when available. Trigger: performance optimization, CPU/GPU choice, fast mode, quality vs speed."
+description: "KINTSUGI NOTEBOOK processing principles: Never sacrifice quality for speed, always use GPU when available. Trigger: performance optimization, CPU/GPU choice, fast mode, quality vs speed in NOTEBOOKS (not SLURM)."
 author: KINTSUGI Team
 date: 2025-12-14
+updated: 2026-02-03
 ---
 
-# GPU-Only and Quality-First Processing Principles
+# GPU-Only and Quality-First Processing Principles (Notebooks)
 
 ## Experiment Overview
 | Item | Details |
 |------|---------|
 | **Date** | 2025-12-14 |
-| **Goal** | Establish processing principles for KINTSUGI batch processing |
+| **Updated** | 2026-02-03 |
+| **Goal** | Establish processing principles for KINTSUGI **notebook** processing |
 | **Environment** | HiPerGator, multi-GPU (NVIDIA), CuPy, KINTSUGI pipeline |
 | **Status** | Policy Established |
 
+## Scope: Notebooks Only
+
+**IMPORTANT**: This skill applies to **interactive notebook processing** only, NOT to SLURM batch processing.
+
+| Mode | GPU Policy | This Skill Applies? |
+|------|------------|---------------------|
+| Notebooks (interactive) | GPU required, no fallback | **YES** |
+| SLURM (headless batch) | GPU + CPU concurrent | NO - see `slurm-concurrent-processing` |
+
+For SLURM processing, see the `slurm-concurrent-processing` skill which describes how to maximize throughput using both GPU and CPU resources concurrently.
+
 ## Context
 
-During performance optimization of Notebook 2 (Cycle Processing), a "fast mode" was proposed that would reduce BaSiC iteration parameters to speed up processing. The user explicitly rejected this approach, establishing core principles for KINTSUGI processing.
+During performance optimization of Notebook 2 (Cycle Processing), a "fast mode" was proposed that would reduce BaSiC iteration parameters to speed up processing. The user explicitly rejected this approach, establishing core principles for KINTSUGI **notebook** processing.
 
 **Scientific imaging requires quality-first processing.** Unlike consumer applications where "good enough" may be acceptable, multiplex immunofluorescence analysis depends on accurate quantification. Quality degradation compounds through the pipeline: illumination correction errors affect stitching, which affects deconvolution, which affects segmentation, which affects all downstream analysis.
 
@@ -36,36 +49,40 @@ BASIC_MAX_REWEIGHT_ITERATIONS = 25
 BASIC_REWEIGHT_TOLERANCE = 1e-3
 ```
 
-### 2. ALWAYS Use GPU When Available - No CPU Fallback
+### 2. ALWAYS Use GPU When Available - No CPU Fallback (Notebooks Only)
 
-If a GPU is available, it must be used. CPU fallback options should be disabled or removed.
+**In notebook/interactive mode**: If a GPU is available, it must be used. CPU fallback options should be disabled.
 
 ```python
-# CORRECT: GPU enforcement
+# CORRECT for NOTEBOOKS: GPU enforcement
 if not USE_GPU:
     raise RuntimeError(
         "GPU not available but required for processing.\n"
         "Check GPU status with: from kintsugi.gpu import get_gpu_manager; "
         "print(get_gpu_manager().summary())"
     )
-use_gpu = True  # Always True - GPU required
+use_gpu = True  # Always True - GPU required in notebooks
 ```
 
-### 3. Remove CPU Options When GPU Exists
+**In SLURM mode**: CPU processing is allowed and encouraged to maximize throughput. See `slurm-concurrent-processing` skill.
 
-Don't provide `use_cpu` or `use_gpu=False` options. If the system has a GPU, use it.
+### 3. Remove CPU Options in Notebook Code
+
+In notebook code, don't provide `use_cpu` or `use_gpu=False` options. If the system has a GPU, use it.
 
 ```python
-# WRONG: Providing CPU option
+# WRONG for notebooks: Providing CPU option
 def process(use_gpu=True):  # Allows use_gpu=False
     ...
 
-# CORRECT: GPU-only
+# CORRECT for notebooks: GPU-only
 def process(device_id=None):  # GPU assumed, only device selection
     if device_id is None:
         device_id = GPU_DEVICE_IDS[0]
     ...
 ```
+
+**Note**: SLURM job scripts DO support CPU mode via `KINTSUGI_DEVICE_MODE` environment variable - this is intentional for concurrent GPU+CPU processing.
 
 ## Failed Attempts (Critical)
 
@@ -95,7 +112,8 @@ These optimizations improve speed WITHOUT sacrificing quality:
 - **Speed comes from better hardware, not shortcuts** - Invest in GPUs, not reduced iterations
 - **Errors compound** - A 5% error in illumination correction becomes 10%+ by segmentation
 - **"Fast mode for testing" is a trap** - Test with production parameters or you'll miss production issues
-- **CPU fallback is never needed** - If no GPU, the user should know immediately, not get silent degradation
+- **Notebook GPU enforcement** - In notebooks, if no GPU, the user should know immediately
+- **SLURM is different** - Headless batch processing uses concurrent GPU+CPU to maximize throughput (see `slurm-concurrent-processing` skill)
 
 ## Implementation Pattern
 

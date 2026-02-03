@@ -1,7 +1,7 @@
 {
   "name": "gpu-quality-priority",
-  "version": "1.0.0",
-  "description": "KINTSUGI processing principles: (1) Never sacrifice quality for speed, (2) Always use GPU when available - no CPU fallback, (3) Adding 'fast mode' options that reduce quality. Trigger: performance optimization, CPU/GPU choice, fast mode, quality vs speed tradeoff.",
+  "version": "1.1.0",
+  "description": "KINTSUGI NOTEBOOK processing principles: (1) Never sacrifice quality for speed, (2) Always use GPU in notebooks - no CPU fallback in interactive mode. Trigger: performance optimization, CPU/GPU choice, fast mode in NOTEBOOKS (NOT SLURM). For SLURM batch processing, see slurm-concurrent-processing skill.",
   "author": {
     "name": "KINTSUGI Team"
   },
