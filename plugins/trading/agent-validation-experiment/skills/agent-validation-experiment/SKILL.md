@@ -2,8 +2,8 @@
 name: agent-validation-experiment
 description: "A/B testing infrastructure for validating Claude agent integration in RL training. Trigger when: (1) planning agent validation, (2) analyzing agent effectiveness, (3) deciding whether to enable agents, (4) understanding agent cost-benefit."
 author: Claude Code
-date: 2025-01-31
-version: v1.0
+date: 2026-02-04
+version: v1.1
 ---
 
 # Agent Validation Experiment
@@ -12,9 +12,9 @@ version: v1.0
 
 | Item | Details |
 |------|---------|
-| **Date** | 2025-01-31 |
+| **Date** | 2026-02-04 |
 | **Goal** | Determine if Claude agent integration improves model predictive power |
-| **Status** | Infrastructure ready - awaiting experiment execution |
+| **Status** | v1.0 failed (zero consultations) - v1.1 fix deployed, awaiting re-run |
 | **Files** | `scripts/agent_validation_experiment.py`, `notebooks/agent_validation_analysis.ipynb` |
 
 ## The Question
@@ -169,6 +169,37 @@ If agents improve Sharpe by 0.1:
 1. Pattern recognition in metrics (reward collapse, HOLD bias)
 2. Safety guardrails (veto authority, bounds enforcement)
 3. Documentation/audit trail for post-training analysis
+
+## Failed Attempts
+
+| Attempt | Date | What Happened | Root Cause | Fix |
+|---------|------|--------------|------------|-----|
+| v1.0 | 2026-02-01 | Zero agent consultations across all 10 treatment runs. Treatment results were byte-for-byte identical to baseline. | **validation_interval mismatch**: With 50M timesteps, `n_envs=1024`, `n_steps=512`, only ~95 updates occurred. With `validation_interval=20`, only 4-5 validation cycles happened. Agent intervals (3, 5, 10) rarely aligned with these few cycles. | `train_with_guidance()` now auto-adjusts `validation_interval` to ensure ≥15 validation cycles. Added diagnostic logging to track callback invocations. |
+
+### v1.0 Failure Details (2026-02-01)
+
+**Symptoms:**
+- All treatment runs showed `agent_consultations: 0`, `agent_actions_taken: 0`
+- Agent config files had empty arrays: `"consultations": [], "decisions": []`
+- Treatment metrics were identical to baseline (same seeds, no agent interventions)
+
+**The Math That Broke It:**
+```
+Steps per update: 1024 * 512 = 524,288
+Total updates: 50M / 524,288 ≈ 95 updates
+Validation interval: 20 (from get_auto_config('standard'))
+Validation cycles: 95 / 20 ≈ 4-5 cycles
+
+Agent intervals:
+- Risk Analyst: every 3rd cycle → triggers at cycle 3
+- Hyperparameter Tuner: every 5th cycle → triggers at cycle 5
+- Reward Engineer: every 10th cycle → never triggers with only 4-5 cycles
+```
+
+**Why Treatment == Baseline:**
+1. Same random seeds used
+2. No agents consulted → no hyperparameter changes
+3. Deterministic training with identical conditions
 
 ## Failed Attempts (Predicted)
 
