@@ -1,18 +1,18 @@
 ---
 name: slurm-concurrent-processing
-description: "KINTSUGI SLURM batch processing: Maximize throughput using concurrent GPU and CPU jobs. Trigger: SLURM job submission, batch processing, resource maximization, GPU+CPU concurrent, headless processing."
+description: "KINTSUGI SLURM batch processing: Maximize throughput using dual-pool resource calculation and dynamic job promotion. Trigger: SLURM job submission, batch processing, resource maximization, GPU+CPU concurrent, headless processing, resource pool, job promotion."
 author: KINTSUGI Team
-date: 2026-02-03
+date: 2026-02-04
 ---
 
-# SLURM Concurrent GPU+CPU Processing
+# SLURM Concurrent GPU+CPU Processing (Dual-Pool Architecture)
 
 ## Experiment Overview
 | Item | Details |
 |------|---------|
-| **Date** | 2026-02-03 |
-| **Goal** | Maximize SLURM batch throughput by running GPU and CPU jobs concurrently |
-| **Environment** | HiPerGator HPC, SLURM scheduler, 2 GPUs max, many CPU cores |
+| **Date** | 2026-02-04 |
+| **Goal** | Maximize SLURM batch throughput using dual-pool resource calculation and dynamic job promotion |
+| **Environment** | HiPerGator HPC, SLURM scheduler, 3 GPUs, 104 CPUs, 812GB RAM |
 | **Status** | Implemented |
 
 ## Context
@@ -22,26 +22,79 @@ KINTSUGI has two processing modes with different resource strategies:
 | Mode | Context | GPU Policy | CPU Policy |
 |------|---------|------------|------------|
 | **Notebook** | Interactive | GPU required, no fallback | Not used |
-| **SLURM** | Headless batch | GPU preferred | CPU concurrent |
+| **SLURM** | Headless batch | GPU + CPU concurrent | CPU concurrent |
 
-**The Problem**: With only 2 GPUs available on HiperGator, running GPU-only jobs leaves many CPU cores idle. For large datasets with many cycles, this is inefficient.
+**The Problem**: With only 3 GPUs available, limiting concurrency to GPU count (3 jobs) leaves many CPU cores idle. For a 9-cycle dataset, this is inefficient.
 
-**The Solution**: Run GPU jobs AND CPU jobs concurrently. GPU accounts process cycles on GPU while CPU-only burst accounts process additional cycles on CPU simultaneously.
+**The Solution**: **Dual-pool resource calculation** - calculate total concurrent jobs from both GPU and CPU resource pools. With 3 GPUs + remaining CPU resources, we can run 8 jobs concurrently instead of 3.
 
 ## Verified Workflow
 
+### Dual-Pool Resource Calculation
+
+The key innovation is calculating total concurrent jobs from **both** GPU and CPU resource pools:
+
+```bash
+# In calculate_max_concurrent() - slurm/submit.sh
+
+# GPU Pool: Limited by allocated GPUs
+gpu_slots=$((ALLOC_GPUS / GPUS_PER_NODE))  # e.g., 3/1 = 3
+
+# CPU Pool: Limited by remaining resources after GPU allocation
+cpus_used_by_gpu=$((gpu_slots * CPUS_PER_TASK))      # 3 * 8 = 24
+cpus_for_cpu_jobs=$((ALLOC_CPUS - cpus_used_by_gpu)) # 104 - 24 = 80
+cpu_slots_by_cpu=$((cpus_for_cpu_jobs / CPU_CPUS_PER_TASK))  # 80/8 = 10
+
+mem_used_by_gpu=$((gpu_slots * MEM_DECON))           # 3 * 180 = 540
+mem_for_cpu_jobs=$((ALLOC_MEM - mem_used_by_gpu))    # 812 - 540 = 272
+cpu_slots_by_mem=$((mem_for_cpu_jobs / CPU_MEM_DECON))  # 272/48 = 5
+
+# CPU slots = minimum of CPU and memory limits
+cpu_slots=$((cpu_slots_by_cpu < cpu_slots_by_mem ? cpu_slots_by_cpu : cpu_slots_by_mem))
+
+# Total concurrent = GPU slots + CPU slots
+COMPUTED_MAX_CONCURRENT=$((gpu_slots + cpu_slots))  # 3 + 5 = 8
+```
+
+**Example Calculation** (104 CPUs, 812GB, 3 GPUs):
+| Resource | GPU Jobs | CPU Jobs | Calculation |
+|----------|----------|----------|-------------|
+| GPUs | 3 | 0 | 3 GPUs / 1 per job |
+| CPUs | 24 | 80 | 104 - (3×8) = 80 remaining |
+| Memory | 540 GB | 272 GB | 812 - (3×180) = 272 remaining |
+| CPU slots | - | 5 | min(80/8, 272/48) = min(10,5) |
+| **Total** | **8** | | 3 GPU + 5 CPU concurrent jobs |
+
+### Dynamic Job Promotion
+
+The burst monitor (`burst_monitor.sh`) promotes jobs to better resources when available:
+
+1. **Burst → Allocated**: Preemptible GPU jobs promoted to guaranteed QOS
+2. **CPU → GPU**: CPU jobs promoted to GPU when GPUs free up
+
+```bash
+# In burst_monitor.sh - promote_cpu_to_gpu() function
+# When GPUs become available, cancel CPU job and resubmit as GPU job
+if [ "${idle_nodes}" -gt 0 ] && [ -n "${pending_cpu}" ]; then
+    promote_cpu_to_gpu "${job_id}" "${job_name}"
+fi
+```
+
+Promotion priority: Burst jobs first (already GPU-ready), then CPU jobs.
+
 ### How Concurrent Processing Works
 
-1. **Account Chain Selection** (`submit.sh`):
-   - Primary accounts (GPU-enabled): `maigan`, `clive`
-   - Overflow accounts (CPU-only): `maigan-b` (burst)
-   - Jobs submitted to first available account in chain
+1. **Dual-Pool Calculation** (`submit.sh`):
+   - Calculates GPU slots from `ALLOC_GPUS / GPUS_PER_NODE`
+   - Calculates CPU slots from remaining resources after GPU allocation
+   - Sets `EFFECTIVE_MAX_CONCURRENT = GPU_SLOTS + CPU_SLOTS`
+   - Exports `GPU_SLOTS` and `CPU_SLOTS` for burst_monitor.sh
 
 2. **Device Mode Export**:
    ```bash
-   # submit.sh sets this based on account type
-   export KINTSUGI_DEVICE_MODE=gpu   # For GPU accounts
-   export KINTSUGI_DEVICE_MODE=cpu   # For CPU-only burst accounts
+   # submit.sh sets this based on job type
+   export KINTSUGI_DEVICE_MODE=gpu   # For GPU jobs
+   export KINTSUGI_DEVICE_MODE=cpu   # For CPU jobs
    ```
 
 3. **Job Script Adaptation** (02_stitching.sh, 03_deconvolution.sh, 04_edf.sh):
@@ -61,7 +114,7 @@ KINTSUGI has two processing modes with different resource strategies:
            print("Falling back to CPU processing")
            DEVICE_MODE = 'cpu'
    else:
-       print("Running in CPU mode (CPU-only burst account)")
+       print("Running in CPU mode")
 
    # Use appropriate backend
    use_gpu = (DEVICE_MODE == 'gpu')
@@ -70,8 +123,8 @@ KINTSUGI has two processing modes with different resource strategies:
 
 4. **Resource Allocation**:
    - GPU jobs: Standard time limits, 1 GPU per job
-   - CPU jobs: 5x time multiplier (automatic), more CPUs per job
-   - Both run simultaneously on different partitions
+   - CPU jobs: 5x time multiplier (automatic), use remaining CPUs/memory
+   - Both run simultaneously using different resource pools
 
 ### Implementation in Job Scripts
 
@@ -149,10 +202,12 @@ kintsugi slurm submit . --steps decon,edf --use-burst
 
 | Attempt | Why it Failed | Lesson Learned |
 |---------|---------------|----------------|
-| GPU-only processing for SLURM | CPU cores sit idle with only 2 GPUs | Headless mode should maximize ALL resources |
+| GPU as sole limiting factor | With 3 GPUs, only 3 concurrent jobs even with 104 CPUs | Calculate from BOTH GPU and CPU pools |
+| GPU-only processing for SLURM | CPU cores sit idle with only 3 GPUs | Headless mode should maximize ALL resources |
 | CPU fallback only on GPU failure | Doesn't utilize CPU proactively | Need concurrent GPU+CPU, not just fallback |
 | Same time limits for GPU and CPU | CPU jobs timeout | Apply 5x time multiplier for CPU jobs |
 | Applying notebook GPU-only policy to SLURM | Wastes resources | Different modes need different strategies |
+| No job promotion | CPU jobs stay on CPU even when GPUs free up | Implement dynamic CPU→GPU promotion |
 
 ## Key Differences from Notebook Mode
 
@@ -182,28 +237,55 @@ kintsugi slurm submit . --steps decon,edf --use-burst
 | Variable | Values | Set By | Used By |
 |----------|--------|--------|---------|
 | `KINTSUGI_DEVICE_MODE` | `gpu`, `cpu` | `submit.sh` | All job scripts |
+| `GPU_SLOTS` | Integer (e.g., 3) | `submit.sh` | `burst_monitor.sh` |
+| `CPU_SLOTS` | Integer (e.g., 5) | `submit.sh` | `burst_monitor.sh` |
+| `ALLOC_CPUS` | Integer (e.g., 104) | `config.sh` | `submit.sh` |
+| `ALLOC_MEM` | Integer GB (e.g., 812) | `config.sh` | `submit.sh` |
+| `ALLOC_GPUS` | Integer (e.g., 3) | `config.sh` | `submit.sh` |
+| `CPU_CPUS_PER_TASK` | Integer (e.g., 8) | `config.sh` | `submit.sh` |
+| `CPU_MEM_DECON` | Integer GB (e.g., 48) | `config.sh` | `submit.sh` |
 | `CUDA_VISIBLE_DEVICES` | GPU IDs | SLURM | CuPy |
 | `CPU_TIME_MULTIPLIER` | `5` (default) | `config.sh` | `submit.sh` |
 
 ## Key Insights
 
+- **Dual-pool calculation is the key innovation** - GPU slots + CPU slots = total concurrent
 - **Notebook vs SLURM are different paradigms** - Don't apply interactive policies to batch processing
 - **Maximize ALL resources** - With limited GPUs, use CPU cores for overflow
 - **Same quality, different speed** - CPU processing takes longer but produces identical results
-- **Account chain enables concurrent processing** - GPU accounts + burst accounts = parallel execution
+- **Dynamic promotion improves utilization** - CPU jobs can be promoted to GPU when resources free up
 - **5x time multiplier is empirically derived** - CPU processing typically 3-7x slower than GPU
 
 ## When to Apply This Pattern
 
 - SLURM batch processing on HPC clusters
-- Limited GPU availability (1-2 GPUs)
-- Large datasets requiring many cycles
+- Limited GPU availability (1-3 GPUs) relative to CPU allocation
+- Large datasets requiring many cycles (more cycles than GPUs)
 - Need to maximize throughput over wall-clock time
 - Processing can run overnight/unattended
+- Want dynamic resource optimization (jobs move to better resources as they free up)
+
+## CLI Output Example
+
+```
+Resource pool calculation:
+  GPU job slots: 3 (from 3 GPUs)
+  CPU job slots: 5 (from remaining resources)
+  Total concurrent jobs: 8
+  GPU pool: 3 (3 GPUs), CPU pool: 5 (80 CPUs, 272GB remaining)
+
+Resource Allocation (Dual-Pool Architecture):
+  Allocation limits: 104 CPUs, 812GB mem, 3 GPUs
+  GPU jobs: 8 CPUs, 180GB mem, 1 GPU each
+  CPU jobs: 8 CPUs, 48GB mem each
+  GPU slots: 3, CPU slots: 5
+  Total concurrent: 8 jobs
+```
 
 ## References
 
-- KINTSUGI CLAUDE.md - Processing Modes section
+- KINTSUGI CLAUDE.md - "Resource Pool Calculation" section
+- KINTSUGI README.md - "Resource Pool Architecture" section
 - `gpu-quality-priority` skill - Notebook-specific GPU enforcement
 - `slurm-workflow-integration` skill - SLURM setup and submission
 - HiPerGator burst accounts: https://help.rc.ufl.edu/doc/Account_and_QOS_Limits

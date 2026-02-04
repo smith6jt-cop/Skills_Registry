@@ -1,7 +1,7 @@
 {
   "name": "slurm-concurrent-processing",
-  "version": "1.0.0",
-  "description": "KINTSUGI SLURM batch processing: Maximize throughput using concurrent GPU and CPU jobs. Trigger: SLURM job submission, batch processing, resource maximization, GPU+CPU concurrent, headless processing, account chain.",
+  "version": "2.0.0",
+  "description": "KINTSUGI SLURM batch processing: Dual-pool resource calculation (GPU+CPU slots) and dynamic job promotion (CPU→GPU). Trigger: SLURM job submission, batch processing, resource pool, GPU+CPU concurrent, job promotion, resource maximization.",
   "author": {
     "name": "KINTSUGI Team"
   },
