@@ -3,7 +3,7 @@ name: agent-validation-experiment
 description: "A/B testing infrastructure for validating Claude agent integration in RL training. Trigger when: (1) planning agent validation, (2) analyzing agent effectiveness, (3) deciding whether to enable agents, (4) understanding agent cost-benefit."
 author: Claude Code
 date: 2026-02-04
-version: v1.1
+version: v1.2
 ---
 
 # Agent Validation Experiment
@@ -14,7 +14,7 @@ version: v1.1
 |------|---------|
 | **Date** | 2026-02-04 |
 | **Goal** | Determine if Claude agent integration improves model predictive power |
-| **Status** | v1.0 failed (zero consultations) - v1.1 fix deployed, awaiting re-run |
+| **Status** | v1.0 failed (zero consultations), v1.1 failed (missing directories) - v1.2 fix deployed |
 | **Files** | `scripts/agent_validation_experiment.py`, `notebooks/agent_validation_analysis.ipynb` |
 
 ## The Question
@@ -175,6 +175,35 @@ If agents improve Sharpe by 0.1:
 | Attempt | Date | What Happened | Root Cause | Fix |
 |---------|------|--------------|------------|-----|
 | v1.0 | 2026-02-01 | Zero agent consultations across all 10 treatment runs. Treatment results were byte-for-byte identical to baseline. | **validation_interval mismatch**: With 50M timesteps, `n_envs=1024`, `n_steps=512`, only ~95 updates occurred. With `validation_interval=20`, only 4-5 validation cycles happened. Agent intervals (3, 5, 10) rarely aligned with these few cycles. | `train_with_guidance()` now auto-adjusts `validation_interval` to ensure ≥15 validation cycles. Added diagnostic logging to track callback invocations. |
+| v1.1 | 2026-02-04 | Agent consultations now working, but "Parent directory checkpoints does not exist" error during checkpoint action. Training continued but agent-triggered checkpoints failed silently. | **Missing directory creation**: (1) `_apply_action()` wrote to `checkpoints/agent_triggered_{step}.pt` without creating directory. (2) `save_agent_logs()` wrote to filepath without ensuring parent exists. | Added `os.makedirs(os.path.dirname(path), exist_ok=True)` before both save operations in `multi_agent.py` (lines 589 and 1086-1088). |
+
+### v1.1 Failure Details (2026-02-04)
+
+**Symptoms:**
+- Error message: `⚠️ Agent consultation error: Parent directory checkpoints does not exist.`
+- Training continued (error caught in callback exception handler)
+- Agent-triggered checkpoints not saved
+- Risk analyst halted Treatment 1/10 early due to "zero fitness collapse"
+- Consultations happening but actions failing silently
+
+**The Code That Broke It:**
+```python
+# multi_agent.py line 588 (BEFORE fix)
+elif action.action_type == "checkpoint":
+    checkpoint_path = f"checkpoints/agent_triggered_{self.trainer.global_step}.pt"
+    self.trainer.save(checkpoint_path)  # FAILS - checkpoints/ doesn't exist in Colab
+```
+
+**Why It Wasn't Caught Earlier:**
+1. Exception handler at line 987 catches all errors and logs them as warnings
+2. Training continues after error - doesn't fail visibly
+3. Quick validation test (cell 25) doesn't trigger checkpoint actions
+4. Risk analyst triggered `halt` action on first run, masking the checkpoint issue
+
+**Files Modified:**
+- `alpaca_trading/training/multi_agent.py`:
+  - Line 589: Added `os.makedirs(os.path.dirname(checkpoint_path), exist_ok=True)`
+  - Lines 1086-1088: Added parent directory creation before `save_agent_logs()`
 
 ### v1.0 Failure Details (2026-02-01)
 
@@ -209,6 +238,8 @@ Agent intervals:
 | Too few samples | High variance in training outcomes | Minimum 10 runs per group |
 | Different symbols per group | Symbol difficulty varies | Match symbols exactly |
 | Agent costs explode | Runaway consultations | Max 50 consultations/run |
+| Silent file I/O failures | Colab working directory differs from expected, directories don't exist | Always use `os.makedirs(parent, exist_ok=True)` before any file write |
+| Risk analyst too aggressive | Halts training early on normal early-training volatility | Consider requiring 2+ consecutive bad validations before halt |
 
 ## Key Principles
 
