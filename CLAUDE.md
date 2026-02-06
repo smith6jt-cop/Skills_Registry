@@ -71,7 +71,7 @@ Skills_Registry/
 - **kintsugi/**: KINTSUGI-specific image processing skills (won't trigger for other projects)
 - **templates/**: Example skills and templates for creating new skills
 
-## Trading Skills (v3.8.0)
+## Trading Skills (v3.9.0)
 Key skills for the Alpaca Trading system:
 
 ### Reward Function & Training
@@ -79,11 +79,12 @@ Key skills for the Alpaca Trading system:
 - `discounted-thompson-sampling` - Non-stationary bandit with decay
 - `reward-function-v330` - Rebalanced weights, removed trading_incentive
 - `reward-scaling-calibration` - reward_scale=0.001 calibration
+- `agent-validation-experiment` - v2.0: Per-component metrics, adaptive drawdown, rewritten prompts, A/B testing
 
 ### Risk Management
 - `integrated-risk-manager` - Unified Kelly + GARCH + drawdown sizing
 - `adaptive-predator-prey` - Regime-aware Lotka-Volterra dynamics
-- `drawdown-guardrails-pattern` - Max drawdown triggers and scaling
+- `drawdown-guardrails-pattern` - Max drawdown triggers and scaling (v3.9.0: adaptive threshold)
 
 ### Data & Infrastructure
 - `data-source-priority` - Alpaca API mandatory, yfinance NOT a fallback
