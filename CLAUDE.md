@@ -43,6 +43,13 @@ Skills_Registry/
 │   ├── scientific/           # Scientific computing & GPU patterns
 │   │   ├── project-data-separation/
 │   │   └── windows-cupy-nvrtc/
+│   ├── trading/              # Alpaca Trading system skills
+│   │   ├── differential-sharpe-ratio/   # v3.8.0 - DSR reward component
+│   │   ├── discounted-thompson-sampling/ # v3.8.0 - Non-stationary bandit
+│   │   ├── reward-function-v330/        # v3.3.0 - Reward rebalancing
+│   │   ├── integrated-risk-manager/     # v3.3.0 - Unified risk sizing
+│   │   ├── adaptive-predator-prey/      # v3.3.0 - Regime dynamics
+│   │   └── ...                          # 60+ trading skills
 │   ├── kintsugi/             # KINTSUGI-specific skills
 │   │   ├── basic-caching-evaluation/
 │   │   └── gpu-quality-priority/
@@ -60,5 +67,25 @@ Skills_Registry/
 ## Category Guidelines
 - **general/**: Skills applicable to any Python project (packaging, linting, environments)
 - **scientific/**: Scientific computing patterns (GPU, data pipelines, architecture)
+- **trading/**: Alpaca Trading system skills (RL training, risk management, reward functions, signals)
 - **kintsugi/**: KINTSUGI-specific image processing skills (won't trigger for other projects)
 - **templates/**: Example skills and templates for creating new skills
+
+## Trading Skills (v3.8.0)
+Key skills for the Alpaca Trading system:
+
+### Reward Function & Training
+- `differential-sharpe-ratio` - DSR for risk-adjusted rewards (Moody & Saffell 1998)
+- `discounted-thompson-sampling` - Non-stationary bandit with decay
+- `reward-function-v330` - Rebalanced weights, removed trading_incentive
+- `reward-scaling-calibration` - reward_scale=0.001 calibration
+
+### Risk Management
+- `integrated-risk-manager` - Unified Kelly + GARCH + drawdown sizing
+- `adaptive-predator-prey` - Regime-aware Lotka-Volterra dynamics
+- `drawdown-guardrails-pattern` - Max drawdown triggers and scaling
+
+### Data & Infrastructure
+- `data-source-priority` - Alpaca API mandatory, yfinance NOT a fallback
+- `colab-notebook-development` - Mandatory notebook structure
+- `persistent-cache-gap-filling` - gap_fill_threshold_days parameter

@@ -1,0 +1,18 @@
+{
+  "name": "discounted-thompson-sampling",
+  "version": "1.0.0",
+  "description": "v3.8.0 Discounted Thompson Sampling for non-stationary bandits. Exponentially decays past observations to handle regime changes. Trigger when discussing Thompson sampling, bandits, or non-stationary reward distributions.",
+  "author": "Claude Code",
+  "category": "trading",
+  "tags": ["thompson-sampling", "bandit", "non-stationary", "discounting", "exploration", "v3.8.0"],
+  "skills": ["discounted-thompson-sampling"],
+  "triggers": [
+    "discounted thompson sampling",
+    "non-stationary bandit",
+    "thompson sampling",
+    "online bandit",
+    "regime change bandit",
+    "adaptive exploration",
+    "dTS"
+  ]
+}
