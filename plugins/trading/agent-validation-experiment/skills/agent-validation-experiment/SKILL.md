@@ -1,9 +1,9 @@
 ---
 name: agent-validation-experiment
-description: "A/B testing infrastructure for validating Claude agent integration in RL training. Trigger when: (1) planning agent validation, (2) analyzing agent effectiveness, (3) deciding whether to enable agents, (4) understanding agent cost-benefit, (5) reviewing agent prompt design."
+description: "A/B testing infrastructure for validating Claude agent integration in RL training. Trigger when: (1) planning agent validation, (2) analyzing agent effectiveness, (3) deciding whether to enable agents, (4) understanding agent cost-benefit, (5) reviewing agent prompt design, (6) debugging agent response parsing."
 author: Claude Code
-date: 2026-02-06
-version: v2.0
+date: 2026-02-07
+version: v2.1
 ---
 
 # Agent Validation Experiment
@@ -12,9 +12,9 @@ version: v2.0
 
 | Item | Details |
 |------|---------|
-| **Date** | 2026-02-06 |
+| **Date** | 2026-02-07 |
 | **Goal** | Determine if Claude agent integration improves model predictive power |
-| **Status** | v1.0 failed (zero consultations), v1.1 failed (missing directories), v1.2 ran (90 consultations analyzed), **v2.0 systemic fixes deployed** |
+| **Status** | v1.0 failed (zero consultations), v1.1 failed (missing directories), v1.2 ran (90 consultations analyzed), v2.0 systemic fixes deployed, **v2.1 bug fixes from experiment results (+11.6% PF, p=0.009)** |
 | **Files** | `scripts/agent_validation_experiment.py`, `alpaca_trading/training/multi_agent.py`, `alpaca_trading/gpu/vectorized_env.py`, `tests/test_multi_agent.py` |
 
 ## The Question
@@ -193,6 +193,20 @@ If agents improve Sharpe by 0.1:
 | v1.0 | 2026-02-01 | Zero agent consultations across all 10 treatment runs. Treatment results were byte-for-byte identical to baseline. | **validation_interval mismatch**: With 50M timesteps, `n_envs=1024`, `n_steps=512`, only ~95 updates occurred. With `validation_interval=20`, only 4-5 validation cycles happened. Agent intervals (3, 5, 10) rarely aligned with these few cycles. | `train_with_guidance()` now auto-adjusts `validation_interval` to ensure ≥15 validation cycles. Added diagnostic logging to track callback invocations. |
 | v1.1 | 2026-02-04 | Agent consultations now working, but "Parent directory checkpoints does not exist" error during checkpoint action. Training continued but agent-triggered checkpoints failed silently. | **Missing directory creation**: (1) `_apply_action()` wrote to `checkpoints/agent_triggered_{step}.pt` without creating directory. (2) `save_agent_logs()` wrote to filepath without ensuring parent exists. | Added `os.makedirs(os.path.dirname(path), exist_ok=True)` before both save operations in `multi_agent.py` (lines 589 and 1086-1088). |
 | v1.2 | 2026-02-05 | 90 consultations analyzed. All HP tuner recommendations identical (`lr=0.7, ent=1.3`). Risk Analyst fixated on KL. Reward Engineer using v2.5.0 weights. No agents analyzed trade quality. Drawdown penalty inactive (15% threshold never triggered). | **7 systemic problems**: (1) No per-run context (symbol/volatility), (2) Fixed DD threshold useless, (3) No component breakdown visible, (4) KL over-emphasized, (5) Wrong weights in RE prompt, (6) No position sizing analysis, (7) Grace period untested. | v2.0: Rewritten prompts, per-component metrics pipeline, adaptive drawdown, expanded TrainingResult. 16 new tests. |
+| v2.0 | 2026-02-07 | Experiment showed +11.6% profit factor (p=0.009) but 5 bugs degraded agent effectiveness: ~50% Risk Analyst parse failures, grace period produced invalid action type, orchestrator passed unknown action types, Risk Analyst prompt suggested invalid types, max_tokens too low. | **5 code bugs**: (1) `max_tokens=800` truncates 8-field JSON, (2) grace period converts to `save_checkpoint` (invalid), (3) no action type validation, (4) prompt vocabulary uses non-canonical types, (5) parser has no truncation recovery. | v2.1: 5-strategy JSON parser, `VALID_ACTION_TYPES` + `ACTION_TYPE_ALIASES`, grace period→`checkpoint`, prompt vocabulary fix, max_tokens→1500. 17 new tests. |
+
+### v2.0 Failure Details (2026-02-07)
+
+**Experiment Results (statistically significant improvement despite bugs):**
+- +11.6% profit factor (p=0.009)
+- 20 runs, 200M timesteps each, A100 GPU
+
+**5 Bugs Found:**
+1. **~50% parse failures**: Risk Analyst's 8-field JSON with reasoning regularly exceeds 800 tokens. Response truncated before closing `}`, `json.loads()` fails, returns `{"error": "Failed to parse response"}`.
+2. **Invalid grace period type**: `halt → save_checkpoint` — but `_apply_action()` only handles `checkpoint`, so the action falls through to "Unknown action type" and does nothing.
+3. **Unknown action types pass through**: Orchestrator creates `TrainingAction(action_type="flag_for_review")` from LLM output. `_apply_action()` returns "Unknown action type" but the action is silently ignored.
+4. **Prompt vocabulary mismatch**: Risk Analyst prompt says `"recommendation": "continue|save_checkpoint|halt|reduce_lr"` — two of those (`save_checkpoint`, `reduce_lr`) are not canonical types.
+5. **Root cause of #1**: `max_tokens=800` for agent consultations, `max_tokens=1000` for orchestrator. Risk Analyst's response with 8 fields + detailed reasoning regularly needs 1200+ tokens.
 
 ### v1.1 Failure Details (2026-02-04)
 
@@ -285,8 +299,8 @@ Agent intervals:
 
 - `scripts/agent_validation_experiment.py` - Experiment runner (v2.0: expanded TrainingResult)
 - `notebooks/agent_validation_analysis.ipynb` - Statistical analysis
-- `alpaca_trading/training/multi_agent.py` - Agent integration code (v2.0: rewritten prompts, expanded metrics)
+- `alpaca_trading/training/multi_agent.py` - Agent integration code (v2.0: rewritten prompts; v2.1: robust parser, action validation, max_tokens)
 - `alpaca_trading/gpu/vectorized_env.py` - Component metrics + adaptive drawdown (v2.0)
 - `alpaca_trading/gpu/ppo_trainer_native.py` - Metrics pipeline (v2.0)
-- `tests/test_multi_agent.py` - 16 tests for prompt correctness, metrics flow, adaptive drawdown (v2.0)
+- `tests/test_multi_agent.py` - 33 tests: prompt correctness, metrics flow, adaptive drawdown (v2.0), parser robustness, action validation, grace period (v2.1)
 - `.skills/plugins/trading/multi-agent-integration/` - Integration documentation

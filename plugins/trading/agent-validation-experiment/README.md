@@ -51,6 +51,40 @@ Agent prompts now include 5 new sections: Reward Component Breakdown, Action Dis
 
 ---
 
+## Implementation (v2.1 - Bug Fixes, v3.9.1)
+
+Five bugs found during v2.0 experiment (20 runs, 200M timesteps, +11.6% profit factor p=0.009):
+
+| Bug | Impact | Fix |
+|-----|--------|-----|
+| ~50% Risk Analyst parse failures | Truncated JSON from `max_tokens=800` | 5-strategy parser + `max_tokens=1500` |
+| Grace period → invalid `save_checkpoint` | Action silently fails | Changed to `checkpoint` |
+| Unknown action types pass through | `flag_for_review` etc. reach `_apply_action` | `VALID_ACTION_TYPES` + `ACTION_TYPE_ALIASES` |
+| Risk Analyst prompt suggests invalid types | Agent returns `save_checkpoint`, `reduce_lr` | Prompt uses `checkpoint`, `adjust_lr` |
+| `max_tokens=800` too low | Truncates 8-field JSON responses | Increased to 1500 |
+
+### Action Type Validation (`multi_agent.py`)
+
+```python
+VALID_ACTION_TYPES = {"adjust_lr", "adjust_entropy", "checkpoint", "halt", "continue"}
+
+ACTION_TYPE_ALIASES = {
+    "save_checkpoint": "checkpoint", "reduce_lr": "adjust_lr",
+    "flag_for_review": "checkpoint", "early_stop": "halt", ...  # 13 aliases total
+}
+```
+
+### Robust JSON Parser (`multi_agent.py`)
+
+5-strategy fallback in `_parse_agent_response()`:
+1. Markdown fence extraction (standard)
+2. Truncated fence handling (no closing ```)
+3. Brace-delimited extraction (text around JSON)
+4. Brace balancing for truncated JSON
+5. Regex field extraction (last resort, tagged `_parsed_via: "regex_fallback"`)
+
+---
+
 ## Implementation (v1.4 - Grace Period)
 
 ### Grace Period Logic (`multi_agent.py`)
@@ -60,7 +94,7 @@ Agent prompts now include 5 new sections: Reward Component Breakdown, Action Dis
 training_progress = trainer.global_step / self.trainer.config.total_timesteps
 if action.action_type == "halt" and training_progress < 0.25:
     print(f"  [GRACE PERIOD] Converting halt -> checkpoint at {training_progress:.1%} progress")
-    action.action_type = "save_checkpoint"
+    action.action_type = "checkpoint"  # v3.9.1: was "save_checkpoint" (invalid)
     action.params = {"reason": f"[Converted from halt] {action.params.get('reason', 'Early training grace period')}"}
 ```
 
@@ -161,3 +195,4 @@ This indicates the fix is working - halt actions are being safely converted to c
 - **v1.3.0** (2026-01-31): Initial experiment infrastructure, API key fixes
 - **v1.4.0** (2026-02-05): Grace period fix, production-length configuration
 - **v2.0.0** (2026-02-06): Agent prompt rewrite, per-component metrics, adaptive drawdown, expanded experiment results. Addresses 7 systemic problems found in v1.2 experiment analysis.
+- **v2.1.0** (2026-02-07): Bug fixes from v2.0 experiment results (+11.6% PF, p=0.009). Robust JSON parser, action type validation, grace period fix, prompt vocabulary fix, increased max_tokens.
