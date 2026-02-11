@@ -88,15 +88,17 @@ The `CH#_edf.tif` pattern matched **none** of these strategies.
 | Not loading CHANNELNAMES.txt | No marker names available for file naming | SLURM jobs need same metadata as notebooks |
 | Skipping `check_cycle_complete` update | Would look for old `CH#_edf.tif` names | All file references must be updated together |
 | `from Kio import` with only `PROJECT_DIR/notebooks` on sys.path | `Kio.py` lives in main repo, not synced to project notebooks | Must add `KINTSUGI_DIR/notebooks` to sys.path in SLURM jobs |
+| `MEM_EDF=16` (default) for large datasets | OOM kill (exit 137) after first channel — 3.6 GB per z-stack needs ~48 GB | EDF memory must match deconvolution memory; default 16 GB only works for small tiles |
 
 ## Key Insights
 
 - **SLURM jobs must match notebook output conventions** - downstream QC, visualization, and analysis code expects specific file naming patterns
 - **`Kio.load_channel_names()` is the canonical parser** - don't reinvent channel name loading; import from `Kio.py` which handles all CHANNELNAMES.txt formats
-- **`sys.path` already includes notebooks dir** - SLURM job scripts add `PROJECT_DIR/notebooks` to `sys.path`, so `from Kio import ...` works
+- **`sys.path` needs both notebook dirs** - SLURM job scripts must add both `PROJECT_DIR/notebooks` and `KINTSUGI_DIR/notebooks` to `sys.path`
 - **Always provide CH# fallback** - if CHANNELNAMES.txt is missing, fall back to `CH{ch}` rather than failing
 - **Update ALL file references** - when changing output naming, also update `check_cycle_complete()`, QC image names, and log messages
 - **SLURM sys.path must include `KINTSUGI_DIR/notebooks`** - project notebooks dirs only contain synced subset files; `Kio.py`, `Kprocess.py`, etc. live in the main repo's notebooks dir and are NOT always synced to projects
+- **EDF memory must match deconvolution memory** - EDF loads the same z-stacks as decon (~3-4 GB per channel for 5x5 grids); default 16 GB causes OOM (exit 137) after the first channel
 
 ## References
 
