@@ -157,6 +157,14 @@ fetcher = CachingDataFetcher(
 | Check file modification time | Partial | Doesn't verify data completeness |
 | 2-hour tolerance for gap-fill | Unnecessary warnings | Cache 3 days old is fine for training |
 
+## Troubleshooting: 401 During Gap-Fill
+
+If gap-fill shows `401 Authorization Required` from nginx:
+
+1. **Check API key parsing first** - Key files use `Key:\n<value>\nSecret:\n<value>` format. Naive line reading sends `"Key:"` as the API key ID. Use `_read_keys_from_file()` from `alpaca_trading.trading.broker`.
+2. **Check key validity** - Paper trading keys expire if the account is deactivated.
+3. **The cache still works** - Gap-fill failure is graceful; stale cache is returned with `(Xd old)` message. Training can proceed with slightly older data.
+
 ## Key Insights
 
 1. **Historical data is immutable** - Past candles never change, so there's no reason to re-fetch them

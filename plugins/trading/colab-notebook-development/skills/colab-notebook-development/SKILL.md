@@ -5,7 +5,7 @@ author: Claude Code
 date: 2026-02-01
 ---
 
-# Colab Notebook Development Pattern (v3.7.0)
+# Colab Notebook Development Pattern (v3.7.1)
 
 ## CRITICAL RULE
 
@@ -76,9 +76,15 @@ sys.path.insert(0, '/content/Alpaca_trading')
 ```
 
 ```python
-# Cell 6: API Keys
-API_KEYS_FILE = '/content/Alpaca_trading/config/API_key_500Paper.txt'
-# ... load keys
+# Cell 6: API Keys - MUST use broker's parser (handles "Key:"/"Secret:" labels)
+ALPACA_KEYS_FILE = '/content/Alpaca_trading/config/API_key_500Paper.txt'
+if os.path.exists(ALPACA_KEYS_FILE):
+    from alpaca_trading.trading.broker import _read_keys_from_file
+    parsed = _read_keys_from_file(ALPACA_KEYS_FILE)
+    if parsed.get('key') and parsed.get('secret'):
+        os.environ['APCA_API_KEY_ID'] = parsed['key']
+        os.environ['APCA_API_SECRET_KEY'] = parsed['secret']
+# NEVER use naive line reading (lines[0], lines[1]) - labels become values!
 ```
 
 ### Data Loading Pattern
@@ -122,7 +128,7 @@ gc.collect()
 torch.cuda.empty_cache()
 ```
 
-## Failed Attempts (Session 2026-02-01)
+## Failed Attempts
 
 | Attempt | Why it Failed | Correct Approach |
 |---------|---------------|------------------|
@@ -132,6 +138,7 @@ torch.cuda.empty_cache()
 | Created notebook from scratch | Many missing pieces | Always start from training.ipynb |
 | Forgot output directories | trainer.save() failed | mkdir before any save |
 | Different pip install list | Import errors | Match training.ipynb exactly |
+| Naive line reading for API keys | Key file has "Key:"/"Secret:" labels → `APCA_API_KEY_ID="Key:"` → 401 auth errors | Use `_read_keys_from_file()` from broker module |
 
 ## Checklist for New Notebooks
 

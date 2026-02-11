@@ -79,7 +79,7 @@ Key skills for the Alpaca Trading system:
 - `discounted-thompson-sampling` - Non-stationary bandit with decay
 - `reward-function-v330` - Rebalanced weights, removed trading_incentive
 - `reward-scaling-calibration` - reward_scale=0.001 calibration
-- `agent-validation-experiment` - v2.1: Per-component metrics, adaptive drawdown, rewritten prompts, A/B testing, robust JSON parser, action type validation
+- `agent-validation-experiment` - v2.2: Per-component metrics, adaptive drawdown, rewritten prompts, A/B testing, robust JSON parser, action type validation, API key parsing fix, quick validation speed fix
 
 ### Risk Management
 - `integrated-risk-manager` - Unified Kelly + GARCH + drawdown sizing
@@ -88,5 +88,5 @@ Key skills for the Alpaca Trading system:
 
 ### Data & Infrastructure
 - `data-source-priority` - Alpaca API mandatory, yfinance NOT a fallback
-- `colab-notebook-development` - Mandatory notebook structure
-- `persistent-cache-gap-filling` - gap_fill_threshold_days parameter
+- `colab-notebook-development` - Mandatory notebook structure, API key parsing pattern
+- `persistent-cache-gap-filling` - gap_fill_threshold_days parameter, 401 troubleshooting
