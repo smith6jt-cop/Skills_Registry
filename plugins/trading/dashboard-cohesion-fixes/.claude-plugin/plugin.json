@@ -1,0 +1,8 @@
+{
+  "name": "dashboard-cohesion-fixes",
+  "version": "1.0.0",
+  "description": "Integration fixes between backtest engine, FastAPI dashboard, and live trader. Triggers: (1) gate_status.json missing fields the dashboard reads, (2) broker.submit_order parameter name mismatches, (3) circular imports between API routes and server module, (4) WebSocket log broadcasting gaps, (5) obs_dim hardcoded tuples in backtest engine, (6) duplicate data loading in API routes",
+  "author": { "name": "Claude Code" },
+  "skills": "./skills",
+  "repository": "https://github.com/smith-cop/Skills_Registry"
+}
