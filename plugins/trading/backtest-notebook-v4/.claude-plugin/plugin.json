@@ -1,0 +1,10 @@
+{
+  "name": "backtest-notebook-v4",
+  "version": "1.0.0",
+  "description": "Fix for 8-action space bug in backtest engines and Colab notebook rewrite. The bug caused v4.0.0 BUY_50% (action 2) to be treated as SELL, and actions 3-7 to be treated as HOLD. Fixed by using interpret_action() from model_version.py.",
+  "author": {
+    "name": "Claude Code"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith-cop/Skills_Registry"
+}
