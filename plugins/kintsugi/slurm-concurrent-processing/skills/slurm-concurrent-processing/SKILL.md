@@ -1,19 +1,19 @@
 ---
 name: slurm-concurrent-processing
-description: "KINTSUGI SLURM batch processing: Maximize throughput using dual-pool resource calculation with independent GPU and CPU accounts. Trigger: SLURM job submission, batch processing, resource maximization, GPU+CPU concurrent, headless processing, resource pool."
+description: "KINTSUGI SLURM batch processing: Maximize throughput using multi-account resource calculation with GPU+CPU pools per account. Trigger: SLURM job submission, batch processing, resource maximization, GPU+CPU concurrent, headless processing, resource pool."
 author: KINTSUGI Team
-date: 2026-02-11
+date: 2026-02-12
 ---
 
-# SLURM Concurrent GPU+CPU Processing (Dual-Pool Architecture)
+# SLURM Concurrent GPU+CPU Processing (Multi-Account Architecture)
 
 ## Experiment Overview
 | Item | Details |
 |------|---------|
-| **Date** | 2026-02-11 |
-| **Goal** | Maximize SLURM batch throughput using dual-pool resource calculation with independent GPU and CPU account pools |
-| **Environment** | HiPerGator HPC, SLURM scheduler, 3 GPUs (clive account), 80 CPUs/625GB (maigan account) = 13 total concurrent slots |
-| **Status** | Implemented |
+| **Date** | 2026-02-12 (updated from 2026-02-11) |
+| **Goal** | Maximize SLURM batch throughput using multi-account resource calculation — each account contributes BOTH GPU and CPU slots |
+| **Environment** | HiPerGator HPC, SLURM scheduler, clive (3G+11C) + maigan (2G+8C) = 24 total concurrent slots |
+| **Status** | Implemented (submit.sh + Snakemake) |
 
 ## Context
 
@@ -24,53 +24,45 @@ KINTSUGI has two processing modes with different resource strategies:
 | **Notebook** | Interactive | GPU required, no fallback | Not used |
 | **SLURM** | Headless batch | GPU + CPU concurrent | CPU concurrent |
 
-**The Problem**: With only 3 GPUs available, limiting concurrency to GPU count (3 jobs) leaves many CPU cores idle. For a 9-cycle dataset, this is inefficient.
+**The Problem**: With only 3-5 GPUs available across accounts, limiting concurrency to GPU count leaves many CPU cores idle.
 
-**The Solution**: **Dual-pool resource calculation** - calculate total concurrent jobs from independent GPU and CPU account pools. With 3 GPU slots (clive account) + 10 CPU slots (maigan account), we can run 13 jobs concurrently instead of 3.
+**The Solution**: **Multi-account resource calculation** — each account contributes both GPU slots (from QOS `gres/gpu`) and CPU slots (from `floor(0.85 * cpus / cpus_per_job)`). GPU and CPU partitions are independent pools — GPU jobs on `hpg-b200` do NOT consume CPU allocation on `hpg-default`. With clive (3G+11C) + maigan (2G+8C), we get 24 concurrent jobs instead of 5.
 
 ## Verified Workflow
 
-### Dual-Pool Resource Calculation
+### Multi-Account Resource Calculation
 
-The key innovation is calculating total concurrent jobs from **independent** GPU and CPU account pools, each with their own QOS limits queried via `sacctmgr`:
+The key innovation is that **every** non-blocked account contributes both GPU and CPU slots. Each account's QOS limits are queried via `sacctmgr show associations`:
 
-```bash
-# In calculate_max_concurrent() - slurm/submit.sh
+```python
+# In detect_multi_account_resources() - src/kintsugi/hpc.py
+# For EACH account:
+gpu_slots = qos_gpu_limit                           # e.g., clive: 3, maigan: 2
+cpu_slots = floor(0.85 * qos_cpu_limit / cpus_per_job)  # 85% cap
 
-# GPU Pool: From GPU account (ACCOUNT_CHAIN), queried via sacctmgr
-# clive QOS: 104 CPUs, 812GB, 3 GPUs
-gpu_slots=$((ALLOC_GPUS / GPUS_PER_NODE))  # e.g., 3/1 = 3
-
-# CPU Pool: From CPU account (CPU_ONLY_ACCOUNTS), independent limits
-# auto_detect_cpu_allocation() queries maigan QOS via sacctmgr
-# maigan QOS: 80 CPUs, 625GB, 0 GPUs
-cpu_slots_by_cpu=$((CPU_ALLOC_CPUS / CPU_CPUS_PER_TASK))  # 80/8 = 10
-cpu_slots_by_mem=$((CPU_ALLOC_MEM / CPU_MEM_DECON))        # 625/48 = 13
-cpu_slots=$((cpu_slots_by_cpu < cpu_slots_by_mem ? cpu_slots_by_cpu : cpu_slots_by_mem))  # min(10,13) = 10
-
-# Total concurrent = GPU slots + CPU slots
-COMPUTED_MAX_CONCURRENT=$((gpu_slots + cpu_slots))  # 3 + 10 = 13
+# Total = sum across all accounts
+total_gpu = sum(acct.gpu_slots for acct in accounts)  # 3 + 2 = 5
+total_cpu = sum(acct.cpu_slots for acct in accounts)  # 11 + 8 = 19
+total_concurrent = total_gpu + total_cpu               # 24
 ```
 
-**Example Calculation** (clive: 3 GPUs, 104 CPUs, 812GB; maigan: 80 CPUs, 625GB):
-| Resource | GPU Pool (clive) | CPU Pool (maigan) | Calculation |
-|----------|------------------|-------------------|-------------|
-| GPUs | 3 | 0 | 3 GPUs / 1 per job |
-| CPUs | 104 | 80 | Independent accounts |
-| Memory | 812 GB | 625 GB | Independent accounts |
-| Slots by CPU | 3 | 10 | 80/8 = 10 |
-| Slots by Mem | 3 | 13 | 625/48 = 13 |
-| **Slots** | **3** | **10** | min(10,13) = 10 |
-| **Total** | **13** | | 3 GPU + 10 CPU concurrent jobs |
+**Example Calculation** (both accounts have GPUs AND CPUs):
+| Account | CPUs | Memory | GPUs | GPU Slots | CPU Slots | Calculation |
+|---------|------|--------|------|-----------|-----------|-------------|
+| `clive` | 104 | 812 GB | 3 | 3 | 11 | GPUs: 3/1; CPUs: floor(0.85*104/8) |
+| `maigan` | 80 | 625 GB | 2 | 2 | 8 | GPUs: 2/1; CPUs: floor(0.85*80/8) |
+| **Total** | | | **5** | **5** | **19** | **24 concurrent jobs** |
+
+**Important**: The old skill version incorrectly showed maigan with 0 GPUs. Both accounts have GPUs AND CPUs. The `brusko` account is permanently blocked (hard-coded in `BLOCKED_ACCOUNTS` frozenset).
 
 ### How Concurrent Processing Works
 
-1. **Dual-Pool Calculation** (`submit.sh`):
-   - Auto-detects GPU account limits from `ACCOUNT_CHAIN` (clive) via `sacctmgr`
-   - Auto-detects CPU account limits from `CPU_ONLY_ACCOUNTS` (maigan) via `auto_detect_cpu_allocation()`
-   - Calculates GPU slots from GPU account QOS limits
-   - Calculates CPU slots from CPU account QOS limits (independent pool)
-   - Sets `EFFECTIVE_MAX_CONCURRENT = GPU_SLOTS + CPU_SLOTS`
+1. **Multi-Account Detection** (`hpc.py` + `submit.sh`):
+   - `detect_multi_account_resources()` queries `sacctmgr show associations` for all user accounts
+   - Filters burst accounts (`-b` suffix) and blocked accounts (`brusko`)
+   - Each account contributes GPU slots + CPU slots independently
+   - `detect_live_multi_account()` adds real-time usage data for availability calculation
+   - Sets total concurrent = sum(GPU slots) + sum(CPU slots) across accounts
 
 2. **Device Mode Export**:
    ```bash
@@ -142,22 +134,32 @@ use_gpu = (DEVICE_MODE == 'gpu')
 # Functions like KCorrectGPU, stitch_images accept use_gpu parameter
 ```
 
-### Account Chain Configuration
+### Account Configuration
 
-In `slurm/config.sh`:
+**submit.sh path** (`slurm/config.sh`):
 ```bash
-# GPU account (for GPU partition)
-ACCOUNT_CHAIN="clive"
-
-# CPU account (for CPU partition - guaranteed resources)
-CPU_ONLY_ACCOUNTS="maigan"
-
-# CPU partition
-PARTITION_CPU="hpg-default"
-
-# Time multiplier for CPU processing (5x slower than GPU)
+ACCOUNT_CHAIN="clive"           # Primary GPU account
+CPU_ONLY_ACCOUNTS="maigan"      # Additional CPU account
 CPU_TIME_MULTIPLIER=5
 ```
+
+**Snakemake path** (`workflow/config.yaml`):
+```yaml
+resources:
+  accounts:
+    - name: clive
+      partition_gpu: "hpg-b200,hpg-turin"
+      partition_cpu: hpg-default
+      gpu_slots: 3
+      cpu_slots: 11
+    - name: maigan
+      partition_gpu: "hpg-b200,hpg-turin"
+      partition_cpu: hpg-default
+      gpu_slots: 2
+      cpu_slots: 8
+```
+
+Both paths use the same `detect_multi_account_resources()` in `hpc.py`.
 
 ## Failed Attempts (Critical)
 
@@ -170,6 +172,8 @@ CPU_TIME_MULTIPLIER=5
 | Applying notebook GPU-only policy to SLURM | Wastes resources | Different modes need different strategies |
 | CPU pool from "remaining" GPU account resources | Underestimates CPU capacity — treats GPU and CPU as one shared pool | Use independent account pools with separate QOS limits |
 | Burst QOS for CPU jobs | OOM kills — burst nodes are oversubscribed, memory not guaranteed | Use regular account QOS with guaranteed resource allocation |
+| `sacctmgr show user USERNAME format=account` | Returns empty pipe on HiPerGator | Use `sacctmgr show associations user=USERNAME format=account -n -P` |
+| Treating maigan as CPU-only (0 GPUs) | Wasted 2 GPU slots — maigan has GPUs too | Query every account for BOTH GPU and CPU limits |
 
 ## Key Differences from Notebook Mode
 
@@ -250,8 +254,9 @@ Resource Allocation (Dual-Pool Architecture):
 
 ## References
 
-- KINTSUGI CLAUDE.md - "Resource Pool Calculation" section
-- KINTSUGI README.md - "Resource Pool Architecture" section
+- KINTSUGI CLAUDE.md - "Multi-Account Architecture" and "Snakemake Workflow" sections
+- `snakemake-workflow-architecture` skill - Snakemake-specific design (lambda resources, cycle pre-assignment)
 - `gpu-quality-priority` skill - Notebook-specific GPU enforcement
 - `slurm-workflow-integration` skill - SLURM setup and submission
+- `src/kintsugi/hpc.py` - `detect_multi_account_resources()`, `detect_live_multi_account()`
 - HiPerGator account/QOS limits: https://help.rc.ufl.edu/doc/Account_and_QOS_Limits
