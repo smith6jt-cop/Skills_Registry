@@ -1,0 +1,10 @@
+{
+  "name": "gpu-only-scheduling",
+  "version": "1.0.0",
+  "description": "Trigger: (1) configuring GPU vs CPU scheduling for SLURM batch processing, (2) investigating slow CPU stitching/deconvolution jobs, (3) deciding whether to use CPU fallback for overflow cycles. Verified on HiPerGator B200/Turin GPUs with CODEX 9x7 datasets.",
+  "author": {
+    "name": "KINTSUGI Team"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith-cop/Skills_Registry"
+}

@@ -1,126 +1,8 @@
 {
   "version": "1.0.0",
-  "generated_at": "2026-01-14T22:10:24.047301Z",
+  "generated_at": "2026-02-13T20:10:15.339878Z",
   "repository": "https://github.com/smith-cop/Skills_Registry",
   "plugins": [
-    {
-      "name": "multiplex-imaging-analysis",
-      "version": "1.0.0",
-      "description": "Specific trigger conditions: (1) improving multiplex immunofluorescence segmentation or feature extraction, (2) optimizing SOM/FlowSOM clustering for cell phenotyping, (3) adding spatial analysis to imaging workflows, (4) integrating ECM features with cell compartment analysis. Verified on KINTSUGI v1.2.0 with InstanSeg, pyFlowSOM, scanpy, scimap.",
-      "author": {
-        "name": "smith6jt"
-      },
-      "category": "training",
-      "path": "plugins/training/multiplex-imaging-analysis"
-    },
-    {
-      "name": "windows-cupy-nvrtc",
-      "version": "1.0.0",
-      "description": "Fix CuPy NVRTC compilation errors on Windows. Trigger: (1) NVRTC_ERROR_BUILTIN_OPERATION_FAILURE, (2) nvrtc-builtins64_xxx.dll not found, (3) CuPy JIT compilation fails on Windows.",
-      "author": {
-        "name": "KINTSUGI Team"
-      },
-      "category": "scientific",
-      "path": "plugins/scientific/windows-cupy-nvrtc"
-    },
-    {
-      "name": "project-data-separation",
-      "version": "1.0.0",
-      "description": "Pattern for separating repository code from user data and notebooks. Trigger: (1) organizing scientific pipelines, (2) separating code from data, (3) creating project management frameworks.",
-      "author": {
-        "name": "KINTSUGI Team"
-      },
-      "category": "scientific",
-      "path": "plugins/scientific/project-data-separation"
-    },
-    {
-      "name": "plotly-figurewidget-interactive",
-      "version": "1.0.0",
-      "description": "Fix for Plotly FigureWidget KeyError: 'uid' bug when updating shapes interactively. Trigger: (1) Plotly interactive dashboard not working, (2) KeyError: 'uid' in FigureWidget, (3) batch_update() causing errors with shapes",
-      "author": {
-        "name": "Claude Code"
-      },
-      "category": "scientific",
-      "path": "plugins/scientific/plotly-figurewidget-interactive"
-    },
-    {
-      "name": "notebook-checkpoint-pattern",
-      "version": "1.0.0",
-      "description": "Pattern for connecting Jupyter notebooks via checkpoint files. Trigger: (1) notebooks should be connected, (2) save outputs between notebooks, (3) pipeline with multiple notebooks",
-      "author": {
-        "name": "Claude Code"
-      },
-      "category": "scientific",
-      "path": "plugins/scientific/notebook-checkpoint-pattern"
-    },
-    {
-      "name": "trust-rl-model-predictions",
-      "version": "1.0.0",
-      "description": "Remove pattern filters that second-guess RL model predictions. Trigger when: (1) signals show past threshold but status is HOLD, (2) pattern filter blocks model signals, (3) external gates contradict trained model, (4) dashboard shows disconnect between signal strength and action.",
-      "author": {
-        "name": "Claude Code"
-      },
-      "category": "trading",
-      "path": "plugins/trading/trust-rl-model-predictions"
-    },
-    {
-      "name": "trading-gates-pattern-filter",
-      "version": "1.0.0",
-      "description": "Trading gates pattern: (1) pattern filter normalization for predator/prey dominance ratios, (2) multi-gate order entry requirements, (3) dashboard gate status display. Fixes pattern filter that was using raw Lotka-Volterra values instead of normalized dominance ratios.",
-      "author": {
-        "name": "Claude Code"
-      },
-      "category": "trading",
-      "path": "plugins/trading/trading-gates-pattern-filter"
-    },
-    {
-      "name": "symbol-selection-asset-filters",
-      "version": "1.0.0",
-      "description": "Fix symbol selection failing due to wrong asset-type filters. Trigger when: (1) '0/N passed hard filter', (2) crypto selection fails, (3) min_price or min_volume filtering wrong assets.",
-      "author": {
-        "name": "Claude Code"
-      },
-      "category": "trading",
-      "path": "plugins/trading/symbol-selection-asset-filters"
-    },
-    {
-      "name": "multi-agent-integration",
-      "version": "1.0.0",
-      "description": "Integrate Claude agents into training and live trading (v3.0). Trigger when: (1) setting up multi-agent training, (2) adding agent consultation to live trading, (3) configuring orchestrator, (4) understanding agent roles and safety mechanisms.",
-      "author": "Claude Code",
-      "category": "trading",
-      "path": "plugins/trading/multi-agent-integration"
-    },
-    {
-      "name": "data-source-priority",
-      "version": "1.0.0",
-      "description": "Ensure Alpaca API is used for quality data, not yfinance fallback. Trigger when: (1) crypto volume filter fails unexpectedly, (2) zero-volume bars in data, (3) 'Alpaca data enabled: False' in logs, (4) API key configuration issues.",
-      "author": {
-        "name": "Claude Code"
-      },
-      "category": "trading",
-      "path": "plugins/trading/data-source-priority"
-    },
-    {
-      "name": "selection-progress-reporting",
-      "version": "1.0.0",
-      "description": "Progress reporting for universe selection phases. Trigger when: (1) selection appears to stall/hang, (2) no output after data fetching, (3) need visibility into hard filter or scoring phases.",
-      "author": {
-        "name": "Claude Code"
-      },
-      "category": "trading",
-      "path": "plugins/trading/selection-progress-reporting"
-    },
-    {
-      "name": "gpu-aware-training-config",
-      "version": "1.0.0",
-      "description": "GPU-aware RL training configuration. Trigger: (1) slow GPU training, (2) low GPU utilization, (3) configuring PPO for A100/H100, (4) training mode configuration, (5) FPS below expected.",
-      "author": {
-        "name": "Claude Code"
-      },
-      "category": "trading",
-      "path": "plugins/trading/gpu-aware-training-config"
-    },
     {
       "name": "backtest-datetime-visualization",
       "version": "1.0.0",
@@ -130,36 +12,6 @@
       },
       "category": "trading",
       "path": "plugins/trading/backtest-datetime-visualization"
-    },
-    {
-      "name": "persistence-layer-audit",
-      "version": "1.0.0",
-      "description": "Audit SQLite persistence layer for unused tables, missing methods, and broken integrations. Trigger when: (1) checking database usage, (2) cleaning up schema, (3) finding methods called but not implemented, (4) aligning database with actual codebase features.",
-      "author": {
-        "name": "Claude Code"
-      },
-      "category": "trading",
-      "path": "plugins/trading/persistence-layer-audit"
-    },
-    {
-      "name": "capital-proportional-limits",
-      "version": "1.0.0",
-      "description": "Use percentage-based capital limits, not hard-coded dollar amounts. Trigger when: (1) trades blocked on small accounts, (2) min_cash_buffer is absolute dollars, (3) capital allocation doesn't scale with account size, (4) fixed dollar thresholds in risk code.",
-      "author": {
-        "name": "Claude Code"
-      },
-      "category": "trading",
-      "path": "plugins/trading/capital-proportional-limits"
-    },
-    {
-      "name": "broker-order-limitations",
-      "version": "1.0.0",
-      "description": "Alpaca broker order limitations: crypto shorts blocked, stock shorts allowed. Trigger when: (1) SELL signals blocked unexpectedly, (2) crypto vs equity order behavior differs, (3) shorting gate confusion.",
-      "author": {
-        "name": "Claude Code"
-      },
-      "category": "trading",
-      "path": "plugins/trading/broker-order-limitations"
     },
     {
       "name": "private-function-shim-export",
@@ -172,24 +24,130 @@
       "path": "plugins/trading/private-function-shim-export"
     },
     {
-      "name": "persistent-sector-caching",
+      "name": "prediction-outcome-recording",
       "version": "1.0.0",
-      "description": "Cache yfinance sector data permanently to avoid rate limits. Trigger when: (1) yfinance 401 errors during sector updates, (2) sector fetching takes too long, (3) need to refresh sector data for specific symbols.",
+      "description": "Record prediction outcomes when positions close to complete the prediction lifecycle. Trigger when: (1) predictions are logged but outcomes not recorded, (2) calculating prediction accuracy, (3) tracking model performance over time, (4) position closes need to update prediction tables.",
       "author": {
         "name": "Claude Code"
       },
       "category": "trading",
-      "path": "plugins/trading/persistent-sector-caching"
+      "path": "plugins/trading/prediction-outcome-recording"
     },
     {
-      "name": "dashboard-pnl-visualization",
-      "version": "1.0.0",
-      "description": "Trading dashboard P&L visualization with profit tracker integration. Triggers: (1) adding win-rate overlays to P&L panels, (2) splitting realized vs unrealized P&L, (3) displaying R-multiples for positions, (4) integrating broker equity history, (5) configurable dashboard runtime settings",
+      "name": "data-source-priority",
+      "version": "2.0.0",
+      "description": "CRITICAL: Alpaca API is MANDATORY for all OHLCV data. yfinance is NOT a valid fallback - EVER. Trigger when: (1) any code proposes yfinance fallback for price/volume, (2) crypto volume filter fails, (3) zero-volume bars detected, (4) 'Alpaca data enabled: False' in logs, (5) API key configuration issues, (6) MCP server data source questions.",
       "author": {
         "name": "Claude Code"
       },
       "category": "trading",
-      "path": "plugins/trading/dashboard-pnl-visualization"
+      "path": "plugins/trading/data-source-priority"
+    },
+    {
+      "name": "model-version-protocol",
+      "version": "1.0.0",
+      "description": "Model-trader version compatibility protocol (v2.7.0): Embed version metadata in checkpoints, validate at load time. Trigger when: (1) training changes break live trading, (2) models incompatible with trader, (3) need version-specific action interpretation.",
+      "author": {
+        "name": "Claude Code"
+      },
+      "category": "trading",
+      "path": "plugins/trading/model-version-protocol"
+    },
+    {
+      "name": "live-trader-prediction-fixes",
+      "version": "1.0.0",
+      "description": "Fix live trader prediction issues: zeros returned, excessive data fetching, insufficient bars. Trigger when: (1) all predictions show signal=0 and confidence=0.0, (2) live trader continuously fetches thousands of bars, (3) 'Insufficient data' warnings in prediction logs, (4) Markov features show uniform priors [0.33, 0.34, 0.33].",
+      "author": {
+        "name": "Claude Code"
+      },
+      "category": "trading",
+      "path": "plugins/trading/live-trader-prediction-fixes"
+    },
+    {
+      "name": "dashboard-symbol-discovery",
+      "version": "1.0.0",
+      "description": "Auto-discover dashboard symbols from loaded RL models. Trigger when: (1) dashboard shows old/wrong symbols, (2) symbols mismatch between live trader and dashboard, (3) adding new models to system, (4) dashboard shows NO_MODEL for all symbols.",
+      "author": {
+        "name": "Claude Code"
+      },
+      "category": "trading",
+      "path": "plugins/trading/dashboard-symbol-discovery"
+    },
+    {
+      "name": "dual-folder-workflow",
+      "version": "1.0.0",
+      "description": "Workflow for private repos + Colab training: (1) need to train on Colab but repo is private, (2) want to separate development from production code, (3) risk of accidentally using untested code in production. Uses two local folders with different branches.",
+      "author": {
+        "name": "Claude Code"
+      },
+      "category": "trading",
+      "path": "plugins/trading/dual-folder-workflow"
+    },
+    {
+      "name": "alpaca-algo-plus-data",
+      "version": "1.0.0",
+      "description": "Use Alpaca Algo Trader Plus subscription for 4+ years of historical data. Trigger when: (1) increasing training lookback beyond 2 years, (2) configuring LOOKBACK_DAYS, (3) data source selection, (4) yfinance vs Alpaca comparison.",
+      "author": {
+        "name": "Claude Code"
+      },
+      "category": "trading",
+      "path": "plugins/trading/alpaca-algo-plus-data"
+    },
+    {
+      "name": "markov-regime-features",
+      "version": "1.0.0",
+      "description": "Debugging and implementing dynamic Markov regime features in RL observations. Triggers: (1) Markov features appear constant in observation heatmaps, (2) uniform priors [0.33, 0.34, 0.33] instead of actual regime probabilities, (3) InferenceObservationBuilder not updating states, (4) HMM regime detection not reflecting market conditions",
+      "author": {
+        "name": "Claude Code"
+      },
+      "category": "trading",
+      "path": "plugins/trading/markov-regime-features"
+    },
+    {
+      "name": "selection-progress-reporting",
+      "version": "1.0.0",
+      "description": "Progress reporting for universe selection phases. Trigger when: (1) selection appears to stall/hang, (2) no output after data fetching, (3) need visibility into hard filter or scoring phases.",
+      "author": {
+        "name": "Claude Code"
+      },
+      "category": "trading",
+      "path": "plugins/trading/selection-progress-reporting"
+    },
+    {
+      "name": "gpu-correlation-caching",
+      "version": "1.0.0",
+      "description": "GPU-accelerated correlation matrix computation with persistent caching. Triggers: (1) correlation calculation is slow or hanging, (2) rolling correlation bottleneck, (3) portfolio diversification taking too long, (4) optimizing selection pipeline performance",
+      "author": {
+        "name": "Claude Code"
+      },
+      "category": "trading",
+      "path": "plugins/trading/gpu-correlation-caching"
+    },
+    {
+      "name": "crypto-hard-filter-simplification",
+      "version": "1.0.0",
+      "description": "Simplify crypto hard filters to essential checks only. Trigger when: (1) crypto symbols fail multiple filters, (2) data_quality/spread/trading_status fail for crypto, (3) yfinance data gaps causing false failures.",
+      "author": "Claude Code",
+      "category": "trading",
+      "path": "plugins/trading/crypto-hard-filter-simplification"
+    },
+    {
+      "name": "testing-benchmarking-infrastructure",
+      "version": "1.0.0",
+      "description": "Testing suite improvements with pytest-benchmark for version-to-version performance comparison: (1) shared fixtures with GPU mocking fallback, (2) benchmark tests across feature engineering, GPU, inference, and validation, (3) feature regression tests for version compatibility, (4) integration tests for training/inference pipelines. Verified on Python 3.10/3.11 trading system with pytest 8.4.",
+      "author": {
+        "name": "Claude Code"
+      },
+      "category": "trading",
+      "path": "plugins/trading/testing-benchmarking-infrastructure"
+    },
+    {
+      "name": "multi-agent-integration",
+      "version": "1.0.0",
+      "description": "Integrate Claude agents into training and live trading (v3.0). Trigger when: (1) setting up multi-agent training, (2) adding agent consultation to live trading, (3) configuring orchestrator, (4) understanding agent roles and safety mechanisms.",
+      "author": "Claude Code",
+      "category": "trading",
+      "path": "plugins/trading/multi-agent-integration"
     },
     {
       "name": "risk-sizing-not-blocking",
@@ -202,12 +160,308 @@
       "path": "plugins/trading/risk-sizing-not-blocking"
     },
     {
+      "name": "empirical-config-builder",
+      "version": "1.0.0",
+      "description": "Derive selection thresholds from market data instead of hardcoding. Trigger when: (1) reviewing hardcoded parameters, (2) volume/price thresholds seem arbitrary, (3) selection returns too many/few candidates, (4) adapting to market conditions.",
+      "author": {
+        "name": "Claude Code"
+      },
+      "category": "trading",
+      "path": "plugins/trading/empirical-config-builder"
+    },
+    {
+      "name": "colab-notebook-development",
+      "version": "1.0.0",
+      "description": "Pattern for creating new Colab notebooks. Trigger when: (1) Creating a new notebook for experiments, (2) Adding notebook-based functionality, (3) Agent or validation notebooks, (4) Any notebook that uses GPU training infrastructure.",
+      "author": {
+        "name": "Claude Code"
+      },
+      "category": "trading",
+      "path": "plugins/trading/colab-notebook-development"
+    },
+    {
+      "name": "crypto-pair-fee-optimization",
+      "version": "1.0.0",
+      "description": "Crypto-to-crypto vs crypto-to-USD fee analysis for Alpaca. Triggers: (1) comparing crypto trading pair strategies, (2) optimizing fees for crypto portfolio rebalancing, (3) evaluating stablecoin vs fiat pairs, (4) implementing crypto-to-crypto trading support.",
+      "author": {
+        "name": "Claude Code"
+      },
+      "category": "trading",
+      "path": "plugins/trading/crypto-pair-fee-optimization"
+    },
+    {
+      "name": "backtest-capital-accounting",
+      "version": "1.0.0",
+      "description": "Critical fix for backtest capital accounting: (1) implementing position entry/exit cash flows, (2) debugging inflated equity curves, (3) fixing meaningless drawdown metrics. Verified on Python 3.10 backtesting engine.",
+      "author": {
+        "name": "Claude Code"
+      },
+      "category": "trading",
+      "path": "plugins/trading/backtest-capital-accounting"
+    },
+    {
+      "name": "codebase-consolidation-pattern",
+      "version": "1.0.0",
+      "description": "Reorganize scattered modules into subpackages while maintaining backwards compatibility. Trigger when: (1) too many root-level files, (2) need to group related functionality, (3) cleaning up codebase structure without breaking imports.",
+      "author": {
+        "name": "Claude Code"
+      },
+      "category": "trading",
+      "path": "plugins/trading/codebase-consolidation-pattern"
+    },
+    {
+      "name": "training-archive-gating",
+      "version": "1.0.0",
+      "description": "Mandatory training archive with model gating (APPROVED/REVIEW/DROP). Trigger when: (1) training run completes, (2) need to decide which models to deploy, (3) want historical training reference, (4) need checkpoint recommendations for overfitting.",
+      "author": {
+        "name": "Claude Code"
+      },
+      "category": "trading",
+      "path": "plugins/trading/training-archive-gating"
+    },
+    {
+      "name": "branch-integration-workflow",
+      "version": "1.0.0",
+      "description": "Safely review and merge remote branches into stable. Trigger when: (1) reviewing open PRs, (2) integrating feature branches, (3) merging stale branches that may have conflicts.",
+      "author": {
+        "name": "Claude Code"
+      },
+      "category": "trading",
+      "path": "plugins/trading/branch-integration-workflow"
+    },
+    {
+      "name": "symbol-selection-asset-filters",
+      "version": "1.0.0",
+      "description": "Fix symbol selection failing due to wrong asset-type filters. Trigger when: (1) '0/N passed hard filter', (2) crypto selection fails, (3) min_price or min_volume filtering wrong assets.",
+      "author": {
+        "name": "Claude Code"
+      },
+      "category": "trading",
+      "path": "plugins/trading/symbol-selection-asset-filters"
+    },
+    {
+      "name": "symbol-selection-statistical",
+      "version": "1.0.0",
+      "description": "Statistical symbol selection for algorithmic trading. Triggers: (1) selecting stocks/crypto for mean-reversion or momentum strategies, (2) finding assets compatible with GARCH volatility models, (3) building diversified trading portfolios, (4) evaluating Hurst exponent or half-life characteristics",
+      "author": {
+        "name": "Claude Code"
+      },
+      "category": "trading",
+      "path": "plugins/trading/symbol-selection-statistical"
+    },
+    {
+      "name": "dashboard-parallel-lists",
+      "version": "1.0.0",
+      "description": "Dashboard symbol_signals uses parallel lists not dict-by-symbol. Trigger when: (1) 'list' object has no attribute 'get' error, (2) iterating over symbol_signals with .items(), (3) expecting symbol_signals[symbol] access pattern.",
+      "author": {
+        "name": "Claude Code"
+      },
+      "category": "trading",
+      "path": "plugins/trading/dashboard-parallel-lists"
+    },
+    {
+      "name": "crypto-database-population",
+      "version": "1.0.0",
+      "description": "Populate symbol database with crypto symbols before training. Trigger when: (1) live trader fails with 'CRYPTO VIOLATION', (2) no crypto models in models/rl_symbols/, (3) db.get_candidates(asset_types=['crypto']) returns 0, (4) starting fresh training without crypto.",
+      "author": {
+        "name": "Claude Code"
+      },
+      "category": "trading",
+      "path": "plugins/trading/crypto-database-population"
+    },
+    {
+      "name": "trading-gates-pattern-filter",
+      "version": "1.0.0",
+      "description": "Trading gates pattern: (1) pattern filter normalization for predator/prey dominance ratios, (2) multi-gate order entry requirements, (3) dashboard gate status display. Fixes pattern filter that was using raw Lotka-Volterra values instead of normalized dominance ratios.",
+      "author": {
+        "name": "Claude Code"
+      },
+      "category": "trading",
+      "path": "plugins/trading/trading-gates-pattern-filter"
+    },
+    {
+      "name": "reward-function-hold-bias",
+      "version": "1.0.0",
+      "description": "Fix HOLD bias in RL reward function. Trigger when: (1) model learns to always HOLD, (2) trade rate is too low (<10%), (3) slippage penalty exceeds typical price moves.",
+      "author": "Claude Code",
+      "category": "trading",
+      "path": "plugins/trading/reward-function-hold-bias"
+    },
+    {
+      "name": "drawdown-guardrails-pattern",
+      "version": "1.0.0",
+      "description": "Consistent drawdown control pattern across backtest, live trading, and training: (1) implementing max drawdown halts, (2) warning zone position scaling, (3) training fitness penalties. Verified on Python 3.10 trading system.",
+      "author": {
+        "name": "Claude Code"
+      },
+      "category": "trading",
+      "path": "plugins/trading/drawdown-guardrails-pattern"
+    },
+    {
+      "name": "dashboard-pnl-visualization",
+      "version": "1.0.0",
+      "description": "Trading dashboard P&L visualization with profit tracker integration. Triggers: (1) adding win-rate overlays to P&L panels, (2) splitting realized vs unrealized P&L, (3) displaying R-multiples for positions, (4) integrating broker equity history, (5) configurable dashboard runtime settings",
+      "author": {
+        "name": "Claude Code"
+      },
+      "category": "trading",
+      "path": "plugins/trading/dashboard-pnl-visualization"
+    },
+    {
+      "name": "persistence-layer-audit",
+      "version": "1.0.0",
+      "description": "Audit SQLite persistence layer for unused tables, missing methods, and broken integrations. Trigger when: (1) checking database usage, (2) cleaning up schema, (3) finding methods called but not implemented, (4) aligning database with actual codebase features.",
+      "author": {
+        "name": "Claude Code"
+      },
+      "category": "trading",
+      "path": "plugins/trading/persistence-layer-audit"
+    },
+    {
+      "name": "network-architecture-sizing",
+      "version": "1.0.0",
+      "description": "PPO network architecture sizing for trading models. Trigger: (1) model files are unexpectedly small/large, (2) choosing hidden_dims for training, (3) balancing model capacity vs inference speed.",
+      "author": {
+        "name": "Claude Code"
+      },
+      "category": "trading",
+      "path": "plugins/trading/network-architecture-sizing"
+    },
+    {
+      "name": "dotted-symbol-exclusion",
+      "version": "1.0.0",
+      "description": "Exclude ALL dotted symbols (.WS, .PR*, .A, .B, .V, .U, .R, .W) from yfinance sector lookups. Trigger when: (1) yfinance sector check fails on warrants/units/class shares, (2) training notebook errors on excluded symbols, (3) symbol filtering misses special security types.",
+      "author": {
+        "name": "Claude Code"
+      },
+      "category": "trading",
+      "path": "plugins/trading/dotted-symbol-exclusion"
+    },
+    {
+      "name": "capital-proportional-limits",
+      "version": "1.0.0",
+      "description": "Use percentage-based capital limits, not hard-coded dollar amounts. Trigger when: (1) trades blocked on small accounts, (2) min_cash_buffer is absolute dollars, (3) capital allocation doesn't scale with account size, (4) fixed dollar thresholds in risk code.",
+      "author": {
+        "name": "Claude Code"
+      },
+      "category": "trading",
+      "path": "plugins/trading/capital-proportional-limits"
+    },
+    {
+      "name": "parallel-universe-selection",
+      "version": "1.0.0",
+      "description": "Parallel processing for universe selection with 3-4x speedup. Trigger when: (1) selection takes too long, (2) 'No data returned' warnings for cached symbols, (3) need to process 100+ candidates.",
+      "author": {
+        "name": "Claude Code"
+      },
+      "category": "trading",
+      "path": "plugins/trading/parallel-universe-selection"
+    },
+    {
+      "name": "broker-order-limitations",
+      "version": "1.0.0",
+      "description": "Alpaca broker order limitations: crypto shorts blocked, stock shorts allowed. Trigger when: (1) SELL signals blocked unexpectedly, (2) crypto vs equity order behavior differs, (3) shorting gate confusion.",
+      "author": {
+        "name": "Claude Code"
+      },
+      "category": "trading",
+      "path": "plugins/trading/broker-order-limitations"
+    },
+    {
+      "name": "position-sizing-action-space",
+      "version": "1.0.0",
+      "description": "Position sizing action space (v2.7.0): 7 actions (HOLD + 3 BUY sizes + 3 SELL sizes) with account simulation. Trigger when: (1) model needs to learn position sizing, (2) training for small accounts, (3) obs_dim changes from 5600 to 5900, (4) 56 to 59 feature upgrade.",
+      "author": {
+        "name": "Claude Code"
+      },
+      "category": "trading",
+      "path": "plugins/trading/position-sizing-action-space"
+    },
+    {
       "name": "selection-data-caching",
       "version": "1.0.0",
       "description": "Cache data during symbol selection for instant repeat runs. Trigger when: (1) selection takes too long on repeat runs, (2) API rate limits during selection, (3) want consistent data between selection and training.",
       "author": "Claude Code",
       "category": "trading",
       "path": "plugins/trading/selection-data-caching"
+    },
+    {
+      "name": "training-resilience",
+      "version": "1.0.0",
+      "description": "Fix PPO training early-stop issues: (1) training stops with impossible drawdown values like 1017.8%, (2) training stops too early on drawdown threshold, (3) need adaptive recovery instead of hard stop. Includes drawdown calculation fix and retry mechanism.",
+      "author": {
+        "name": "Claude Code"
+      },
+      "category": "trading",
+      "path": "plugins/trading/training-resilience"
+    },
+    {
+      "name": "backtest-persistence",
+      "version": "1.0.0",
+      "description": "Save backtest results to SQLite database for comparison and tracking. Trigger when: (1) adding backtest history tracking, (2) comparing model performance across runs, (3) querying best performing backtests, (4) adding --save-to-db flag.",
+      "author": {
+        "name": "Claude Code"
+      },
+      "category": "trading",
+      "path": "plugins/trading/backtest-persistence"
+    },
+    {
+      "name": "dashboard-cohesion-fixes",
+      "version": "1.0.0",
+      "description": "Integration fixes between backtest engine, FastAPI dashboard, and live trader. Triggers: (1) gate_status.json missing fields the dashboard reads, (2) broker.submit_order parameter name mismatches, (3) circular imports between API routes and server module, (4) WebSocket log broadcasting gaps, (5) obs_dim hardcoded tuples in backtest engine, (6) duplicate data loading in API routes",
+      "author": {
+        "name": "Claude Code"
+      },
+      "category": "trading",
+      "path": "plugins/trading/dashboard-cohesion-fixes"
+    },
+    {
+      "name": "selection-diversity-validation",
+      "version": "1.0.0",
+      "description": "FAIL LOUDLY pattern for selection constraints. Trigger when: (1) correlated stocks selected together, (2) min_crypto_positions ignored, (3) constraints violated silently.",
+      "author": "Claude Code",
+      "category": "trading",
+      "path": "plugins/trading/selection-diversity-validation"
+    },
+    {
+      "name": "mcp-server-configuration",
+      "version": "1.0.0",
+      "description": "MCP (Model Context Protocol) server configuration for Claude Code integration with trading platform. Trigger when: (1) setting up MCP servers, (2) alpaca-mcp-server issues, (3) adding new MCP integrations, (4) uvx dependency errors, (5) .mcp.json configuration.",
+      "author": {
+        "name": "Claude Code"
+      },
+      "category": "trading",
+      "path": "plugins/trading/mcp-server-configuration"
+    },
+    {
+      "name": "trust-rl-model-predictions",
+      "version": "1.0.0",
+      "description": "Remove pattern filters that second-guess RL model predictions. Trigger when: (1) signals show past threshold but status is HOLD, (2) pattern filter blocks model signals, (3) external gates contradict trained model, (4) dashboard shows disconnect between signal strength and action.",
+      "author": {
+        "name": "Claude Code"
+      },
+      "category": "trading",
+      "path": "plugins/trading/trust-rl-model-predictions"
+    },
+    {
+      "name": "position-reconciliation",
+      "version": "1.0.0",
+      "description": "Broker position reconciliation pattern: (1) syncing internal state with broker, (2) handling order execution misses, (3) manual intervention detection. Verified on Alpaca API.",
+      "author": {
+        "name": "Claude Code"
+      },
+      "category": "trading",
+      "path": "plugins/trading/position-reconciliation"
+    },
+    {
+      "name": "account-aware-training",
+      "version": "1.0.0",
+      "description": "Account-aware RL training (v2.4): Add P&L, win rate, drawdown to observations + drawdown penalty. Trigger when: (1) model needs account state awareness, (2) training to avoid drawdowns, (3) obs_dim changes from 5300 to 5600, (4) 53 to 56 feature upgrade.",
+      "author": {
+        "name": "Claude Code"
+      },
+      "category": "trading",
+      "path": "plugins/trading/account-aware-training"
     },
     {
       "name": "training-code-verification",
@@ -230,32 +484,14 @@
       "path": "plugins/trading/multi-timeframe-training"
     },
     {
-      "name": "crypto-hard-filter-simplification",
+      "name": "per-sector-candidate-filtering",
       "version": "1.0.0",
-      "description": "Simplify crypto hard filters to essential checks only. Trigger when: (1) crypto symbols fail multiple filters, (2) data_quality/spread/trading_status fail for crypto, (3) yfinance data gaps causing false failures.",
-      "author": "Claude Code",
-      "category": "trading",
-      "path": "plugins/trading/crypto-hard-filter-simplification"
-    },
-    {
-      "name": "account-aware-training",
-      "version": "1.0.0",
-      "description": "Account-aware RL training (v2.4): Add P&L, win rate, drawdown to observations + drawdown penalty. Trigger when: (1) model needs account state awareness, (2) training to avoid drawdowns, (3) obs_dim changes from 5300 to 5600, (4) 53 to 56 feature upgrade.",
+      "description": "Per-sector candidate limits for universe selection using yfinance sector data and SQL window functions. Reduces ~4k candidates to ~1.5k while maintaining sector diversity. Trigger when: (1) too many candidates from initial filtering, (2) historical data download takes too long, (3) sector diversity needed in candidate pool.",
       "author": {
         "name": "Claude Code"
       },
       "category": "trading",
-      "path": "plugins/trading/account-aware-training"
-    },
-    {
-      "name": "dual-folder-workflow",
-      "version": "1.0.0",
-      "description": "Workflow for private repos + Colab training: (1) need to train on Colab but repo is private, (2) want to separate development from production code, (3) risk of accidentally using untested code in production. Uses two local folders with different branches.",
-      "author": {
-        "name": "Claude Code"
-      },
-      "category": "trading",
-      "path": "plugins/trading/dual-folder-workflow"
+      "path": "plugins/trading/per-sector-candidate-filtering"
     },
     {
       "name": "notebook-config-audit",
@@ -268,137 +504,9 @@
       "path": "plugins/trading/notebook-config-audit"
     },
     {
-      "name": "empirical-config-builder",
-      "version": "1.0.0",
-      "description": "Derive selection thresholds from market data instead of hardcoding. Trigger when: (1) reviewing hardcoded parameters, (2) volume/price thresholds seem arbitrary, (3) selection returns too many/few candidates, (4) adapting to market conditions.",
-      "author": {
-        "name": "Claude Code"
-      },
-      "category": "trading",
-      "path": "plugins/trading/empirical-config-builder"
-    },
-    {
-      "name": "markov-regime-features",
-      "version": "1.0.0",
-      "description": "Debugging and implementing dynamic Markov regime features in RL observations. Triggers: (1) Markov features appear constant in observation heatmaps, (2) uniform priors [0.33, 0.34, 0.33] instead of actual regime probabilities, (3) InferenceObservationBuilder not updating states, (4) HMM regime detection not reflecting market conditions",
-      "author": {
-        "name": "Claude Code"
-      },
-      "category": "trading",
-      "path": "plugins/trading/markov-regime-features"
-    },
-    {
-      "name": "training-archive-gating",
-      "version": "1.0.0",
-      "description": "Mandatory training archive with model gating (APPROVED/REVIEW/DROP). Trigger when: (1) training run completes, (2) need to decide which models to deploy, (3) want historical training reference, (4) need checkpoint recommendations for overfitting.",
-      "author": {
-        "name": "Claude Code"
-      },
-      "category": "trading",
-      "path": "plugins/trading/training-archive-gating"
-    },
-    {
-      "name": "dotted-symbol-exclusion",
-      "version": "1.0.0",
-      "description": "Exclude ALL dotted symbols (.WS, .PR*, .A, .B, .V, .U, .R, .W) from yfinance sector lookups. Trigger when: (1) yfinance sector check fails on warrants/units/class shares, (2) training notebook errors on excluded symbols, (3) symbol filtering misses special security types.",
-      "author": {
-        "name": "Claude Code"
-      },
-      "category": "trading",
-      "path": "plugins/trading/dotted-symbol-exclusion"
-    },
-    {
-      "name": "reward-function-hold-bias",
-      "version": "1.0.0",
-      "description": "Fix HOLD bias in RL reward function. Trigger when: (1) model learns to always HOLD, (2) trade rate is too low (<10%), (3) slippage penalty exceeds typical price moves.",
-      "author": "Claude Code",
-      "category": "trading",
-      "path": "plugins/trading/reward-function-hold-bias"
-    },
-    {
-      "name": "network-architecture-sizing",
-      "version": "1.0.0",
-      "description": "PPO network architecture sizing for trading models. Trigger: (1) model files are unexpectedly small/large, (2) choosing hidden_dims for training, (3) balancing model capacity vs inference speed.",
-      "author": {
-        "name": "Claude Code"
-      },
-      "category": "trading",
-      "path": "plugins/trading/network-architecture-sizing"
-    },
-    {
-      "name": "drawdown-guardrails-pattern",
-      "version": "1.0.0",
-      "description": "Consistent drawdown control pattern across backtest, live trading, and training: (1) implementing max drawdown halts, (2) warning zone position scaling, (3) training fitness penalties. Verified on Python 3.10 trading system.",
-      "author": {
-        "name": "Claude Code"
-      },
-      "category": "trading",
-      "path": "plugins/trading/drawdown-guardrails-pattern"
-    },
-    {
-      "name": "position-reconciliation",
-      "version": "1.0.0",
-      "description": "Broker position reconciliation pattern: (1) syncing internal state with broker, (2) handling order execution misses, (3) manual intervention detection. Verified on Alpaca API.",
-      "author": {
-        "name": "Claude Code"
-      },
-      "category": "trading",
-      "path": "plugins/trading/position-reconciliation"
-    },
-    {
-      "name": "dashboard-symbol-discovery",
-      "version": "1.0.0",
-      "description": "Auto-discover dashboard symbols from loaded RL models. Trigger when: (1) dashboard shows old/wrong symbols, (2) symbols mismatch between live trader and dashboard, (3) adding new models to system, (4) dashboard shows NO_MODEL for all symbols.",
-      "author": {
-        "name": "Claude Code"
-      },
-      "category": "trading",
-      "path": "plugins/trading/dashboard-symbol-discovery"
-    },
-    {
-      "name": "testing-benchmarking-infrastructure",
-      "version": "1.0.0",
-      "description": "Testing suite improvements with pytest-benchmark for version-to-version performance comparison: (1) shared fixtures with GPU mocking fallback, (2) benchmark tests across feature engineering, GPU, inference, and validation, (3) feature regression tests for version compatibility, (4) integration tests for training/inference pipelines. Verified on Python 3.10/3.11 trading system with pytest 8.4.",
-      "author": {
-        "name": "Claude Code"
-      },
-      "category": "trading",
-      "path": "plugins/trading/testing-benchmarking-infrastructure"
-    },
-    {
-      "name": "parallel-universe-selection",
-      "version": "1.0.0",
-      "description": "Parallel processing for universe selection with 3-4x speedup. Trigger when: (1) selection takes too long, (2) 'No data returned' warnings for cached symbols, (3) need to process 100+ candidates.",
-      "author": {
-        "name": "Claude Code"
-      },
-      "category": "trading",
-      "path": "plugins/trading/parallel-universe-selection"
-    },
-    {
-      "name": "symbol-selection-statistical",
-      "version": "1.0.0",
-      "description": "Statistical symbol selection for algorithmic trading. Triggers: (1) selecting stocks/crypto for mean-reversion or momentum strategies, (2) finding assets compatible with GARCH volatility models, (3) building diversified trading portfolios, (4) evaluating Hurst exponent or half-life characteristics",
-      "author": {
-        "name": "Claude Code"
-      },
-      "category": "trading",
-      "path": "plugins/trading/symbol-selection-statistical"
-    },
-    {
-      "name": "backtest-capital-accounting",
-      "version": "1.0.0",
-      "description": "Critical fix for backtest capital accounting: (1) implementing position entry/exit cash flows, (2) debugging inflated equity curves, (3) fixing meaningless drawdown metrics. Verified on Python 3.10 backtesting engine.",
-      "author": {
-        "name": "Claude Code"
-      },
-      "category": "trading",
-      "path": "plugins/trading/backtest-capital-accounting"
-    },
-    {
       "name": "colab-unzip-workflow",
-      "version": "1.0.0",
-      "description": "Colab file paths after unzipping repo. Trigger when: (1) API key file not found, (2) file path errors in Colab, (3) configuring notebook paths, (4) 'yfinance fallback' despite keys existing.",
+      "version": "2.0.0",
+      "description": "Colab notebook setup pattern. Trigger when: (1) Creating new Colab notebooks, (2) API key file not found, (3) file path errors in Colab, (4) repository extraction fails, (5) 'yfinance fallback' despite keys existing.",
       "author": {
         "name": "Claude Code"
       },
@@ -406,232 +514,54 @@
       "path": "plugins/trading/colab-unzip-workflow"
     },
     {
-      "name": "per-sector-candidate-filtering",
+      "name": "persistent-sector-caching",
       "version": "1.0.0",
-      "description": "Per-sector candidate limits for universe selection using yfinance sector data and SQL window functions. Reduces ~4k candidates to ~1.5k while maintaining sector diversity. Trigger when: (1) too many candidates from initial filtering, (2) historical data download takes too long, (3) sector diversity needed in candidate pool.",
+      "description": "Cache yfinance sector data permanently to avoid rate limits. Trigger when: (1) yfinance 401 errors during sector updates, (2) sector fetching takes too long, (3) need to refresh sector data for specific symbols.",
       "author": {
         "name": "Claude Code"
       },
       "category": "trading",
-      "path": "plugins/trading/per-sector-candidate-filtering"
+      "path": "plugins/trading/persistent-sector-caching"
     },
     {
-      "name": "alpaca-algo-plus-data",
+      "name": "gpu-aware-training-config",
       "version": "1.0.0",
-      "description": "Use Alpaca Algo Trader Plus subscription for 4+ years of historical data. Trigger when: (1) increasing training lookback beyond 2 years, (2) configuring LOOKBACK_DAYS, (3) data source selection, (4) yfinance vs Alpaca comparison.",
+      "description": "GPU-aware RL training configuration. Trigger: (1) slow GPU training, (2) low GPU utilization, (3) configuring PPO for A100/H100, (4) training mode configuration, (5) FPS below expected.",
       "author": {
         "name": "Claude Code"
       },
       "category": "trading",
-      "path": "plugins/trading/alpaca-algo-plus-data"
+      "path": "plugins/trading/gpu-aware-training-config"
     },
     {
-      "name": "branch-integration-workflow",
+      "name": "multiplex-imaging-analysis",
       "version": "1.0.0",
-      "description": "Safely review and merge remote branches into stable. Trigger when: (1) reviewing open PRs, (2) integrating feature branches, (3) merging stale branches that may have conflicts.",
+      "description": "Specific trigger conditions: (1) improving multiplex immunofluorescence segmentation or feature extraction, (2) optimizing SOM/FlowSOM clustering for cell phenotyping, (3) adding spatial analysis to imaging workflows, (4) integrating ECM features with cell compartment analysis. Verified on KINTSUGI v1.2.0 with InstanSeg, pyFlowSOM, scanpy, scimap.",
       "author": {
-        "name": "Claude Code"
+        "name": "smith6jt"
       },
-      "category": "trading",
-      "path": "plugins/trading/branch-integration-workflow"
+      "category": "training",
+      "path": "plugins/training/multiplex-imaging-analysis"
     },
     {
-      "name": "position-sizing-action-space",
+      "name": "example-skill",
       "version": "1.0.0",
-      "description": "Position sizing action space (v2.7.0): 7 actions (HOLD + 3 BUY sizes + 3 SELL sizes) with account simulation. Trigger when: (1) model needs to learn position sizing, (2) training for small accounts, (3) obs_dim changes from 5600 to 5900, (4) 56 to 59 feature upgrade.",
+      "description": "Example skill demonstrating registry structure. Trigger: (1) setting up a new skills registry, (2) learning the skill format.",
       "author": {
-        "name": "Claude Code"
+        "name": "Skills Registry Team"
       },
-      "category": "trading",
-      "path": "plugins/trading/position-sizing-action-space"
+      "category": "templates",
+      "path": "plugins/templates/example-skill"
     },
     {
-      "name": "crypto-pair-fee-optimization",
+      "name": "large-cell-ratio-matching",
       "version": "1.0.0",
-      "description": "Crypto-to-crypto vs crypto-to-USD fee analysis for Alpaca. Triggers: (1) comparing crypto trading pair strategies, (2) optimizing fees for crypto portfolio rebalancing, (3) evaluating stablecoin vs fiat pairs, (4) implementing crypto-to-crypto trading support.",
-      "author": {
-        "name": "Claude Code"
-      },
-      "category": "trading",
-      "path": "plugins/trading/crypto-pair-fee-optimization"
-    },
-    {
-      "name": "backtest-persistence",
-      "version": "1.0.0",
-      "description": "Save backtest results to SQLite database for comparison and tracking. Trigger when: (1) adding backtest history tracking, (2) comparing model performance across runs, (3) querying best performing backtests, (4) adding --save-to-db flag.",
-      "author": {
-        "name": "Claude Code"
-      },
-      "category": "trading",
-      "path": "plugins/trading/backtest-persistence"
-    },
-    {
-      "name": "training-resilience",
-      "version": "1.0.0",
-      "description": "Fix PPO training early-stop issues: (1) training stops with impossible drawdown values like 1017.8%, (2) training stops too early on drawdown threshold, (3) need adaptive recovery instead of hard stop. Includes drawdown calculation fix and retry mechanism.",
-      "author": {
-        "name": "Claude Code"
-      },
-      "category": "trading",
-      "path": "plugins/trading/training-resilience"
-    },
-    {
-      "name": "prediction-outcome-recording",
-      "version": "1.0.0",
-      "description": "Record prediction outcomes when positions close to complete the prediction lifecycle. Trigger when: (1) predictions are logged but outcomes not recorded, (2) calculating prediction accuracy, (3) tracking model performance over time, (4) position closes need to update prediction tables.",
-      "author": {
-        "name": "Claude Code"
-      },
-      "category": "trading",
-      "path": "plugins/trading/prediction-outcome-recording"
-    },
-    {
-      "name": "model-version-protocol",
-      "version": "1.0.0",
-      "description": "Model-trader version compatibility protocol (v2.7.0): Embed version metadata in checkpoints, validate at load time. Trigger when: (1) training changes break live trading, (2) models incompatible with trader, (3) need version-specific action interpretation.",
-      "author": {
-        "name": "Claude Code"
-      },
-      "category": "trading",
-      "path": "plugins/trading/model-version-protocol"
-    },
-    {
-      "name": "selection-diversity-validation",
-      "version": "1.0.0",
-      "description": "FAIL LOUDLY pattern for selection constraints. Trigger when: (1) correlated stocks selected together, (2) min_crypto_positions ignored, (3) constraints violated silently.",
-      "author": "Claude Code",
-      "category": "trading",
-      "path": "plugins/trading/selection-diversity-validation"
-    },
-    {
-      "name": "codebase-consolidation-pattern",
-      "version": "1.0.0",
-      "description": "Reorganize scattered modules into subpackages while maintaining backwards compatibility. Trigger when: (1) too many root-level files, (2) need to group related functionality, (3) cleaning up codebase structure without breaking imports.",
-      "author": {
-        "name": "Claude Code"
-      },
-      "category": "trading",
-      "path": "plugins/trading/codebase-consolidation-pattern"
-    },
-    {
-      "name": "dashboard-parallel-lists",
-      "version": "1.0.0",
-      "description": "Dashboard symbol_signals uses parallel lists not dict-by-symbol. Trigger when: (1) 'list' object has no attribute 'get' error, (2) iterating over symbol_signals with .items(), (3) expecting symbol_signals[symbol] access pattern.",
-      "author": {
-        "name": "Claude Code"
-      },
-      "category": "trading",
-      "path": "plugins/trading/dashboard-parallel-lists"
-    },
-    {
-      "name": "github-copilot-pr-review",
-      "version": "1.0.0",
-      "description": "Review and apply GitHub Copilot suggestions on pull requests. Trigger when: (1) reviewing PRs with Copilot suggestions, (2) merging multiple PRs with overlapping suggestions, (3) setting up gh CLI for private repos.",
-      "author": {
-        "name": "Claude Code"
-      },
-      "category": "general",
-      "path": "plugins/general/github-copilot-pr-review"
-    },
-    {
-      "name": "python-performance-patterns",
-      "version": "1.0.0",
-      "description": "Low-risk Python performance optimizations. Trigger: (1) performance audit findings, (2) slow file operations, (3) O(n^2) loops, (4) repeated function calls, (5) sequential I/O bottlenecks.",
-      "author": {
-        "name": "KINTSUGI Team"
-      },
-      "category": "general",
-      "path": "plugins/general/python-performance-patterns"
-    },
-    {
-      "name": "dataclass-optimization",
-      "version": "1.0.0",
-      "description": "Python dataclass best practices for memory and performance. Trigger: (1) reviewing dataclasses, (2) memory optimization, (3) config classes, (4) immutable data structures, (5) dataclass validation.",
-      "author": {
-        "name": "Claude Code"
-      },
-      "category": "general",
-      "path": "plugins/general/dataclass-optimization"
-    },
-    {
-      "name": "pypi-collision-fix",
-      "version": "1.0.0",
-      "description": "Fix PyPI package name collisions when local package name exists on PyPI. Trigger: (1) pip installs wrong package version, (2) 'pip install package[extra]' downloads from PyPI instead of using local, (3) editable install gets overwritten.",
-      "author": {
-        "name": "KINTSUGI Team"
-      },
-      "category": "general",
-      "path": "plugins/general/pypi-collision-fix"
-    },
-    {
-      "name": "hpc-dev-testing-workflow",
-      "version": "1.0.0",
-      "description": "Efficient development testing workflow for HPC environments with VS Code tunneling. Trigger: testing code changes on HPC, development workflow with external data directories, VS Code Remote SSH development",
-      "author": {
-        "name": "KINTSUGI Team"
-      },
-      "category": "general",
-      "path": "plugins/general/hpc-dev-testing-workflow"
-    },
-    {
-      "name": "conda-multi-account-hipergator",
-      "version": "1.0.0",
-      "description": "Set up conda with multiple group storage locations on HiPerGator. Trigger: (1) conda envs on shared storage, (2) multiple conda installations, (3) HiPerGator environment setup, (4) shared group conda environments.",
-      "author": {
-        "name": "KINTSUGI Team"
-      },
-      "category": "general",
-      "path": "plugins/general/conda-multi-account-hipergator"
-    },
-    {
-      "name": "skills-registry-organization",
-      "version": "1.0.0",
-      "description": "Organize Skills Registry for cross-project reuse. Trigger: (1) setting up skills registry as submodule, (2) deciding project-specific vs shared skills, (3) reorganizing skills for multiple repos.",
-      "author": {
-        "name": "KINTSUGI Team"
-      },
-      "category": "general",
-      "path": "plugins/general/skills-registry-organization"
-    },
-    {
-      "name": "dependency-deprecation",
-      "version": "1.0.0",
-      "description": "Pattern for deprecating external dependencies while maintaining backward compatibility. Trigger: (1) removing Java/FIJI/MATLAB dependencies, (2) deprecating optional dependencies, (3) migrating to pure Python implementations.",
-      "author": {
-        "name": "KINTSUGI Team"
-      },
-      "category": "general",
-      "path": "plugins/general/dependency-deprecation"
-    },
-    {
-      "name": "pytorch-common-pitfalls",
-      "version": "1.0.0",
-      "description": "Fix common PyTorch bugs: (1) percentile calculation with kthvalue vs quantile, (2) LayerNorm dimension mismatch with Conv1d outputs, (3) buffer edge cases for last transitions. Trigger when: writing PyTorch code for RL, neural networks, or data processing.",
-      "author": {
-        "name": "Claude Code"
-      },
-      "category": "general",
-      "path": "plugins/general/pytorch-common-pitfalls"
-    },
-    {
-      "name": "type-checking-pattern",
-      "version": "1.0.0",
-      "description": "Fix F821 undefined name errors for optional dependencies using TYPE_CHECKING pattern. Trigger: (1) ruff F821 errors for type hints, (2) undefined name in type annotation, (3) optional dependency type hints.",
-      "author": {
-        "name": "KINTSUGI Team"
-      },
-      "category": "general",
-      "path": "plugins/general/type-checking-pattern"
-    },
-    {
-      "name": "notebook-import-conventions",
-      "version": "1.0.0",
-      "description": "Specific trigger conditions: (1) fixing notebook imports in maxfuse project, (2) updating paths from mario-py to maxfuse.mario, (3) standardizing data file paths in notebooks. Verified on maxfuse package with src/maxfuse/ layout.",
+      "description": "MaxFuse parameter tuning for datasets with large protein:RNA cell ratios (>100:1). Triggers: (1) protein cells >> RNA cells (e.g., 1.7M vs 1.2k), (2) matching_ratio causing cell loss, (3) pivot filter removing too many matches, (4) low RNA coverage after integration",
       "author": {
         "name": "smith6jt"
       },
       "category": "maxfuse",
-      "path": "plugins/maxfuse/notebook-import-conventions"
+      "path": "plugins/maxfuse/large-cell-ratio-matching"
     },
     {
       "name": "repo-reorganization",
@@ -654,54 +584,174 @@
       "path": "plugins/maxfuse/region-aware-matching"
     },
     {
-      "name": "example-skill",
+      "name": "notebook-import-conventions",
       "version": "1.0.0",
-      "description": "Example skill demonstrating registry structure. Trigger: (1) setting up a new skills registry, (2) learning the skill format.",
+      "description": "Specific trigger conditions: (1) fixing notebook imports in maxfuse project, (2) updating paths from mario-py to maxfuse.mario, (3) standardizing data file paths in notebooks. Verified on maxfuse package with src/maxfuse/ layout.",
       "author": {
-        "name": "Skills Registry Team"
+        "name": "smith6jt"
       },
-      "category": "templates",
-      "path": "plugins/templates/example-skill"
+      "category": "maxfuse",
+      "path": "plugins/maxfuse/notebook-import-conventions"
     },
     {
-      "name": "gpu-parallel-scheduling",
+      "name": "plotly-figurewidget-interactive",
       "version": "1.0.0",
-      "description": "GPU-safe parallel processing for KINTSUGI: (1) Queue-based GPU allocation to prevent OOM, (2) Avoiding nested ThreadPoolExecutor, (3) Main-thread progress output for Jupyter. Trigger: kernel crash during parallel processing, OOM error, nested ThreadPoolExecutor, multi-GPU scheduling, CuPy thread safety.",
+      "description": "Fix for Plotly FigureWidget KeyError: 'uid' bug when updating shapes interactively. Trigger: (1) Plotly interactive dashboard not working, (2) KeyError: 'uid' in FigureWidget, (3) batch_update() causing errors with shapes",
+      "author": {
+        "name": "Claude Code"
+      },
+      "category": "scientific",
+      "path": "plugins/scientific/plotly-figurewidget-interactive"
+    },
+    {
+      "name": "sparse-expression-visualization",
+      "version": "1.0.0",
+      "description": "Visualization patterns for sparse single-cell gene expression data. Trigger: (1) boxplots showing flat lines at zero, (2) single-cell RNA expression visualization, (3) sparse count data visualization, (4) boxplot y-axis scaling issues",
+      "author": {
+        "name": "Claude Code"
+      },
+      "category": "scientific",
+      "path": "plugins/scientific/sparse-expression-visualization"
+    },
+    {
+      "name": "notebook-checkpoint-pattern",
+      "version": "1.0.0",
+      "description": "Pattern for connecting Jupyter notebooks via checkpoint files. Trigger: (1) notebooks should be connected, (2) save outputs between notebooks, (3) pipeline with multiple notebooks",
+      "author": {
+        "name": "Claude Code"
+      },
+      "category": "scientific",
+      "path": "plugins/scientific/notebook-checkpoint-pattern"
+    },
+    {
+      "name": "windows-cupy-nvrtc",
+      "version": "1.0.0",
+      "description": "Fix CuPy NVRTC compilation errors on Windows. Trigger: (1) NVRTC_ERROR_BUILTIN_OPERATION_FAILURE, (2) nvrtc-builtins64_xxx.dll not found, (3) CuPy JIT compilation fails on Windows.",
+      "author": {
+        "name": "KINTSUGI Team"
+      },
+      "category": "scientific",
+      "path": "plugins/scientific/windows-cupy-nvrtc"
+    },
+    {
+      "name": "project-data-separation",
+      "version": "1.0.0",
+      "description": "Pattern for separating repository code from user data and notebooks. Trigger: (1) organizing scientific pipelines, (2) separating code from data, (3) creating project management frameworks.",
+      "author": {
+        "name": "KINTSUGI Team"
+      },
+      "category": "scientific",
+      "path": "plugins/scientific/project-data-separation"
+    },
+    {
+      "name": "github-copilot-pr-review",
+      "version": "1.0.0",
+      "description": "Review and apply GitHub Copilot suggestions on pull requests. Trigger when: (1) reviewing PRs with Copilot suggestions, (2) merging multiple PRs with overlapping suggestions, (3) setting up gh CLI for private repos.",
+      "author": {
+        "name": "Claude Code"
+      },
+      "category": "general",
+      "path": "plugins/general/github-copilot-pr-review"
+    },
+    {
+      "name": "dataclass-optimization",
+      "version": "1.0.0",
+      "description": "Python dataclass best practices for memory and performance. Trigger: (1) reviewing dataclasses, (2) memory optimization, (3) config classes, (4) immutable data structures, (5) dataclass validation.",
+      "author": {
+        "name": "Claude Code"
+      },
+      "category": "general",
+      "path": "plugins/general/dataclass-optimization"
+    },
+    {
+      "name": "python-performance-patterns",
+      "version": "1.0.0",
+      "description": "Low-risk Python performance optimizations. Trigger: (1) performance audit findings, (2) slow file operations, (3) O(n^2) loops, (4) repeated function calls, (5) sequential I/O bottlenecks.",
+      "author": {
+        "name": "KINTSUGI Team"
+      },
+      "category": "general",
+      "path": "plugins/general/python-performance-patterns"
+    },
+    {
+      "name": "conda-multi-account-hipergator",
+      "version": "1.0.0",
+      "description": "Set up conda with multiple group storage locations on HiPerGator. Trigger: (1) conda envs on shared storage, (2) multiple conda installations, (3) HiPerGator environment setup, (4) shared group conda environments.",
+      "author": {
+        "name": "KINTSUGI Team"
+      },
+      "category": "general",
+      "path": "plugins/general/conda-multi-account-hipergator"
+    },
+    {
+      "name": "pytorch-common-pitfalls",
+      "version": "1.0.0",
+      "description": "Fix common PyTorch bugs: (1) percentile calculation with kthvalue vs quantile, (2) LayerNorm dimension mismatch with Conv1d outputs, (3) buffer edge cases for last transitions. Trigger when: writing PyTorch code for RL, neural networks, or data processing.",
+      "author": {
+        "name": "Claude Code"
+      },
+      "category": "general",
+      "path": "plugins/general/pytorch-common-pitfalls"
+    },
+    {
+      "name": "dependency-deprecation",
+      "version": "1.0.0",
+      "description": "Pattern for deprecating external dependencies while maintaining backward compatibility. Trigger: (1) removing Java/FIJI/MATLAB dependencies, (2) deprecating optional dependencies, (3) migrating to pure Python implementations.",
+      "author": {
+        "name": "KINTSUGI Team"
+      },
+      "category": "general",
+      "path": "plugins/general/dependency-deprecation"
+    },
+    {
+      "name": "skills-registry-organization",
+      "version": "1.0.0",
+      "description": "Organize Skills Registry for cross-project reuse. Trigger: (1) setting up skills registry as submodule, (2) deciding project-specific vs shared skills, (3) reorganizing skills for multiple repos.",
+      "author": {
+        "name": "KINTSUGI Team"
+      },
+      "category": "general",
+      "path": "plugins/general/skills-registry-organization"
+    },
+    {
+      "name": "pypi-collision-fix",
+      "version": "1.0.0",
+      "description": "Fix PyPI package name collisions when local package name exists on PyPI. Trigger: (1) pip installs wrong package version, (2) 'pip install package[extra]' downloads from PyPI instead of using local, (3) editable install gets overwritten.",
+      "author": {
+        "name": "KINTSUGI Team"
+      },
+      "category": "general",
+      "path": "plugins/general/pypi-collision-fix"
+    },
+    {
+      "name": "hpc-dev-testing-workflow",
+      "version": "1.0.0",
+      "description": "Efficient development testing workflow for HPC environments with VS Code tunneling. Trigger: testing code changes on HPC, development workflow with external data directories, VS Code Remote SSH development",
+      "author": {
+        "name": "KINTSUGI Team"
+      },
+      "category": "general",
+      "path": "plugins/general/hpc-dev-testing-workflow"
+    },
+    {
+      "name": "type-checking-pattern",
+      "version": "1.0.0",
+      "description": "Fix F821 undefined name errors for optional dependencies using TYPE_CHECKING pattern. Trigger: (1) ruff F821 errors for type hints, (2) undefined name in type annotation, (3) optional dependency type hints.",
+      "author": {
+        "name": "KINTSUGI Team"
+      },
+      "category": "general",
+      "path": "plugins/general/type-checking-pattern"
+    },
+    {
+      "name": "gpu-quality-priority",
+      "version": "1.1.0",
+      "description": "KINTSUGI NOTEBOOK processing principles: (1) Never sacrifice quality for speed, (2) Always use GPU in notebooks - no CPU fallback in interactive mode. Trigger: performance optimization, CPU/GPU choice, fast mode in NOTEBOOKS (NOT SLURM). For SLURM batch processing, see slurm-concurrent-processing skill.",
       "author": {
         "name": "KINTSUGI Team"
       },
       "category": "kintsugi",
-      "path": "plugins/kintsugi/gpu-parallel-scheduling"
-    },
-    {
-      "name": "gpu-memory-cleanup",
-      "version": "1.0.0",
-      "description": "CuPy GPU memory cleanup to prevent Jupyter cell hangs: (1) Explicit memory pool cleanup after GPU processing, (2) Preventing lazy cleanup hangs. Trigger: cell hanging, GPU memory, CuPy cleanup, Jupyter hang, processing complete but cell still running.",
-      "author": {
-        "name": "KINTSUGI Team"
-      },
-      "category": "kintsugi",
-      "path": "plugins/kintsugi/gpu-memory-cleanup"
-    },
-    {
-      "name": "basic-caching-evaluation",
-      "version": "1.0.0",
-      "description": "Evaluation of BaSiC illumination correction caching strategies. Trigger: (1) optimizing BaSiC performance, (2) considering caching for illumination correction, (3) sparse marker handling in microscopy.",
-      "author": {
-        "name": "KINTSUGI Team"
-      },
-      "category": "kintsugi",
-      "path": "plugins/kintsugi/basic-caching-evaluation"
-    },
-    {
-      "name": "repo-project-sync-workflow",
-      "version": "1.0.0",
-      "description": "KINTSUGI repo-to-project sync workflow: Always edit main repo (/blue/maigan/smith6jt/KINTSUGI/) first, then sync to project folders. Trigger: editing Kdecon, Kstitch, Kreg, Kview2 modules; fix not working after edit; syncing between repos; KINTSUGI_Projects folder edits.",
-      "author": {
-        "name": "KINTSUGI Team"
-      },
-      "category": "kintsugi",
-      "path": "plugins/kintsugi/repo-project-sync-workflow"
+      "path": "plugins/kintsugi/gpu-quality-priority"
     },
     {
       "name": "jupyter-autoreload-awareness",
@@ -714,24 +764,32 @@
       "path": "plugins/kintsugi/jupyter-autoreload-awareness"
     },
     {
-      "name": "channel-name-parsing",
+      "name": "repo-project-sync-workflow",
       "version": "1.0.0",
-      "description": "Multi-format channel name parsing for KINTSUGI: (1) Simple list format (one per line), (2) Cycle-prefixed formats (colon, tab, CSV). Trigger: CHANNELNAMES.txt, channel names, marker names, parsing channel file, channel metadata.",
+      "description": "KINTSUGI repo-to-project sync workflow: Always edit main repo (/blue/maigan/smith6jt/KINTSUGI/) first, then sync to project folders. Trigger: editing Kdecon, Kstitch, Kreg, Kview2 modules; fix not working after edit; syncing between repos; KINTSUGI_Projects folder edits.",
       "author": {
         "name": "KINTSUGI Team"
       },
       "category": "kintsugi",
-      "path": "plugins/kintsugi/channel-name-parsing"
+      "path": "plugins/kintsugi/repo-project-sync-workflow"
     },
     {
-      "name": "tile-snake-pattern-stitching",
+      "name": "basic-caching-evaluation",
       "version": "1.0.0",
-      "description": "KINTSUGI tile acquisition patterns for stitching: (1) SNAKE pattern - even rows L\u2192R, odd rows R\u2192L, (2) RASTER pattern - all rows L\u2192R. Trigger: stitching, tile order, acquisition pattern, SNAKE vs RASTER, tile coordinates, image mosaic, grid pattern.",
+      "description": "Evaluation of BaSiC illumination correction caching strategies. Trigger: (1) optimizing BaSiC performance, (2) considering caching for illumination correction, (3) sparse marker handling in microscopy.",
       "author": {
         "name": "KINTSUGI Team"
       },
       "category": "kintsugi",
-      "path": "plugins/kintsugi/tile-snake-pattern-stitching"
+      "path": "plugins/kintsugi/basic-caching-evaluation"
+    },
+    {
+      "name": "stitched-image-qc",
+      "version": "1.0.0",
+      "description": "Quality control for detecting and fixing problematic stitched images (saturation, tile grid patterns)",
+      "author": {},
+      "category": "kintsugi",
+      "path": "plugins/kintsugi/stitched-image-qc"
     },
     {
       "name": "lightsheet-psf-deconvolution",
@@ -744,6 +802,86 @@
       "path": "plugins/kintsugi/lightsheet-psf-deconvolution"
     },
     {
+      "name": "tile-snake-pattern-stitching",
+      "version": "1.0.0",
+      "description": "KINTSUGI tile acquisition patterns for stitching: (1) SNAKE pattern - even rows L\u2192R, odd rows R\u2192L, (2) RASTER pattern - all rows L\u2192R. Trigger: stitching, tile order, acquisition pattern, SNAKE vs RASTER, tile coordinates, image mosaic, grid pattern.",
+      "author": {
+        "name": "KINTSUGI Team"
+      },
+      "category": "kintsugi",
+      "path": "plugins/kintsugi/tile-snake-pattern-stitching"
+    },
+    {
+      "name": "deconvolution-intensity-scaling",
+      "version": "1.0.0",
+      "description": "KINTSUGI deconvolution: Output scaling must preserve original intensity relationships. Trigger: deconvolution saturates at 65535, channel intensity ratios inverted, quantitative marker analysis broken, hist_clip scaling issues, deconvolved images clipped.",
+      "author": {
+        "name": "KINTSUGI Team"
+      },
+      "category": "kintsugi",
+      "path": "plugins/kintsugi/deconvolution-intensity-scaling"
+    },
+    {
+      "name": "channel-name-parsing",
+      "version": "1.0.0",
+      "description": "Multi-format channel name parsing for KINTSUGI: (1) Simple list format (one per line), (2) Cycle-prefixed formats (colon, tab, CSV). Trigger: CHANNELNAMES.txt, channel names, marker names, parsing channel file, channel metadata.",
+      "author": {
+        "name": "KINTSUGI Team"
+      },
+      "category": "kintsugi",
+      "path": "plugins/kintsugi/channel-name-parsing"
+    },
+    {
+      "name": "slurm-concurrent-processing",
+      "version": "2.0.0",
+      "description": "KINTSUGI SLURM batch processing: Dual-pool resource calculation (GPU+CPU slots) and dynamic job promotion (CPU\u2192GPU). Trigger: SLURM job submission, batch processing, resource pool, GPU+CPU concurrent, job promotion, resource maximization.",
+      "author": {
+        "name": "KINTSUGI Team"
+      },
+      "category": "kintsugi",
+      "path": "plugins/kintsugi/slurm-concurrent-processing"
+    },
+    {
+      "name": "slurm-workflow-integration",
+      "version": "1.0.0",
+      "description": "Integrating SLURM job submission with kintsugi init. Trigger: (1) adding HPC/SLURM support to projects, (2) auto-detecting cluster settings, (3) CLI workflow for batch job submission. Verified on HiperGator.",
+      "author": {
+        "name": "Claude Code"
+      },
+      "category": "kintsugi",
+      "path": "plugins/kintsugi/slurm-workflow-integration"
+    },
+    {
+      "name": "gpu-parallel-scheduling",
+      "version": "1.0.0",
+      "description": "GPU-safe parallel processing for KINTSUGI: (1) Queue-based GPU allocation to prevent OOM, (2) Avoiding nested ThreadPoolExecutor, (3) Main-thread progress output for Jupyter. Trigger: kernel crash during parallel processing, OOM error, nested ThreadPoolExecutor, multi-GPU scheduling, CuPy thread safety.",
+      "author": {
+        "name": "KINTSUGI Team"
+      },
+      "category": "kintsugi",
+      "path": "plugins/kintsugi/gpu-parallel-scheduling"
+    },
+    {
+      "name": "snakemake-skip-existing",
+      "version": "1.0.0",
+      "description": "Per-channel skip-existing checks in Snakemake wrapper scripts to avoid re-processing completed channels after interrupted jobs. Trigger: Snakemake interrupted job, skip existing channels, resume incomplete cycle, sentinel missing but outputs exist, per-channel completeness check.",
+      "author": {
+        "name": "KINTSUGI Team"
+      },
+      "category": "kintsugi",
+      "path": "plugins/kintsugi/snakemake-skip-existing"
+    },
+    {
+      "name": "gpu-memory-cleanup",
+      "version": "1.0.0",
+      "description": "CuPy GPU memory cleanup to prevent Jupyter cell hangs: (1) Explicit memory pool cleanup after GPU processing, (2) Preventing lazy cleanup hangs. Trigger: cell hanging, GPU memory, CuPy cleanup, Jupyter hang, processing complete but cell still running.",
+      "author": {
+        "name": "KINTSUGI Team"
+      },
+      "category": "kintsugi",
+      "path": "plugins/kintsugi/gpu-memory-cleanup"
+    },
+    {
       "name": "notebook-module-refactoring",
       "version": "1.0.0",
       "description": "Safe notebook-to-module refactoring: When extracting functions from Jupyter notebooks into Python modules, preserve variable definitions and cell dependencies. Trigger: extracting functions to module, creating Kio/Kutils modules, refactoring notebook cells, 'moved to module' changes.",
@@ -752,16 +890,6 @@
       },
       "category": "kintsugi",
       "path": "plugins/kintsugi/notebook-module-refactoring"
-    },
-    {
-      "name": "gpu-quality-priority",
-      "version": "1.0.0",
-      "description": "KINTSUGI processing principles: (1) Never sacrifice quality for speed, (2) Always use GPU when available - no CPU fallback, (3) Adding 'fast mode' options that reduce quality. Trigger: performance optimization, CPU/GPU choice, fast mode, quality vs speed tradeoff.",
-      "author": {
-        "name": "KINTSUGI Team"
-      },
-      "category": "kintsugi",
-      "path": "plugins/kintsugi/gpu-quality-priority"
     }
   ]
 }

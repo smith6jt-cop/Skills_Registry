@@ -1,0 +1,10 @@
+{
+  "name": "globus-dataset-staging",
+  "version": "1.0.0",
+  "description": "Globus CLI workflow for staging HuBMAP CODEX datasets from remote SMB shares to HiPerGator. Trigger: (1) transferring datasets via Globus, (2) staging data from PATH lab or external endpoints, (3) batch Globus transfers with consent/auth issues.",
+  "author": {
+    "name": "KINTSUGI Team"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith6jt-cop/KINTSUGI"
+}

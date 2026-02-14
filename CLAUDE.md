@@ -52,6 +52,7 @@ Skills_Registry/
 │   │   └── ...                          # 60+ trading skills
 │   ├── kintsugi/             # KINTSUGI-specific skills
 │   │   ├── basic-caching-evaluation/
+│   │   ├── globus-dataset-staging/
 │   │   └── gpu-quality-priority/
 │   └── templates/            # Skill templates & examples
 │       └── example-skill/

@@ -1,0 +1,10 @@
+{
+  "name": "snakemake-skip-existing",
+  "version": "1.0.0",
+  "description": "Per-channel skip-existing checks in Snakemake wrapper scripts to avoid re-processing completed channels after interrupted jobs. Trigger: Snakemake interrupted job, skip existing channels, resume incomplete cycle, sentinel missing but outputs exist, per-channel completeness check.",
+  "author": {
+    "name": "KINTSUGI Team"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith6jt-cop/Skills_Registry"
+}

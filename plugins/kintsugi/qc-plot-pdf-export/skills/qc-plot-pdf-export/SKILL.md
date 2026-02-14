@@ -112,18 +112,52 @@ for cycle in range(start_cycle, end_cycle + 1):
 
 Where `{stage}` is one of: `raw`, `stitched`, `deconvolved`, `edf`
 
+## Snakemake-Automated QC Reports (Added 2026-02-13)
+
+The same QC PDFs are now generated automatically by the Snakemake workflow via `workflow/scripts/qc_report.py`. This dispatch script calls the `Kprocess.py` QC functions (`run_stitched_qc`, `run_decon_qc`, `run_edf_qc`) which internally use the same `plot_summary_heatmaps()` and z-profile plotting functions.
+
+### How It Works
+
+1. Three aggregate Snakemake rules (`qc_stitch`, `qc_decon`, `qc_edf`) run after all cycles of a stage complete
+2. `qc_report.py` reads `snakemake.params.stage` and dispatches to the correct Kprocess function
+3. Output PDFs go to `{project}/qc_plots/` (same location as notebook output)
+4. Statistics are cached to `{project}/cache/{stage}_stats.pkl` for cross-stage comparison
+
+### Critical: Headless Matplotlib
+
+`qc_report.py` sets `matplotlib.use("Agg")` **before** importing Kprocess. Without this, Kprocess's internal matplotlib imports will try to open a display and crash on SLURM compute nodes.
+
+```python
+# Must be FIRST — before any Kprocess import
+import matplotlib
+matplotlib.use("Agg")
+# Now safe to import
+from Kprocess import run_stitched_qc, run_decon_qc, run_edf_qc
+```
+
+### Running QC Standalone
+
+```bash
+snakemake qc --profile profiles/slurm -j 1  # Generate QC only (no reprocessing)
+snakemake -n qc                               # Dry run — verify DAG
+```
+
 ## Key Insights
 - Always include `stage_name` parameter to differentiate processing stages
 - Use `bbox_inches='tight'` to prevent label clipping
 - DPI of 150 provides good balance of quality and file size
 - Return the figure object for programmatic use if needed
 - Limit z-profile PDFs to first cycle to avoid excessive file count
+- Set `matplotlib.use("Agg")` before ANY import that touches matplotlib on headless nodes
 
 ## Related Skills
 - `gpu-parallel-scheduling` - Statistics collection uses GPU parallelism
 - `notebook-module-refactoring` - Function extraction pattern
 - `repo-project-sync-workflow` - Edit main repo first
+- `snakemake-workflow-architecture` - QC aggregate rules section
 
 ## References
 - KINTSUGI `notebooks/2_Cycle_Processing.ipynb` - Quantification cells
 - KINTSUGI `docs/workflows.md` - Workflow 2 documentation
+- KINTSUGI `workflow/scripts/qc_report.py` - Snakemake QC dispatch script
+- KINTSUGI `workflow/CLAUDE.md` - QC Report Rules section
