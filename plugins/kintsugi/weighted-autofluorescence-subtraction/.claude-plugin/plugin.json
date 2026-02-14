@@ -1,0 +1,10 @@
+{
+  "name": "weighted-autofluorescence-subtraction",
+  "version": "1.0.0",
+  "description": "Multi-range weighted autofluorescence subtraction algorithm for multiplex IF. Per-intensity-range weights protect dim signal while aggressively removing bright AF. Trigger: autofluorescence removal, blank subtraction, dim marker preservation, weighted subtraction, signal-to-AF ratio, FOXP3/CD163 dim signal, multi-range histogram segmentation.",
+  "author": {
+    "name": "KINTSUGI Team"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith6jt-cop/Skills_Registry"
+}
