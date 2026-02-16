@@ -1,0 +1,15 @@
+{
+  "name": "cleanup-qc-review-guard",
+  "version": "1.0.0",
+  "description": "Guard pattern for cleanup scripts: verify QC sentinel files and prompt for human review before destructive operations on batch-processed datasets",
+  "author": "Claude Code",
+  "category": "kintsugi",
+  "tags": ["kintsugi", "cleanup", "qc", "batch", "sentinel", "safety"],
+  "skills": ["cleanup-qc-review-guard"],
+  "trigger_conditions": [
+    "Deleting intermediate or raw data after batch processing",
+    "Cleanup scripts for processed datasets",
+    "Adding safety guards to destructive batch operations",
+    "Verifying QC completion before cleanup"
+  ]
+}

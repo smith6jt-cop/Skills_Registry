@@ -3,6 +3,7 @@ name: qc-plot-pdf-export
 description: "KINTSUGI quantification plots: Always save QC heatmaps and profiles as PDF"
 author: Claude Code
 date: 2026-01-15
+updated: 2026-02-16
 triggers:
   - quantification
   - QC plots
@@ -18,9 +19,9 @@ triggers:
 ## Experiment Overview
 | Item | Details |
 |------|---------|
-| **Date** | 2026-01-15 |
+| **Date** | 2026-01-15 (updated 2026-02-16) |
 | **Goal** | Ensure all quantification plots are saved as PDFs for documentation |
-| **Environment** | KINTSUGI notebooks/2_Cycle_Processing.ipynb |
+| **Environment** | KINTSUGI notebooks/2_Cycle_Processing.ipynb, workflow/scripts/qc_report.py |
 | **Status** | Implemented |
 
 ## Context
@@ -96,11 +97,10 @@ plot_summary_heatmaps(raw_stats_df, stage_name="raw")
 plot_summary_heatmaps(stitched_stats_df, stage_name="stitched")
 plot_summary_heatmaps(decon_stats_df, stage_name="deconvolved")
 
-# Z-plane profiles (save first cycle only to avoid too many files)
+# Z-plane profiles — save ALL cycles
 for cycle in range(start_cycle, end_cycle + 1):
     for channel in range(start_channel, end_channel + 1):
-        save_pdf = (cycle == start_cycle)  # Only first cycle
-        plot_zplane_profiles(stats_df, cycle, channel, stage_name="raw", save_pdf=save_pdf)
+        plot_zplane_profiles(stats_df, cycle, channel, stage_name="raw", save_pdf=True)
 ```
 
 ## Output Files
@@ -142,12 +142,19 @@ snakemake qc --profile profiles/slurm -j 1  # Generate QC only (no reprocessing)
 snakemake -n qc                               # Dry run — verify DAG
 ```
 
+## Failed Attempts
+
+| Attempt | Why it Failed | Lesson Learned |
+|---------|---------------|----------------|
+| `save_pdf = (cycle == start_cycle)` — only save first cycle | Headless Snakemake runs use `matplotlib.use("Agg")`, making `plt.show()` a no-op. Only saved PDFs are produced, so non-first cycles had NO output. | Always `save_pdf=True` for ALL cycles. Filenames already include cycle number (`_cyc{NN}_`) so no conflicts. In notebooks `plt.show()` renders inline regardless; in headless mode only PDFs persist. |
+| Not setting `matplotlib.use("Agg")` before Kprocess imports | Kprocess imports matplotlib at module level; display backend crashes on headless nodes | Set Agg backend BEFORE any import chain that touches matplotlib |
+
 ## Key Insights
 - Always include `stage_name` parameter to differentiate processing stages
 - Use `bbox_inches='tight'` to prevent label clipping
 - DPI of 150 provides good balance of quality and file size
 - Return the figure object for programmatic use if needed
-- Limit z-profile PDFs to first cycle to avoid excessive file count
+- **Save z-profile PDFs for ALL cycles** — headless runs produce no output from `plt.show()`
 - Set `matplotlib.use("Agg")` before ANY import that touches matplotlib on headless nodes
 
 ## Related Skills
@@ -157,7 +164,7 @@ snakemake -n qc                               # Dry run — verify DAG
 - `snakemake-workflow-architecture` - QC aggregate rules section
 
 ## References
+- KINTSUGI `notebooks/Kprocess.py` - `run_stitched_qc()` (line ~1185), `run_decon_qc()` (line ~1282)
 - KINTSUGI `notebooks/2_Cycle_Processing.ipynb` - Quantification cells
-- KINTSUGI `docs/workflows.md` - Workflow 2 documentation
 - KINTSUGI `workflow/scripts/qc_report.py` - Snakemake QC dispatch script
 - KINTSUGI `workflow/CLAUDE.md` - QC Report Rules section
