@@ -2,8 +2,8 @@
 name: agent-validation-experiment
 description: "A/B testing infrastructure for validating Claude agent integration in RL training. Trigger when: (1) planning agent validation, (2) analyzing agent effectiveness, (3) deciding whether to enable agents, (4) understanding agent cost-benefit, (5) reviewing agent prompt design, (6) debugging agent response parsing, (7) notebook API key loading issues."
 author: Claude Code
-date: 2026-02-10
-version: v2.2
+date: 2026-02-16
+version: v2.3
 ---
 
 # Agent Validation Experiment
@@ -12,9 +12,9 @@ version: v2.2
 
 | Item | Details |
 |------|---------|
-| **Date** | 2026-02-10 |
+| **Date** | 2026-02-16 |
 | **Goal** | Determine if Claude agent integration improves model predictive power |
-| **Status** | v1.0 failed (zero consultations), v1.1 failed (missing directories), v1.2 ran (90 consultations analyzed), v2.0 systemic fixes deployed, v2.1 bug fixes from experiment results (+11.6% PF, p=0.009), **v2.2 notebook key parsing fix + quick validation speed fix** |
+| **Status** | v1.0 failed (zero consultations), v1.1 failed (missing directories), v1.2 ran (90 consultations analyzed), v2.0 systemic fixes deployed, v2.1 bug fixes from experiment results (+11.6% PF, p=0.009), v2.2 notebook key parsing fix + quick validation speed fix, **v2.3 compute cost reduction (580 CU → ~70-95 CU) + incremental save/resume** |
 | **Files** | `scripts/agent_validation_experiment.py`, `notebooks/agent_validation_analysis.ipynb`, `alpaca_trading/training/multi_agent.py`, `alpaca_trading/gpu/vectorized_env.py`, `tests/test_multi_agent.py` |
 
 ## The Question
@@ -37,13 +37,15 @@ The codebase has ~4,744 lines of agent integration code. Before relying on it:
 ### Matching Protocol
 - Same symbols in both groups
 - Same random seeds for reproducibility
-- Same training timesteps (50M recommended)
-- Same environment configuration (v3.3.0)
+- Same training timesteps (50M recommended, sufficient for A/B comparison)
+- Same environment configuration (v4.0.0)
+- Training mode: 'standard' (6M-param 3-layer network, faster per step than 'production')
 
 ### Sample Size
-- Minimum: 10 runs per group (2 symbols x 5 seeds)
+- Minimum: 12 runs total (2 symbols x 3 seeds x 2 groups) — 6 pairs for paired t-test
 - Recommended: 20 runs per group (4 symbols x 5 seeds)
 - Statistical power: 80% to detect Cohen's d = 0.8
+- 3 seeds sufficient to detect large effects with paired design
 
 ## Success Criteria
 
@@ -104,10 +106,19 @@ results = run_validation_experiment(
 
 ## Resource Requirements
 
+### Cost-Optimized (v2.3 — recommended)
+| Resource | Estimate |
+|----------|----------|
+| Training runs | 12 (6 baseline + 6 treatment) |
+| Compute time | ~4-5 hours on A100 (~70-95 CU) |
+| API costs | ~$21 (6 treatment runs x $3.50/run) |
+| Storage | ~200 MB (models + logs) |
+
+### Full Experiment (if budget allows)
 | Resource | Estimate |
 |----------|----------|
 | Training runs | 40 (20 baseline + 20 treatment) |
-| Compute time | ~20-40 hours on A100 |
+| Compute time | ~20-40 hours on A100 (~580 CU at 200M production) |
 | API costs | ~$70 (20 treatment runs x $3.50/run) |
 | Storage | ~500 MB (models + logs) |
 
@@ -195,6 +206,7 @@ If agents improve Sharpe by 0.1:
 | v1.2 | 2026-02-05 | 90 consultations analyzed. All HP tuner recommendations identical (`lr=0.7, ent=1.3`). Risk Analyst fixated on KL. Reward Engineer using v2.5.0 weights. No agents analyzed trade quality. Drawdown penalty inactive (15% threshold never triggered). | **7 systemic problems**: (1) No per-run context (symbol/volatility), (2) Fixed DD threshold useless, (3) No component breakdown visible, (4) KL over-emphasized, (5) Wrong weights in RE prompt, (6) No position sizing analysis, (7) Grace period untested. | v2.0: Rewritten prompts, per-component metrics pipeline, adaptive drawdown, expanded TrainingResult. 16 new tests. |
 | v2.0 | 2026-02-07 | Experiment showed +11.6% profit factor (p=0.009) but 5 bugs degraded agent effectiveness: ~50% Risk Analyst parse failures, grace period produced invalid action type, orchestrator passed unknown action types, Risk Analyst prompt suggested invalid types, max_tokens too low. | **5 code bugs**: (1) `max_tokens=800` truncates 8-field JSON, (2) grace period converts to `save_checkpoint` (invalid), (3) no action type validation, (4) prompt vocabulary uses non-canonical types, (5) parser has no truncation recovery. | v2.1: 5-strategy JSON parser, `VALID_ACTION_TYPES` + `ACTION_TYPE_ALIASES`, grace period→`checkpoint`, prompt vocabulary fix, max_tokens→1500. 17 new tests. |
 | v2.1 | 2026-02-10 | Notebook gap-fill fails with 401 Authorization Required. Quick validation takes >10 min instead of ~5 min. | **2 bugs**: (1) Cell 10 parsed API key file with naive `lines[0]`/`lines[1]` — file has `Key:` and `Secret:` labels on their own lines, so `APCA_API_KEY_ID="Key:"` was sent to Alpaca. (2) Quick validation used 10M timesteps + validation_interval=3 + max_consultations=10 → 76 updates, 25 validations, 10+ API calls. | v2.2 (notebook v1.5.0): Use `_read_keys_from_file()` from broker module. Reduce to 2M timesteps, validation_interval=5, max_consultations=5. |
+| v2.2 | 2026-02-16 | Full experiment at 200M timesteps production mode consumed ~29 CU/model. 20 models = ~580 CU, exceeding Colab Pro+ monthly budget. Only 3.5 baseline models completed before stopping. | **Compute cost too high**: Production mode uses 13M-param 4-layer network. 200M timesteps per model × 20 models is impractical on Colab. | v2.3 (notebook v1.6.0): TIMESTEPS 200M→50M, TRAINING_MODE production→standard (6M-param), N_SEEDS 5→3 (12 models). Added `save_incremental()` + resume logic (skip completed models on Colab reconnect). Lighter cleanup: removed `cleanup_gpu_memory()`, kept `gc.collect()` + `empty_cache()`. Target: ~70-95 CU. |
 
 ### v2.1 Failure Details (2026-02-10)
 

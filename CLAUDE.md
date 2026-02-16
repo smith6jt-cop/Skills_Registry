@@ -80,7 +80,7 @@ Key skills for the Alpaca Trading system:
 - `discounted-thompson-sampling` - Non-stationary bandit with decay
 - `reward-function-v330` - Rebalanced weights, removed trading_incentive
 - `reward-scaling-calibration` - reward_scale=0.001 calibration
-- `agent-validation-experiment` - v2.2: Per-component metrics, adaptive drawdown, rewritten prompts, A/B testing, robust JSON parser, action type validation, API key parsing fix, quick validation speed fix
+- `agent-validation-experiment` - v2.3: Per-component metrics, adaptive drawdown, rewritten prompts, A/B testing, robust JSON parser, action type validation, API key parsing fix, quick validation speed fix, compute cost reduction (50M standard mode, incremental save/resume)
 
 ### Risk Management
 - `integrated-risk-manager` - Unified Kelly + GARCH + drawdown sizing
