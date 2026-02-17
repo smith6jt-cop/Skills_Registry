@@ -1,0 +1,10 @@
+{
+  "name": "h5ad-shiny-data-pipeline",
+  "version": "1.0.0",
+  "description": "Patterns for building H5AD-backed data pipelines for Shiny apps with Excel fallback. Trigger: (1) replacing Excel data loading with H5AD in Shiny, (2) storing tabular groovy/TSV data in AnnData .uns for R consumption, (3) scVI batch correction validation with silhouette/LISI metrics, (4) rebuilding trajectory from fixed aggregation pipeline. Verified on R 4.x, Shiny 1.12.1, anndata (R), scanpy 1.11.5, scvi-tools 1.4.0.",
+  "author": {
+    "name": "smith6jt"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith-cop/Skills_Registry"
+}
