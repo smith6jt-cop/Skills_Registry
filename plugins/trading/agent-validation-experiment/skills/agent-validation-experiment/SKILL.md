@@ -3,7 +3,7 @@ name: agent-validation-experiment
 description: "A/B testing infrastructure for validating Claude agent integration in RL training. Trigger when: (1) planning agent validation, (2) analyzing agent effectiveness, (3) deciding whether to enable agents, (4) understanding agent cost-benefit, (5) reviewing agent prompt design, (6) debugging agent response parsing, (7) notebook API key loading issues."
 author: Claude Code
 date: 2026-02-16
-version: v2.3
+version: v2.4
 ---
 
 # Agent Validation Experiment
@@ -12,9 +12,9 @@ version: v2.3
 
 | Item | Details |
 |------|---------|
-| **Date** | 2026-02-16 |
+| **Date** | 2026-02-17 |
 | **Goal** | Determine if Claude agent integration improves model predictive power |
-| **Status** | v1.0 failed (zero consultations), v1.1 failed (missing directories), v1.2 ran (90 consultations analyzed), v2.0 systemic fixes deployed, v2.1 bug fixes from experiment results (+11.6% PF, p=0.009), v2.2 notebook key parsing fix + quick validation speed fix, **v2.3 compute cost reduction (580 CU → ~70-95 CU) + incremental save/resume** |
+| **Status** | v1.0 failed (zero consultations), v1.1 failed (missing directories), v1.2 ran (90 consultations analyzed), v2.0 systemic fixes deployed, v2.1 bug fixes from experiment results (+11.6% PF, p=0.009), v2.2 notebook key parsing fix + quick validation speed fix, v2.3 compute cost reduction (580 CU → ~70-95 CU) + incremental save/resume, **v2.4 pre-computed observation windows (7K → 15-25K FPS, ~53-83 CU)** |
 | **Files** | `scripts/agent_validation_experiment.py`, `notebooks/agent_validation_analysis.ipynb`, `alpaca_trading/training/multi_agent.py`, `alpaca_trading/gpu/vectorized_env.py`, `tests/test_multi_agent.py` |
 
 ## The Question
@@ -106,11 +106,11 @@ results = run_validation_experiment(
 
 ## Resource Requirements
 
-### Cost-Optimized (v2.3 — recommended)
+### Cost-Optimized (v2.4 — recommended)
 | Resource | Estimate |
 |----------|----------|
 | Training runs | 12 (6 baseline + 6 treatment) |
-| Compute time | ~4-5 hours on A100 (~70-95 CU) |
+| Compute time | ~3-4 hours on A100 (~53-83 CU) with pre-computed obs |
 | API costs | ~$21 (6 treatment runs x $3.50/run) |
 | Storage | ~200 MB (models + logs) |
 
@@ -207,6 +207,7 @@ If agents improve Sharpe by 0.1:
 | v2.0 | 2026-02-07 | Experiment showed +11.6% profit factor (p=0.009) but 5 bugs degraded agent effectiveness: ~50% Risk Analyst parse failures, grace period produced invalid action type, orchestrator passed unknown action types, Risk Analyst prompt suggested invalid types, max_tokens too low. | **5 code bugs**: (1) `max_tokens=800` truncates 8-field JSON, (2) grace period converts to `save_checkpoint` (invalid), (3) no action type validation, (4) prompt vocabulary uses non-canonical types, (5) parser has no truncation recovery. | v2.1: 5-strategy JSON parser, `VALID_ACTION_TYPES` + `ACTION_TYPE_ALIASES`, grace period→`checkpoint`, prompt vocabulary fix, max_tokens→1500. 17 new tests. |
 | v2.1 | 2026-02-10 | Notebook gap-fill fails with 401 Authorization Required. Quick validation takes >10 min instead of ~5 min. | **2 bugs**: (1) Cell 10 parsed API key file with naive `lines[0]`/`lines[1]` — file has `Key:` and `Secret:` labels on their own lines, so `APCA_API_KEY_ID="Key:"` was sent to Alpaca. (2) Quick validation used 10M timesteps + validation_interval=3 + max_consultations=10 → 76 updates, 25 validations, 10+ API calls. | v2.2 (notebook v1.5.0): Use `_read_keys_from_file()` from broker module. Reduce to 2M timesteps, validation_interval=5, max_consultations=5. |
 | v2.2 | 2026-02-16 | Full experiment at 200M timesteps production mode consumed ~29 CU/model. 20 models = ~580 CU, exceeding Colab Pro+ monthly budget. Only 3.5 baseline models completed before stopping. | **Compute cost too high**: Production mode uses 13M-param 4-layer network. 200M timesteps per model × 20 models is impractical on Colab. | v2.3 (notebook v1.6.0): TIMESTEPS 200M→50M, TRAINING_MODE production→standard (6M-param), N_SEEDS 5→3 (12 models). Added `save_incremental()` + resume logic (skip completed models on Colab reconnect). Lighter cleanup: removed `cleanup_gpu_memory()`, kept `gc.collect()` + `empty_cache()`. Target: ~70-95 CU. |
+| v2.3 | 2026-02-17 | v2.3 config (50M standard, 12 models) still projected ~162 CU — only baseline phase completed before running out of compute. Each model took 116 min instead of estimated 15-25 min. | **GPU environment FPS bottleneck**: `_get_observations()` achieved only 7,200 FPS on A100 due to: (1) 3 `.item()` calls forcing CUDA synchronization every step, (2) Python for-loop with 100 iterations for price window, (3) 50+ individual tensor slice/pad/expand ops for indicators. The "40K-80K FPS" docs were from simpler environments, never validated with v4.0.0's 59 features. | v2.4: Pre-computed observation windows via `_precompute_observation_windows()`. All market/technical features pre-computed at init using `unfold()` (~30 MB). `_get_observations()` reduced from ~350 lines to ~120 lines with zero `.item()` calls, zero Python loops, ~10 gather ops. Expected 15K-25K FPS → ~53-83 CU for 12 models. |
 
 ### v2.1 Failure Details (2026-02-10)
 
@@ -334,6 +335,50 @@ Agent intervals:
 | Fitness Score | - | - | - | - | - |
 
 ### Recommendation: [TO BE DETERMINED]
+
+## Implementation (v2.4 - Pre-computed Observation Windows)
+
+### The Bottleneck
+
+`_get_observations()` is called every step of every rollout — the single hottest path in training. On A100-80GB with v4.0.0 (59 features), it achieved only **7,200 FPS** vs the documented 40K-80K FPS (which was never validated with the full feature set).
+
+Three root causes:
+1. **`.item()` calls** (3 per step): Forces CUDA synchronization, breaking GPU pipelining
+2. **Python for-loop** (100 iterations): Launches 100 tiny GPU kernels instead of 1 gather
+3. **50+ individual tensor ops**: Each indicator sliced, padded, normalized, expanded separately
+
+### The Fix (`vectorized_env.py`)
+
+New `_precompute_observation_windows()` method at init time pre-computes all market/technical features:
+
+| Feature | Pre-computed Shape | Method |
+|---------|-------------------|--------|
+| Normalized prices | `(N, W)` | `unfold()` + per-window mean normalization |
+| Returns / log returns | `(N, W)` | `unfold()` + zero position 0 |
+| Volatility, momentum, RSI | `(T,)` | `unfold().std()`, vectorized arithmetic, cumsum sliding window |
+| Extended indicators (14) | `(N, W, 14)` | Stack normalized series, `unfold()`, permute |
+| Multi-window features (9) | `(T, 9)` | Vectorized arithmetic for 3 windows x 3 features |
+
+Total memory: ~30 MB (negligible on A100-80GB). N = T - W + 1.
+
+Rewritten `_get_observations()`: ~120 lines (was ~350), zero `.item()`, zero Python loops, ~10 gather/assign ops.
+
+### Key Design Decisions
+
+1. **Two index types**: `unfold_idx = current_step - W` for windowed features, `step_vals = current_step` for scalar features
+2. **Per-env indexing**: Handles non-uniform steps after auto-reset (improvement over original which assumed `env_ids[0]` for all)
+3. **Sanitize at precompute time**: `nan_to_num` applied once to pre-computed tensors, not every step
+4. **`contiguous()` on permuted tensors**: Ensures efficient gather operations on GPU
+
+### CU Projections (12 models, 50M timesteps each)
+
+| FPS | Min/model | Total hours | Est. CU (~7/hr) |
+|-----|-----------|-------------|------------------|
+| 7,200 (pre-v2.4) | 116 min | 23.2 hrs | ~162 CU |
+| 14,000 (2x) | 60 min | 11.9 hrs | ~83 CU |
+| 22,000 (3x) | 38 min | 7.6 hrs | ~53 CU |
+
+---
 
 ## References
 

@@ -196,3 +196,6 @@ This indicates the fix is working - halt actions are being safely converted to c
 - **v1.4.0** (2026-02-05): Grace period fix, production-length configuration
 - **v2.0.0** (2026-02-06): Agent prompt rewrite, per-component metrics, adaptive drawdown, expanded experiment results. Addresses 7 systemic problems found in v1.2 experiment analysis.
 - **v2.1.0** (2026-02-07): Bug fixes from v2.0 experiment results (+11.6% PF, p=0.009). Robust JSON parser, action type validation, grace period fix, prompt vocabulary fix, increased max_tokens.
+- **v2.2.0** (2026-02-10): Notebook API key parsing fix (`_read_keys_from_file()`), quick validation speed reduction (10M→2M timesteps).
+- **v2.3.0** (2026-02-16): Compute cost reduction (580 CU → ~70-95 CU). 50M timesteps, standard mode, 3 seeds, incremental save/resume.
+- **v2.4.0** (2026-02-17): Pre-computed observation windows in `_get_observations()`. Eliminates `.item()` CUDA sync, Python for-loops, per-step tensor slicing. Expected 7K→15-25K FPS, ~53-83 CU for 12 models.
