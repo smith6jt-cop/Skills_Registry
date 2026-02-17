@@ -366,9 +366,10 @@ Rewritten `_get_observations()`: ~120 lines (was ~350), zero `.item()`, zero Pyt
 ### Key Design Decisions
 
 1. **Two index types**: `unfold_idx = current_step - W` for windowed features, `step_vals = current_step` for scalar features
-2. **Per-env indexing**: Handles non-uniform steps after auto-reset (improvement over original which assumed `env_ids[0]` for all)
+2. **Per-env indexing (bug fix)**: Old code used `env_ids[0].item()` and `window_start[0]` for ALL envs, giving wrong observations to recently-reset envs with different `current_step`. New code uses per-env index tensors — correct for non-uniform steps after auto-reset.
 3. **Sanitize at precompute time**: `nan_to_num` applied once to pre-computed tensors, not every step
 4. **`contiguous()` on permuted tensors**: Ensures efficient gather operations on GPU
+5. **A/B comparison validity**: Both baseline and treatment groups use the same `GPUVectorizedTradingEnv`, so both get the same optimization. Observations are numerically equivalent (within float32 precision) for the uniform-step case. The per-env indexing bug fix affects both groups equally.
 
 ### CU Projections (12 models, 50M timesteps each)
 
