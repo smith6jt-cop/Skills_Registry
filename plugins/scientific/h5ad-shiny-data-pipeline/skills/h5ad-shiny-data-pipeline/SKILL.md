@@ -136,6 +136,10 @@ Validation checks:
 | Old pipeline: PCA-based neighbors (no batch correction) | Donor-specific technical effects drove the UMAP clustering, obscuring disease biology | Use `X_scVI_mean` with cosine metric for batch-corrected neighbor computation |
 | Storing DataFrames directly in `.uns` | H5AD serialization doesn't handle pandas DataFrames well in `.uns` (type conversion issues) | Store each column as a separate numpy array with a naming convention prefix; reconstruct on the R side |
 | Defining slash commands in CLAUDE.md | Claude Code only discovers skills from `.claude/skills/<name>/SKILL.md` files — CLAUDE.md is loaded as documentation context only, NOT for skill registration | Always create skill files in `.claude/skills/`; git submodule CLAUDE.md files are not searched for skills |
+| `adata.obs.reset_index()` when index name matches column | `islets_core_fixed.h5ad` has `islet_id` as both the index name AND a column → pandas raises `ValueError: cannot insert islet_id, already exists` | Check `if idx_name in adata.obs.columns: reset_index(drop=True)` before any merge that uses reset_index |
+| `fillna('')` on categorical columns | h5py can't write NaN in string columns, but `.fillna('')` on a Categorical raises `TypeError: Cannot setitem on a Categorical with a new category` | Always `.astype(str)` BEFORE `.fillna('')` for categorical obs columns |
+| Using `CODEX_Pancreas_Donors.xlsx` for donor metadata | The Excel file has a **different donor cohort** (nPOD pilot: 6090, 6171...) than the CODEX data (6505, 6533...) — ALL merges produce NaN | Derive donor metadata (status, age, gender, AAb flags) from the h5ad obs itself, not from external donor key files. Build `donor_key_df` from `adata.obs.groupby('imageid')` |
+| Missing `combined_islet_id` in rebuilt h5ad | `islets_core_fixed.h5ad` has `islet_id` (e.g., `6505_Islet_284`) but trajectory module references `combined_islet_id` | Add `adata.obs['combined_islet_id'] = adata.obs['islet_id'].copy()` before saving trajectory h5ad |
 
 ## Final Parameters
 
@@ -177,6 +181,23 @@ python_packages: scanpy==1.11.5, anndata==0.12.4, scvi-tools==1.4.0, scib-metric
 - **PAGA-initialized UMAP**: `init_pos='paga'` gives more meaningful UMAP topology than random initialization, especially for trajectory data where group connectivity matters.
 - **Validation gates**: Define quantitative pass/fail criteria (r < -0.3 for INS, etc.) before running the pipeline. This prevents post-hoc rationalization of poor trajectories.
 - **Claude Code skills**: `.claude/skills/<name>/SKILL.md` is the ONLY mechanism for registering slash commands. CLAUDE.md, git submodules, and plugin.json files are NOT discovered as skills.
+- **Donor metadata provenance**: Never assume an external Excel "donor key" matches your data cohort. Build donor metadata from the canonical h5ad obs itself — it already has `donor_status`, `age`, `gender`, and AAb flags from the single-cell phenotyping.
+- **Column name compatibility**: When h5ad obs columns get renamed across pipeline steps (e.g., `islet_id` → `combined_islet_id`), add the expected alias before saving. Check what downstream consumers expect by grepping the app code.
+- **H5AD write gotchas**: Before `adata.write_h5ad()`, iterate all obs columns and convert categoricals → `str` then `fillna('')`. Also check that obs index name doesn't collide with a column name.
+
+## Execution Results (2026-02-17)
+
+| Metric | Value |
+|--------|-------|
+| scVI batch LISI | 2.73 (PCA) → 8.07 (scVI) |
+| INS vs pseudotime | r = -0.741 |
+| GCG vs pseudotime | r = 0.379 |
+| Donor ordering | ND=0.491 < Aab+=0.516 < T1D=0.743 |
+| Max donor quintile fraction | 0.38 (threshold: <0.80) |
+| Islets | 1,015 (31 protein vars) |
+| islet_explorer.h5ad | 47 MB |
+| H5AD vs Excel prep_data | targets=48,438, markers=64,584, comp=5,382 (identical) |
+| Total validation checks | 33/33 passed |
 
 ## References
 
