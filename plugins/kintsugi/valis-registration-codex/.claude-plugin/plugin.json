@@ -1,0 +1,10 @@
+{
+  "name": "valis-registration-codex",
+  "version": "2.1.0",
+  "description": "Trigger: (1) registration produces misaligned images, (2) investigating non-rigid vs rigid registration quality, (3) configuring VALIS parameters for CODEX tissue-on-slide data, (4) batch re-registration across multiple projects. CORRECTED: Earlier 'rigid-only' conclusion was caused by a parameter passing bug (params=init_kwargs not unpacked). Non-rigid with tuned smoothing is the correct approach.",
+  "author": {
+    "name": "KINTSUGI Team"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith-cop/Skills_Registry"
+}
