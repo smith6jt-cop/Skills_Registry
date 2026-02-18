@@ -129,6 +129,8 @@ echo "  Errors:        ${errors}"
 | No QC check at all (original script) | Could delete intermediates before QC reports even existed, let alone reviewed | Always verify QC completion before destructive operations |
 | Checking only for QC PDFs (not sentinels) | PDFs may exist from a partial/failed QC run | Sentinel files are authoritative — only created on successful completion |
 | Making `--force` skip sentinel checks too | Would defeat the purpose entirely | `--force` should only skip human-in-the-loop prompts, never safety checks |
+| Requiring registration QC sentinel for intermediate cleanup | Blocked cleanup of 16 projects while re-registration was in progress | Registration reads EDF outputs, not intermediates. Only stitch/decon/edf sentinels needed for intermediate+raw cleanup |
+| Running `--force` without user reviewing QC reports | Bypasses the human review step (Layer 2) — defeats the purpose of the guard | Never use `--force` without explicit user confirmation that QC has been reviewed |
 
 ## Key Insights
 - **Sentinel files are authoritative** — they're created by Snakemake only on rule success, unlike output files which may be partial
@@ -136,6 +138,8 @@ echo "  Errors:        ${errors}"
 - **`--force` must not bypass sentinel checks** — it only removes the interactive prompt for efficiency on re-runs
 - **`--dry-run` shows what would be prompted** — helps users verify the guard logic without risk
 - **Default-deny** (`[y/N]`) — empty input or anything other than `y`/`Y` skips the dataset
+- **Registration QC is independent** — registration reads EDF outputs, not stitched/deconvolved intermediates. Only stitch/decon/edf sentinels are required for intermediate cleanup. Registration QC is noted as informational but not blocking.
+- **Freed ~6.5 TB** from 16 projects in one cleanup pass (Feb 2026) — stitched (~110-186 GB each) + deconvolved (~same) + raw (~84-481 GB each)
 
 ## Related Skills
 - `batch-staging-rsync-patterns` - Staging scripts that feed into cleanup

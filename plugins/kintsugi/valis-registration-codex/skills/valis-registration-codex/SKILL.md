@@ -14,7 +14,7 @@ date: 2026-02-18
 | **Date** | 2026-02-15 to 2026-02-18 |
 | **Goal** | Diagnose and fix inaccurate multi-cycle registration |
 | **Environment** | HiPerGator, SLURM, GPU (B200/Turin), VALIS library |
-| **Status** | VALIDATED — non-rigid with tuned params confirmed superior on CX_19-001_SP_CC2-A28 |
+| **Status** | VALIDATED — 4/16 batch projects re-registered. Non-rigid with tuned params (sigma_ratio=0.01) confirmed on spleen + lymph node tissue. Fallback copy removed. |
 
 ## Context
 
@@ -200,6 +200,10 @@ crop = img.crop(x, y, 1000, 1000)
 | `sigma_ratio=0.05` (205px sigma!) | Extreme over-smoothing washes out all local corrections | Sigma = 0.05 * 4096 = 205 pixels — averaging over 400+ pixel neighborhoods |
 | Attributing bad registration to "tissue degradation" | Late cycles (10-11) had near-zero NCC | User confirmed: all images have clear contrast; it's feature matching + non-rigid tuning, not tissue quality |
 | Duplicate Snakemake submissions | Stale background Snakemake coordinators auto-resubmit after cancel | Always check `squeue` for duplicate jobs before manual resubmission |
+| `fallback_copy` sentinel masked broken registrations | 3 projects had `method=fallback_copy` with `error=Rigid registration failed` — only caught by manual QC inspection of sentinels, not by pipeline exit code | Remove fallback copy entirely; registration failures must raise loudly. Silent fallbacks hide data quality issues |
+| Race condition: old SLURM jobs writing stale results | Killed Snakemake coordinators leave SLURM jobs running. After Phase 1 cleanup + relaunch, old jobs write stale results to the same output directory | Always `scancel` old jobs AND kill stale coordinators before relaunching. Check `squeue -u $USER` for duplicates |
+| `declare -a TODO_PROJECTS` does NOT clear bash arrays | Adding `declare -a TODO_PROJECTS` to a script that already has the array populated does NOT reset it — the old values persist | Use `TODO_PROJECTS=()` (empty assignment) to explicitly clear a bash array before repopulating |
+| Snakemake targets after `--configfile` parsed as configs | `snakemake --configfile config.yaml registration` treats `registration` as a second config file, not as a target rule | Targets must come BEFORE options: `snakemake registration --configfile config.yaml` |
 
 ## What Worked
 
@@ -212,6 +216,9 @@ crop = img.crop(x, y, 1000, 1000)
 | Non-rigid with tuned params (sigma_ratio=0.01) | CX_19-001_SP_CC2-A28 | 11/12 cycles improved, mean D: 1.12 -> 0.77 |
 | Dimension normalization (pad to common size) | CX_19-001_SP_CC2-A28 | Inconsistent EDF dims padded to (7479, 12662) — critical for VALIS |
 | Defensive `measure_error()` guard for None timing | CX_19-001_SP_CC2-A28 | Prevents NoneType crash when `end_non_rigid_time` is None |
+| Batch re-registration validated (4/16 projects) | CX_19-002_lymph-node_R1 (29.5 min), CX_19-002_lymph-node_R3 (27.6 min), CX_19-003_lymph-node_R1 (40.8 min) | Confirms tuned non-rigid params generalize across tissue types (spleen + lymph node) |
+| Fallback copy removed — loud failure on error | All projects | Registration failures now raise exceptions instead of silently copying EDF images. Prevents masked broken registrations from passing QC undetected |
+| Wave-based parallel execution across GPU pool | 5 concurrent (3 clive + 2 maigan) | Multiple projects registered in parallel waves using multi-account GPU pool. Account distribution controlled by config.yaml accounts list order |
 
 ## Experiment Tracking
 
@@ -223,6 +230,10 @@ crop = img.crop(x, y, 1000, 1000)
 | Heavy smoothing | 4096 | **Disabled** | 0.05 | **Failed** — 205px sigma washes out all local corrections |
 | Fixed sigma + coarse NR + None bk_dxdy | 4096 | **Disabled** (`None` explicit) | 0.01 | **Pending** — needs re-registration to verify |
 | **CX_19-001_SP_CC2-A28 (VALIDATED)** | 4096 | **Disabled** (`None` explicit) | 0.01 | **11/12 cycles improved**, mean D: 1.12 -> 0.77, 52 TIFFs in 67.9 min (B200) |
+| **CX_19-002_lymph-node_R1 (VALIDATED)** | 4096 | **Disabled** | 0.01 | 29.5 min — confirms params generalize to lymph node tissue |
+| **CX_19-002_lymph-node_R3 (VALIDATED)** | 4096 | **Disabled** | 0.01 | 27.6 min — second lymph node dataset validated |
+| **CX_19-003_lymph-node_R1 (VALIDATED)** | 4096 | **Disabled** | 0.01 | 40.8 min — third lymph node dataset validated |
+| **Batch re-registration (4/16)** | 4096 | **Disabled** | 0.01 | Fallback copy removed; wave-based parallel across 5 GPUs (3 clive + 2 maigan) |
 
 ## VALIS Metrics Reference
 
@@ -254,6 +265,11 @@ crop = img.crop(x, y, 1000, 1000)
 - **Dimension normalization**: EDF outputs can have inconsistent dimensions across cycles. The registration wrapper must pad all images to a common size before VALIS, or displacement fields will be incorrect. Use `normalize_dimensions: true` in config.
 - **Stale Snakemake coordinators**: After cancelling SLURM jobs, background Snakemake processes may still be alive and resubmit jobs. Always check `squeue` for duplicate jobs before manual resubmission.
 - **Defensive timing**: `register_micro()` must record `end_non_rigid_time` before returning, and `measure_error()` must guard against `None` timing values to prevent crashes in edge cases
+- **Batch re-registration validated**: 4/16 projects completed (CX_19-002_lymph-node_R1: 29.5 min, CX_19-002_lymph-node_R3: 27.6 min, CX_19-003_lymph-node_R1: 40.8 min). Tuned non-rigid params (sigma_ratio=0.01, 4096px) generalize across spleen and lymph node tissue types.
+- **Fallback copy is dangerous**: The old `fallback_copy` sentinel masked 3 broken registrations with `error=Rigid registration failed`. These passed the pipeline without error and were only caught by manual inspection of sentinel JSON. Fallback copies should NEVER be used — registration failures must raise exceptions.
+- **Race condition on relaunch**: Old SLURM jobs from killed Snakemake coordinators can write stale output after Phase 1 cleanup. Must cancel ALL old jobs (`scancel`) and kill stale coordinators before relaunching registration.
+- **Bash array pitfall**: `declare -a TODO_PROJECTS` does NOT clear an existing bash array. Use `TODO_PROJECTS=()` to explicitly empty it before repopulating.
+- **Snakemake CLI argument order**: Targets after `--configfile` are interpreted as additional config files, not rule targets. Always place targets BEFORE options: `snakemake registration --configfile config.yaml`
 
 ## When to Apply
 

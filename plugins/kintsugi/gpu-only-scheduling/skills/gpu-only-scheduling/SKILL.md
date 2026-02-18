@@ -1,6 +1,6 @@
 ---
 name: gpu-only-scheduling
-description: "GPU-only SLURM scheduling for KINTSUGI: never use CPU fallback for stitching/deconvolution — queuing for GPU is 15-20x faster"
+description: "GPU-only SLURM scheduling for KINTSUGI: never use CPU fallback — measured speedups: stitch 25x, decon 5x, EDF 15x (~13x full cycle)"
 author: KINTSUGI Team
 date: 2026-02-13
 ---
@@ -93,10 +93,12 @@ CPUS = int(getattr(snakemake.resources, "cpus_per_task", 4))
 
 | Attempt | Why it Failed | Lesson Learned |
 |---------|---------------|----------------|
-| CPU fallback for overflow cycles | 15-20x slower — BaSiC `fit()` is GPU-bottlenecked | Queue for GPU instead; even waiting 12 min is faster than 2 hrs on CPU |
+| CPU fallback for overflow cycles | 5-25x slower per step (~13x full cycle) — BaSiC `fit()` is GPU-bottlenecked | Queue for GPU instead; even waiting 22 min is faster than ~282 min on CPU |
 | BaSiC caching (compute fit() once per channel) | 15-20% intensity errors for sparse markers (see `basic-caching-evaluation`) | Flatfield varies per z-plane for some channels — can't cache |
 | Hardcoded `max_workers=4` in wrapper scripts | Wasted half of allocated CPU cores on CPU jobs (8 allocated, 4 used) | Read from `snakemake.resources.cpus_per_task` |
 | Dual-pool `-j 24` (GPU + CPU slots) | Submits too many jobs; CPU jobs block GPU slots conceptually | `-j` should match GPU slots only |
+| Running bare `snakemake` for registration-only work | QC rules trigger alongside registration, consuming SLURM scheduling slots and potentially blocking GPU jobs while waiting for non-GPU QC dependencies | Target specific rules: `snakemake registration --configfile config.yaml` (targets BEFORE options) |
+| Not cancelling stale SLURM jobs before relaunch | Killed Snakemake coordinators leave running SLURM jobs. New launches race with old jobs writing to same output | Always `scancel` + `squeue -u $USER` check before relaunching batch workflows |
 
 ## Final Parameters
 
@@ -113,12 +115,15 @@ CPUS = int(getattr(snakemake.resources, "cpus_per_task", 4))
 ```
 
 ## Key Insights
-- **GPU is 15-20x faster** for BaSiC illumination correction — the dominant bottleneck
-- **Queuing is faster than CPU**: Even if a cycle waits 12 min for a GPU slot, total time is still ~24 min vs ~18 hours with CPU
+- **Measured per-step speedups** (CX_19-003, 9x7 grid, 4ch, 20z): stitch 25x, decon 5x, EDF 15x (~13x full cycle)
+- **GPU ~22 min vs CPU ~282 min per cycle**: stitch ~8 vs ~200 min, decon ~12 vs ~60 min, EDF ~1.5 vs ~22 min
+- **Queuing is faster than CPU**: Even if a cycle waits 12 min for a GPU slot, total time is still ~44 min vs ~18 hours with CPU
 - **Per-cycle pipeline** (`stitch→decon→edf`) means GPU slots free up incrementally — overflow cycles start as soon as one cycle's stitch finishes
 - **BaSiC fit() is the bottleneck**, not stitch_images() or blending — it runs 500 DCT iterations per z-plane, 80 z-planes per cycle
 - **Never cache BaSiC flatfields** — confirmed by `basic-caching-evaluation` skill (15-20% intensity errors)
 - **Dynamic worker counts matter** — `max_workers=4` wasted 50% of CPU job allocation
+- **Target specific Snakemake rules to avoid GPU QC contention** — Running bare `snakemake` triggers QC rules (qc_stitch, qc_decon, qc_edf, qc_registration) which don't need GPU but compete for SLURM scheduling slots. Use `snakemake registration --configfile config.yaml` to run only registration. QC can run separately without GPU allocation (16 GB RAM, 2 CPUs, 30 min)
+- **Account distribution for registration** — `_registration_assignment()` picks the first GPU account in config.yaml `resources.accounts` list. Reorder accounts to control which account runs registration jobs. Useful for load balancing when one account has queued jobs
 
 ## When to Apply
 - Configuring SLURM scheduling for KINTSUGI batch processing

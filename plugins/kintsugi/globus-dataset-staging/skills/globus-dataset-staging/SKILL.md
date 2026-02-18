@@ -53,7 +53,10 @@ globus task list --limit 10
 | PATH lab GCP | `f1b69b9e-f07a-11ef-8c40-0e26ca329435` | Source: Globus Connect Personal on PATH lab workstation |
 | UFRC HiPerGator | `5dbaf795-8a7e-4dca-91aa-6e10d610c2b3` | Destination: HiPerGator mapped collection |
 
-Source base path: `/run/user/1001/gvfs/smb-share:server=path.ahc.ufl.edu,share=path$/SHARE/HuBMAP/`
+Source base path (cifs): `/mnt/ahc_share/SHARE/HuBMAP/`
+Source base path (GVFS, DEPRECATED): `/run/user/1001/gvfs/smb-share:server=path.ahc.ufl.edu,share=path$/SHARE/HuBMAP/`
+
+**CRITICAL: Use cifs mount, NOT GVFS.** GVFS SMB mounts (`/run/user/1001/gvfs/...`) cause `Fatal FTP response: end-of-file was reached` errors during bulk transfers (~212 faults per task). GVFS is session-dependent desktop middleware, not suitable for sustained I/O. A proper cifs mount is stable (~7 MB/s per concurrent task, 0 faults).
 
 ## Failed Attempts (Critical)
 
@@ -65,6 +68,8 @@ Source base path: `/run/user/1001/gvfs/smb-share:server=path.ahc.ufl.edu,share=p
 | Used `--batch` for dataset with spaces in path (`CX_21-011 L-B_TH_reg1-2`) | Batch format splits on whitespace, corrupting the path | Transfer datasets with spaces as individual `globus transfer` commands, not batch |
 | Assumed all datasets have same nesting structure | Some have extra `data/` level (e.g., `CX_21-010_LN_n3/data/src_*/`) | Always verify with `globus ls` before building path mappings |
 | Assumed release folder names follow consistent pattern | Release1 uses `Codex_dataset_hubmap_*`, Release2 uses `CODEX_dataset_hubmap_*` (different casing) | Hardcode exact folder names rather than pattern-matching |
+| Used GVFS SMB mount (`/run/user/1001/gvfs/...`) as source path | `Fatal FTP response: end-of-file was reached` — 212 faults per task, <0.4% data transferred | GVFS is session-dependent desktop middleware. Use cifs mount (`/mnt/ahc_share/...`) instead |
+| Didn't activate endpoint before resubmitting | `Activated: False` despite `GCP Connected: True` — transfers accepted but fail immediately | Run `globus endpoint activate <UUID>` before any transfer. GCP requires periodic credential renewal |
 
 ## Final Parameters
 
@@ -102,6 +107,8 @@ thymus_manifest.csv              - 13 thymus datasets standalone
 ```
 
 ## Key Insights
+- **GVFS mounts are unreliable for Globus.** Use `sudo mount -t cifs //path.ahc.ufl.edu/path$ /mnt/ahc_share -o username=...,domain=...` instead. GVFS causes EOF errors under sustained read load.
+- Always run `globus endpoint activate <UUID>` before transfers. GCP endpoints deactivate when credentials expire.
 - Globus Connect Personal endpoints may go offline when the host machine sleeps/reboots. Check source endpoint is active before starting large transfers.
 - `--sync-level size` enables safe re-runs without re-transferring completed files.
 - HiPerGator's mapped collection requires periodic consent renewal. If transfers suddenly fail with auth errors, re-run the consent script.

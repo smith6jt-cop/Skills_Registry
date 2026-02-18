@@ -174,6 +174,9 @@ Both paths use the same `detect_multi_account_resources()` in `hpc.py`.
 | Burst QOS for CPU jobs | OOM kills — burst nodes are oversubscribed, memory not guaranteed | Use regular account QOS with guaranteed resource allocation |
 | `sacctmgr show user USERNAME format=account` | Returns empty pipe on HiPerGator | Use `sacctmgr show associations user=USERNAME format=account -n -P` |
 | Treating maigan as CPU-only (0 GPUs) | Wasted 2 GPU slots — maigan has GPUs too | Query every account for BOTH GPU and CPU limits |
+| Running bare `snakemake` for registration-only | QC rules (qc_stitch, qc_decon, qc_edf) also trigger, consuming GPU slots and blocking registration jobs | Target specific rules: `snakemake registration --configfile config.yaml` |
+| Snakemake targets after `--configfile` | `snakemake --configfile config.yaml registration` treats `registration` as a second config file | Targets must come BEFORE options in Snakemake CLI |
+| Stale SLURM jobs after coordinator kill | Killed Snakemake coordinators leave SLURM jobs running; relaunched jobs race with stale ones writing to same output dir | Always `scancel` old jobs + check `squeue -u $USER` before relaunching |
 
 ## Key Differences from Notebook Mode
 
@@ -224,6 +227,9 @@ Both paths use the same `detect_multi_account_resources()` in `hpc.py`.
 - **Maximize ALL resources** - With limited GPUs, use CPU cores from a separate account for overflow
 - **Same quality, different speed** - CPU processing takes longer but produces identical results
 - **5x time multiplier is empirically derived** - CPU processing typically 3-7x slower than GPU
+- **Target specific Snakemake rules to avoid GPU QC contention** - Running `snakemake registration` (targeted rule) instead of bare `snakemake` prevents QC rules from consuming GPU slots. QC rules (qc_stitch, qc_decon, qc_edf, qc_registration) do NOT need GPUs but Snakemake's scheduler may block GPU slots waiting for QC dependencies to resolve
+- **Account distribution via config.yaml order** - The `_registration_assignment()` function picks the FIRST GPU account in the `resources.accounts` list. Reorder the list (e.g., put `maigan` first) to control which account runs registration. This is useful when one account has better GPU availability or you want to balance load across accounts
+- **Wave-based parallel execution** - For batch re-registration of multiple projects, run projects in waves matching GPU slot count (5 concurrent with 3 clive + 2 maigan). Each project gets one GPU for its registration job. Waves complete independently — failed projects in one wave don't block the next
 
 ## When to Apply This Pattern
 
