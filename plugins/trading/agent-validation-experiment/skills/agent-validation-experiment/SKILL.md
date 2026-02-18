@@ -1,9 +1,9 @@
 ---
 name: agent-validation-experiment
-description: "A/B testing infrastructure for validating Claude agent integration in RL training. Trigger when: (1) planning agent validation, (2) analyzing agent effectiveness, (3) deciding whether to enable agents, (4) understanding agent cost-benefit, (5) reviewing agent prompt design, (6) debugging agent response parsing, (7) notebook API key loading issues."
+description: "A/B testing infrastructure for validating Claude agent integration in RL training. Trigger when: (1) planning agent validation, (2) analyzing agent effectiveness, (3) deciding whether to enable agents, (4) understanding agent cost-benefit, (5) reviewing agent prompt design, (6) debugging agent response parsing, (7) notebook API key loading issues, (8) agent guardrails and phase gates."
 author: Claude Code
-date: 2026-02-16
-version: v2.4
+date: 2026-02-18
+version: v3.0
 ---
 
 # Agent Validation Experiment
@@ -12,10 +12,10 @@ version: v2.4
 
 | Item | Details |
 |------|---------|
-| **Date** | 2026-02-17 |
+| **Date** | 2026-02-18 |
 | **Goal** | Determine if Claude agent integration improves model predictive power |
-| **Status** | v1.0 failed (zero consultations), v1.1 failed (missing directories), v1.2 ran (90 consultations analyzed), v2.0 systemic fixes deployed, v2.1 bug fixes from experiment results (+11.6% PF, p=0.009), v2.2 notebook key parsing fix + quick validation speed fix, v2.3 compute cost reduction (580 CU → ~70-95 CU) + incremental save/resume, **v2.4 pre-computed observation windows (7K → 15-25K FPS, ~53-83 CU)** |
-| **Files** | `scripts/agent_validation_experiment.py`, `notebooks/agent_validation_analysis.ipynb`, `alpaca_trading/training/multi_agent.py`, `alpaca_trading/gpu/vectorized_env.py`, `tests/test_multi_agent.py` |
+| **Status** | v2.4 showed agents HURT performance (fitness -38.2%, PF -6.3%). **v3.0 implements guardrails**: phase gates, cumulative entropy bounds, fitness-gated checkpoints, rollback, institutional knowledge, agent memory persistence. Awaiting re-run. |
+| **Files** | `scripts/agent_validation_experiment.py`, `notebooks/agent_validation_analysis.ipynb`, `alpaca_trading/training/multi_agent.py`, `alpaca_trading/training/agent_memory.py`, `alpaca_trading/gpu/vectorized_env.py`, `tests/test_multi_agent.py` |
 
 ## The Question
 
@@ -24,6 +24,70 @@ version: v2.4
 The codebase has ~4,744 lines of agent integration code. Before relying on it:
 1. We need empirical evidence that agents help
 2. We need to quantify the cost-benefit tradeoff
+
+## v2.4 Experiment Results (Agents HURT Performance)
+
+| Metric | Baseline | Treatment | Change |
+|--------|----------|-----------|--------|
+| Profit Factor | 1.191 | 1.115 | **-6.3%** |
+| Fitness Score | 0.110 | 0.068 | **-38.2%** |
+| Reward-to-Risk | 0.075 | 0.047 | **-37.1%** |
+| Final Equity | 1.014 | 1.009 | -0.5% |
+
+AAPL hit hardest (-12.9% PF, -51.6% fitness); GOOGL roughly neutral (+1.3% PF). Cohen's d > 0.9 (large effect) but p-values > 0.12 (underpowered with n=6).
+
+### Top 5 Root Causes
+
+1. **COMPOUNDING ENTROPY INCREASES DESTROY LEARNED POLICIES**: Every treatment model received 1-2 entropy increases at ~63% progress. GOOGL got cumulative 1.56x. No mechanism to decrease or revert.
+2. **AGENTS MISDIAGNOSE NORMAL TRAINING DYNAMICS**: Agents flagged normal PPO behavior (PF < 1.0 early, oscillation) as problems and intervened.
+3. **ENTROPY APPLIED AT WRONG TIMES**: At 63% progress, agents prescribed entropy INCREASE when the correct action was nothing or DECREASE.
+4. **CHECKPOINT SPAM**: 4-5 per model, never used. Each save causes GPU stall.
+5. **LR ADJUSTMENTS ARE SILENT NO-OPS**: `lr_scheduler.step()` (line 986) overwrites agent LR changes on the very next PPO update. `current_entropy_coef` has NO scheduler, so entropy changes persist and compound.
+
+## v3.0 Guardrails (Current Implementation)
+
+### Phase Gates
+- **EARLY (0-30%)**: No intervention allowed. PF < 1.0 is NORMAL. All consultations skipped.
+- **MID (30-70%)**: Entropy DECREASES only. Prefer continue unless 3+ validation decline trend.
+- **LATE (70-100%)**: NEVER increase entropy. Continue only. Halt only if fitness collapsed >50%.
+
+### Cumulative Entropy Bounds
+- Track `_cumulative_entropy_multiplier` across all adjustments
+- Bounds: `[0.5x, 1.5x]` of initial value (configurable)
+- Initial entropy captured on first `_apply_action()` call
+
+### Fitness-Gated Checkpoints
+- Only save when `current_fitness > self._best_fitness`
+- Track `_best_checkpoint_path` for rollback
+- Skip with message when fitness hasn't improved
+
+### Rollback Action
+- New action type: `rollback` (aliases: `restore_best`, `revert`, `load_checkpoint`)
+- Loads best checkpoint via `trainer.load(path)`
+- Resets entropy to initial value
+- Resets cumulative multiplier to 1.0
+
+### LR Adjustments Disabled
+- `adjust_lr` always returns rejection message: "LR managed by cosine schedule"
+- Prevents agents from wasting reasoning on no-op actions
+
+### Institutional Knowledge
+- 5 hardcoded lessons from v2.4 injected into every consultation
+- Includes: entropy increases harmful, PPO oscillation normal, LR managed by scheduler, checkpoints need fitness improvement, HOLD 30-70% is normal
+
+### Agent Memory Persistence
+- `AgentMemory` class in `agent_memory.py` stores `RunSummary` per symbol
+- Tracks: action outcomes, entropy_increase_success_rate, avg fitness with/without agents
+- Loaded as context into agent prompts so agents don't repeat mistakes
+- JSON files in configurable `memory_dir`
+
+### Reward Engineer → READ-ONLY
+- Diagnostic analyst only, always recommends "continue"
+- No weight change recommendations (impossible at runtime anyway)
+
+### Reduced Consultation Intervals
+- hyperparam: 8 (was 5), risk: 5 (was 3), reward: 15 (was 10)
+- Total ~6 consultations/model (was ~9)
 
 ## Experimental Design
 
@@ -44,17 +108,20 @@ The codebase has ~4,744 lines of agent integration code. Before relying on it:
 ### Sample Size
 - Minimum: 12 runs total (2 symbols x 3 seeds x 2 groups) — 6 pairs for paired t-test
 - Recommended: 20 runs per group (4 symbols x 5 seeds)
-- Statistical power: 80% to detect Cohen's d = 0.8
 - 3 seeds sufficient to detect large effects with paired design
+
+### Statistical Methods (v3.0)
+- **Welch's t-test** (`equal_var=False`): More appropriate for small samples with potentially unequal variances
+- **Bonferroni correction**: p < 0.05/6 = 0.0083 for 6 metrics (controls family-wise error rate)
 
 ## Success Criteria
 
 | Metric | Minimum Improvement | Statistical Significance |
 |--------|---------------------|--------------------------|
-| Profit Factor | +0.2 (e.g., 1.5 → 1.7) | p < 0.05 |
-| Sharpe/Reward-to-Risk | +0.1 | p < 0.05 |
+| Profit Factor | +0.2 (e.g., 1.5 → 1.7) | p < 0.0083 (Bonferroni) |
+| Sharpe/Reward-to-Risk | +0.1 | p < 0.0083 |
 | Max Drawdown | -2% (e.g., 12% → 10%) | p < 0.10 |
-| Consistency | +3% (e.g., 62% → 65%) | p < 0.05 |
+| Consistency | +3% (e.g., 62% → 65%) | p < 0.0083 |
 
 ### Decision Matrix
 
@@ -65,6 +132,15 @@ The codebase has ~4,744 lines of agent integration code. Before relying on it:
 | No significant improvement | Disable agents, save ~$350/year |
 | Performance degraded | Do NOT use agents |
 
+## v3.0 Verification Criteria
+
+1. Treatment fitness >= Baseline fitness (agents don't hurt)
+2. Zero entropy increases applied after 30% progress
+3. Agent rejection rate > 50% (gates working)
+4. Checkpoint count reduced from ~4-5 to ~0-2 per model
+5. Cumulative entropy multiplier stays within [0.5, 1.5] bounds
+6. Memory files created in `data/agent_memory/` with action outcome tracking
+
 ## Running the Experiment
 
 ### Prerequisites
@@ -73,320 +149,98 @@ The codebase has ~4,744 lines of agent integration code. Before relying on it:
 3. Alpaca API credentials configured
 4. Pre-cached market data in Google Drive
 
-### Execution (Colab)
+### MultiAgentConfig (v3.0)
 
 ```python
-# In training.ipynb or separate Colab notebook
-
-# 1. Setup
-import os
-os.environ['ANTHROPIC_API_KEY'] = 'your-key-here'
-
-# 2. Run experiment
-from scripts.agent_validation_experiment import run_validation_experiment
-
-results = run_validation_experiment(
-    symbols=["AAPL", "GOOGL", "MSFT", "NVDA"],  # 4 symbols
-    n_seeds=5,                                    # 5 seeds each
-    timesteps=50_000_000,                         # 50M timesteps
-    cache_dir='/content/drive/MyDrive/Colab_Projects/training_data',
-    output_dir='/content/drive/MyDrive/Colab_Projects/agent_validation',
-    keys_file='/content/Alpaca_trading/config/API_key.txt',
+agent_config = MultiAgentConfig(
+    enable_hyperparameter_tuner=True,
+    enable_risk_analyst=True,
+    enable_reward_engineer=True,
+    enable_data_monitor=False,
+    enable_backtest_validator=False,
+    max_consultations_per_run=50,
+    log_agent_responses=True,
+    # v3.0: Reduced intervals
+    hyperparam_interval=8,
+    risk_interval=5,
+    reward_interval=15,
+    # v3.0: Phase gates
+    no_intervention_before_pct=30.0,
+    entropy_decrease_only_after_pct=50.0,
+    # v3.0: Cumulative entropy bounds
+    max_cumulative_entropy_multiplier=1.5,
+    min_cumulative_entropy_multiplier=0.5,
+    # v3.0: Agent memory
+    memory_dir='data/agent_memory',
+    symbol=symbol,
 )
-
-# 3. Results saved to Google Drive automatically
-```
-
-### Analysis
-
-```python
-# Open notebooks/agent_validation_analysis.ipynb
-# or run analysis cells in the experiment output
 ```
 
 ## Resource Requirements
 
-### Cost-Optimized (v2.4 — recommended)
+### Cost-Optimized (v3.0 — recommended)
 | Resource | Estimate |
 |----------|----------|
 | Training runs | 12 (6 baseline + 6 treatment) |
 | Compute time | ~3-4 hours on A100 (~53-83 CU) with pre-computed obs |
-| API costs | ~$21 (6 treatment runs x $3.50/run) |
-| Storage | ~200 MB (models + logs) |
-
-### Full Experiment (if budget allows)
-| Resource | Estimate |
-|----------|----------|
-| Training runs | 40 (20 baseline + 20 treatment) |
-| Compute time | ~20-40 hours on A100 (~580 CU at 200M production) |
-| API costs | ~$70 (20 treatment runs x $3.50/run) |
-| Storage | ~500 MB (models + logs) |
-
-## Cost Analysis
-
-### Agent API Costs (per training run)
-| Agent | Model | Est. Cost |
-|-------|-------|-----------|
-| Orchestrator | Opus | ~$1.50 |
-| Hyperparameter Tuner | Sonnet | ~$0.60 |
-| Risk Analyst | Sonnet | ~$0.90 |
-| Reward Engineer | Sonnet | ~$0.30 |
-| Data Monitor (disabled) | Haiku | ~$0.10 |
-| **Total/run** | - | **~$3.50** |
-
-### Annual Cost Projection
-- 100 training runs/year: ~$350
-- 200 training runs/year: ~$700
-
-### Break-even Analysis
-If agents improve Sharpe by 0.1:
-- Worth approximately 1% additional annual return
-- On $100k portfolio: $1,000/year value
-- ROI: 3x on $350 investment
-
-## What Agents Actually Do (v2.0)
-
-### During Training
-1. **Hyperparameter Tuner** (every 5 validations)
-   - PRIMARY: Analyzes trade quality (win rate, profit factor) to drive LR/entropy decisions
-   - SECONDARY: Checks action distribution (>70% HOLD -> increase entropy)
-   - TERTIARY: KL divergence (only intervene at 3x target)
-   - Receives symbol name and GARCH volatility for per-run differentiation
-   - Bounds: LR 0.1x-3.0x, Entropy 0.1x-5.0x
-
-2. **Risk Analyst** (every 3 validations)
-   - PRIMARY: Trade quality trajectory (win rate, profit factor, reward-to-risk trends)
-   - SECONDARY: Drawdown trajectory (improving/stable/worsening)
-   - TERTIARY: KL divergence (only at 3x target for 3+ consecutive validations)
-   - Returns `trade_quality` and `drawdown_trajectory` assessments
-   - Can recommend checkpoint saves or training halt
-
-3. **Reward Engineer** (every 10 validations)
-   - Analyzes per-component reward balance (P&L should dominate at 40%)
-   - Checks for component gaming (e.g., direction >> P&L = predicts but doesn't profit)
-   - Evaluates action distribution (40-60% HOLD target for hourly trading)
-   - Assesses position sizing health (varied sizes = good, fixed = bad)
-   - Returns `dominant_component`, `component_balance`, `action_distribution_health`, `position_sizing_health`
-
-### v1.2 Analysis Findings (90 consultations)
-
-| Problem | Evidence | Impact |
-|---------|----------|--------|
-| Identical recommendations | All 10 HP tuner at 31.5% gave `lr_mult=0.7, entropy_mult=1.3` | No per-run value |
-| Agents blind to drawdown | Training DD 0.05-0.72%; 15% threshold never triggers | No DD learning |
-| Wrong weights in prompt | RE showed `direction: 0.40, pnl: 0.10` (v2.5.0) | Wrong analysis |
-| KL fixation | ~90% of RA flags cite KL | PPO already manages KL |
-| No trade quality analysis | Win rate, position sizing never discussed | Missing key signals |
-
-### Limitations
-- Claude has **no memory across training runs** - cannot learn what worked
-- Consultations are **rate-limited** (100/run) - cannot react to every update
-- Recommendations are **generic RL knowledge** - may not apply to this specific system
-- **Latency**: By the time Claude sees a problem, thousands of updates have occurred
-
-## Why Results Are Uncertain
-
-### Fundamental Concerns
-1. **LLMs don't learn from feedback** - Each consultation is independent
-2. **Generic vs. specific knowledge** - Claude knows RL, but not this specific reward structure
-3. **Reaction latency** - PPO updates at 50,000+ FPS, consultations every ~1000 updates
-4. **No counterfactual** - Can't run same training with and without agents simultaneously
-
-### What Claude *Can* Do Well
-1. Pattern recognition in metrics (reward collapse, HOLD bias)
-2. Safety guardrails (veto authority, bounds enforcement)
-3. Documentation/audit trail for post-training analysis
+| API costs | ~$15 (6 treatment runs x ~$2.50/run with reduced consultations) |
+| Storage | ~200 MB (models + logs + memory) |
 
 ## Failed Attempts
 
 | Attempt | Date | What Happened | Root Cause | Fix |
 |---------|------|--------------|------------|-----|
-| v1.0 | 2026-02-01 | Zero agent consultations across all 10 treatment runs. Treatment results were byte-for-byte identical to baseline. | **validation_interval mismatch**: With 50M timesteps, `n_envs=1024`, `n_steps=512`, only ~95 updates occurred. With `validation_interval=20`, only 4-5 validation cycles happened. Agent intervals (3, 5, 10) rarely aligned with these few cycles. | `train_with_guidance()` now auto-adjusts `validation_interval` to ensure ≥15 validation cycles. Added diagnostic logging to track callback invocations. |
-| v1.1 | 2026-02-04 | Agent consultations now working, but "Parent directory checkpoints does not exist" error during checkpoint action. Training continued but agent-triggered checkpoints failed silently. | **Missing directory creation**: (1) `_apply_action()` wrote to `checkpoints/agent_triggered_{step}.pt` without creating directory. (2) `save_agent_logs()` wrote to filepath without ensuring parent exists. | Added `os.makedirs(os.path.dirname(path), exist_ok=True)` before both save operations in `multi_agent.py` (lines 589 and 1086-1088). |
-| v1.2 | 2026-02-05 | 90 consultations analyzed. All HP tuner recommendations identical (`lr=0.7, ent=1.3`). Risk Analyst fixated on KL. Reward Engineer using v2.5.0 weights. No agents analyzed trade quality. Drawdown penalty inactive (15% threshold never triggered). | **7 systemic problems**: (1) No per-run context (symbol/volatility), (2) Fixed DD threshold useless, (3) No component breakdown visible, (4) KL over-emphasized, (5) Wrong weights in RE prompt, (6) No position sizing analysis, (7) Grace period untested. | v2.0: Rewritten prompts, per-component metrics pipeline, adaptive drawdown, expanded TrainingResult. 16 new tests. |
-| v2.0 | 2026-02-07 | Experiment showed +11.6% profit factor (p=0.009) but 5 bugs degraded agent effectiveness: ~50% Risk Analyst parse failures, grace period produced invalid action type, orchestrator passed unknown action types, Risk Analyst prompt suggested invalid types, max_tokens too low. | **5 code bugs**: (1) `max_tokens=800` truncates 8-field JSON, (2) grace period converts to `save_checkpoint` (invalid), (3) no action type validation, (4) prompt vocabulary uses non-canonical types, (5) parser has no truncation recovery. | v2.1: 5-strategy JSON parser, `VALID_ACTION_TYPES` + `ACTION_TYPE_ALIASES`, grace period→`checkpoint`, prompt vocabulary fix, max_tokens→1500. 17 new tests. |
-| v2.1 | 2026-02-10 | Notebook gap-fill fails with 401 Authorization Required. Quick validation takes >10 min instead of ~5 min. | **2 bugs**: (1) Cell 10 parsed API key file with naive `lines[0]`/`lines[1]` — file has `Key:` and `Secret:` labels on their own lines, so `APCA_API_KEY_ID="Key:"` was sent to Alpaca. (2) Quick validation used 10M timesteps + validation_interval=3 + max_consultations=10 → 76 updates, 25 validations, 10+ API calls. | v2.2 (notebook v1.5.0): Use `_read_keys_from_file()` from broker module. Reduce to 2M timesteps, validation_interval=5, max_consultations=5. |
-| v2.2 | 2026-02-16 | Full experiment at 200M timesteps production mode consumed ~29 CU/model. 20 models = ~580 CU, exceeding Colab Pro+ monthly budget. Only 3.5 baseline models completed before stopping. | **Compute cost too high**: Production mode uses 13M-param 4-layer network. 200M timesteps per model × 20 models is impractical on Colab. | v2.3 (notebook v1.6.0): TIMESTEPS 200M→50M, TRAINING_MODE production→standard (6M-param), N_SEEDS 5→3 (12 models). Added `save_incremental()` + resume logic (skip completed models on Colab reconnect). Lighter cleanup: removed `cleanup_gpu_memory()`, kept `gc.collect()` + `empty_cache()`. Target: ~70-95 CU. |
-| v2.3 | 2026-02-17 | v2.3 config (50M standard, 12 models) still projected ~162 CU — only baseline phase completed before running out of compute. Each model took 116 min instead of estimated 15-25 min. | **GPU environment FPS bottleneck**: `_get_observations()` achieved only 7,200 FPS on A100 due to: (1) 3 `.item()` calls forcing CUDA synchronization every step, (2) Python for-loop with 100 iterations for price window, (3) 50+ individual tensor slice/pad/expand ops for indicators. The "40K-80K FPS" docs were from simpler environments, never validated with v4.0.0's 59 features. | v2.4: Pre-computed observation windows via `_precompute_observation_windows()`. All market/technical features pre-computed at init using `unfold()` (~30 MB). `_get_observations()` reduced from ~350 lines to ~120 lines with zero `.item()` calls, zero Python loops, ~10 gather ops. Expected 15K-25K FPS → ~53-83 CU for 12 models. |
+| v1.0 | 2026-02-01 | Zero agent consultations across all 10 treatment runs. | **validation_interval mismatch**: With 50M timesteps, only 4-5 validation cycles happened. Agent intervals rarely aligned. | `train_with_guidance()` auto-adjusts `validation_interval` to ensure ≥15 cycles. |
+| v1.1 | 2026-02-04 | "Parent directory checkpoints does not exist" error. | **Missing directory creation** in `_apply_action()`. | Added `os.makedirs(parent, exist_ok=True)` before save. |
+| v1.2 | 2026-02-05 | All HP tuner recommendations identical. Risk Analyst fixated on KL. Wrong weights in RE prompt. | **7 systemic problems**: No per-run context, fixed DD threshold, no component breakdown, KL over-emphasized. | v2.0: Rewritten prompts, per-component metrics, adaptive drawdown. |
+| v2.0 | 2026-02-07 | +11.6% PF (p=0.009) but 5 bugs: ~50% RA parse failures, invalid grace period type, unknown action types. | **5 code bugs**: max_tokens too low, grace period→invalid type, no validation. | v2.1: 5-strategy parser, VALID_ACTION_TYPES, max_tokens→1500. |
+| v2.1 | 2026-02-10 | Notebook 401 errors, quick validation >10 min. | **API key parsing**: Naive line reading sent "Key:" as API key ID. | Use `_read_keys_from_file()`. Quick val: 2M steps, val_interval=5. |
+| v2.2 | 2026-02-16 | 200M production mode = ~29 CU/model, 580 CU total. Exceeded budget. | **Compute cost too high**. | 50M standard mode, 3 seeds, incremental save/resume. ~70-95 CU. |
+| v2.3 | 2026-02-17 | 50M standard still ~162 CU. 116 min/model (7,200 FPS). | **GPU env bottleneck**: `.item()` calls, Python loops, 50+ tensor ops. | v2.4: Pre-computed obs via `unfold()`. 15K-25K FPS, ~53-83 CU. |
+| v2.4 | 2026-02-18 | **Agents HURT performance**: Fitness -38.2%, PF -6.3%. Entropy increases compounded, agents misdiagnosed normal dynamics, LR changes are no-ops. | **5 root causes**: Compounding entropy, misdiagnosis, wrong timing, checkpoint spam, LR no-ops. | v3.0: Phase gates, cumulative bounds [0.5, 1.5], fitness-gated checkpoints, rollback, LR disabled, institutional knowledge, agent memory, RE read-only. |
 
-### v2.1 Failure Details (2026-02-10)
+## Critical Lessons Learned
 
-**Symptoms (API key parsing):**
-- Gap-fill for AAPL and GOOGL returns `401 Authorization Required` HTML from nginx
-- Log shows `Alpaca API keys loaded from environment variables` (keys exist but wrong values)
-- Cache falls back to 11-day-old data (no gap-fill)
+### NEVER increase entropy after 30% training progress
+Entropy increases at 63% progress undo 30M+ steps of learned policy. The model has developed trading strategies by this point; increasing exploration forces it to "forget" them.
 
-**Root Cause:**
-The API key file (`config/API_key_500Paper.txt`) has a labeled format:
-```
-Key:
-PKTH...JLH2
-Secret:
-EsNf...6kbw
-```
-Cell 10 read it as `lines = [line for line if line.strip()]`, producing `["Key:", "PKTH...", "Secret:", "EsNf..."]`. Then `lines[0]="Key:"` was set as `APCA_API_KEY_ID` and `lines[1]="PKTH..."` (the actual key) as `APCA_API_SECRET_KEY`. Alpaca rejected "Key:" as an API key ID → 401.
+### PPO oscillation is NORMAL — agents must not react
+Profit factor naturally oscillates during training. A single validation with PF < 1.0 is not a crisis. Only 3+ consecutive declining validations are meaningful.
 
-**Fix:** Use `_read_keys_from_file()` from `alpaca_trading.trading.broker` which handles `Key:` / `Secret:` labels, `KEY=VALUE`, and `KEY: VALUE` formats correctly.
+### LR adjustments via agents are impossible
+The cosine LR scheduler calls `lr_scheduler.step()` every PPO update, overwriting any agent modification to `param_group['lr']`. Only `current_entropy_coef` persists because it has no scheduler.
 
-**Symptoms (slow quick validation):**
-- 10M timesteps with batch_size=131K → 76 updates
-- validation_interval=3 → ~25 validations
-- Each validation potentially triggers agent API calls (~10-20s each)
-- max_consultations=10 allowed up to 10 Claude API roundtrips
+### Checkpoints are useless without rollback
+v2.4 saved 4-5 checkpoints per model, none were ever loaded. Checkpoints only have value if paired with a rollback mechanism triggered by fitness decline.
 
-**Fix:** Reduce to 2M timesteps (15 updates), validation_interval=5 (3 validations), max_consultations=5. Target ~3 min.
+### Default action must be "continue"
+The v2.4 experiment proved that intervention is destructive. 80%+ of consultations should result in "continue". Active intervention should be rare (<20%).
 
-### v2.0 Failure Details (2026-02-07)
-
-**Experiment Results (statistically significant improvement despite bugs):**
-- +11.6% profit factor (p=0.009)
-- 20 runs, 200M timesteps each, A100 GPU
-
-**5 Bugs Found:**
-1. **~50% parse failures**: Risk Analyst's 8-field JSON with reasoning regularly exceeds 800 tokens. Response truncated before closing `}`, `json.loads()` fails, returns `{"error": "Failed to parse response"}`.
-2. **Invalid grace period type**: `halt → save_checkpoint` — but `_apply_action()` only handles `checkpoint`, so the action falls through to "Unknown action type" and does nothing.
-3. **Unknown action types pass through**: Orchestrator creates `TrainingAction(action_type="flag_for_review")` from LLM output. `_apply_action()` returns "Unknown action type" but the action is silently ignored.
-4. **Prompt vocabulary mismatch**: Risk Analyst prompt says `"recommendation": "continue|save_checkpoint|halt|reduce_lr"` — two of those (`save_checkpoint`, `reduce_lr`) are not canonical types.
-5. **Root cause of #1**: `max_tokens=800` for agent consultations, `max_tokens=1000` for orchestrator. Risk Analyst's response with 8 fields + detailed reasoning regularly needs 1200+ tokens.
-
-### v1.1 Failure Details (2026-02-04)
-
-**Symptoms:**
-- Error message: `⚠️ Agent consultation error: Parent directory checkpoints does not exist.`
-- Training continued (error caught in callback exception handler)
-- Agent-triggered checkpoints not saved
-- Risk analyst halted Treatment 1/10 early due to "zero fitness collapse"
-- Consultations happening but actions failing silently
-
-**The Code That Broke It:**
-```python
-# multi_agent.py line 588 (BEFORE fix)
-elif action.action_type == "checkpoint":
-    checkpoint_path = f"checkpoints/agent_triggered_{self.trainer.global_step}.pt"
-    self.trainer.save(checkpoint_path)  # FAILS - checkpoints/ doesn't exist in Colab
-```
-
-**Why It Wasn't Caught Earlier:**
-1. Exception handler at line 987 catches all errors and logs them as warnings
-2. Training continues after error - doesn't fail visibly
-3. Quick validation test (cell 25) doesn't trigger checkpoint actions
-4. Risk analyst triggered `halt` action on first run, masking the checkpoint issue
-
-**Files Modified:**
-- `alpaca_trading/training/multi_agent.py`:
-  - Line 589: Added `os.makedirs(os.path.dirname(checkpoint_path), exist_ok=True)`
-  - Lines 1086-1088: Added parent directory creation before `save_agent_logs()`
-
-### v1.0 Failure Details (2026-02-01)
-
-**Symptoms:**
-- All treatment runs showed `agent_consultations: 0`, `agent_actions_taken: 0`
-- Agent config files had empty arrays: `"consultations": [], "decisions": []`
-- Treatment metrics were identical to baseline (same seeds, no agent interventions)
-
-**The Math That Broke It:**
-```
-Steps per update: 1024 * 512 = 524,288
-Total updates: 50M / 524,288 ≈ 95 updates
-Validation interval: 20 (from get_auto_config('standard'))
-Validation cycles: 95 / 20 ≈ 4-5 cycles
-
-Agent intervals:
-- Risk Analyst: every 3rd cycle → triggers at cycle 3
-- Hyperparameter Tuner: every 5th cycle → triggers at cycle 5
-- Reward Engineer: every 10th cycle → never triggers with only 4-5 cycles
-```
-
-**Why Treatment == Baseline:**
-1. Same random seeds used
-2. No agents consulted → no hyperparameter changes
-3. Deterministic training with identical conditions
-
-## Failed Attempts (Predicted)
-
-| Attempt | Why It Might Fail | Mitigation |
-|---------|-------------------|------------|
-| Using same seed for both groups | Random seed doesn't guarantee identical training | Use multiple seeds, compare distributions |
-| Too few samples | High variance in training outcomes | Minimum 10 runs per group |
-| Different symbols per group | Symbol difficulty varies | Match symbols exactly |
-| Agent costs explode | Runaway consultations | Max 50 consultations/run |
-| Silent file I/O failures | Colab working directory differs from expected, directories don't exist | Always use `os.makedirs(parent, exist_ok=True)` before any file write |
-| Risk analyst too aggressive | Halts training early on normal early-training volatility | Grace period (v1.4) + KL de-emphasized to tertiary (v2.0) |
-| Agents give same advice to every run | No per-run context, same static prompt | Symbol/volatility context + per-component metrics (v2.0) |
-| Wrong reward weights in prompts | Prompts out of date with code | Tests verify prompt weights match code (v2.0: `test_multi_agent.py`) |
-
-## Key Principles
-
-1. **Validate before activating** - Don't assume agents help
-2. **Match configurations exactly** - Only difference is agent presence
-3. **Multiple seeds required** - Single comparison is meaningless
-4. **Statistical tests required** - "Looks better" is not evidence
-5. **Cost-benefit matters** - Improvement must justify $350+/year
-
-## Results (To Be Completed After Experiment)
-
-### Experiment Run: [DATE]
-
-| Metric | Baseline Mean | Treatment Mean | Diff | p-value | Significant |
-|--------|---------------|----------------|------|---------|-------------|
-| Profit Factor | - | - | - | - | - |
-| Consistency | - | - | - | - | - |
-| Max Drawdown | - | - | - | - | - |
-| Fitness Score | - | - | - | - | - |
-
-### Recommendation: [TO BE DETERMINED]
-
-## Implementation (v2.4 - Pre-computed Observation Windows)
+## Implementation Details (v2.4 - Pre-computed Observation Windows)
 
 ### The Bottleneck
 
-`_get_observations()` is called every step of every rollout — the single hottest path in training. On A100-80GB with v4.0.0 (59 features), it achieved only **7,200 FPS** vs the documented 40K-80K FPS (which was never validated with the full feature set).
+`_get_observations()` achieved only **7,200 FPS** on A100 due to:
+1. **`.item()` calls** (3 per step): Forces CUDA sync
+2. **Python for-loop** (100 iterations): 100 tiny GPU kernels
+3. **50+ individual tensor ops**: Each indicator sliced/padded/normalized separately
 
-Three root causes:
-1. **`.item()` calls** (3 per step): Forces CUDA synchronization, breaking GPU pipelining
-2. **Python for-loop** (100 iterations): Launches 100 tiny GPU kernels instead of 1 gather
-3. **50+ individual tensor ops**: Each indicator sliced, padded, normalized, expanded separately
+### The Fix
 
-### The Fix (`vectorized_env.py`)
+`_precompute_observation_windows()` at init pre-computes all features via `unfold()` (~30 MB). Rewritten `_get_observations()`: ~120 lines (was ~350), zero `.item()`, zero Python loops, ~10 gather ops.
 
-New `_precompute_observation_windows()` method at init time pre-computes all market/technical features:
-
-| Feature | Pre-computed Shape | Method |
-|---------|-------------------|--------|
-| Normalized prices | `(N, W)` | `unfold()` + per-window mean normalization |
-| Returns / log returns | `(N, W)` | `unfold()` + zero position 0 |
-| Volatility, momentum, RSI | `(T,)` | `unfold().std()`, vectorized arithmetic, cumsum sliding window |
-| Extended indicators (14) | `(N, W, 14)` | Stack normalized series, `unfold()`, permute |
-| Multi-window features (9) | `(T, 9)` | Vectorized arithmetic for 3 windows x 3 features |
-
-Total memory: ~30 MB (negligible on A100-80GB). N = T - W + 1.
-
-Rewritten `_get_observations()`: ~120 lines (was ~350), zero `.item()`, zero Python loops, ~10 gather/assign ops.
-
-### Key Design Decisions
-
-1. **Two index types**: `unfold_idx = current_step - W` for windowed features, `step_vals = current_step` for scalar features
-2. **Per-env indexing (bug fix)**: Old code used `env_ids[0].item()` and `window_start[0]` for ALL envs, giving wrong observations to recently-reset envs with different `current_step`. New code uses per-env index tensors — correct for non-uniform steps after auto-reset.
-3. **Sanitize at precompute time**: `nan_to_num` applied once to pre-computed tensors, not every step
-4. **`contiguous()` on permuted tensors**: Ensures efficient gather operations on GPU
-5. **A/B comparison validity**: Both baseline and treatment groups use the same `GPUVectorizedTradingEnv`, so both get the same optimization. Observations are numerically equivalent (within float32 precision) for the uniform-step case. The per-env indexing bug fix affects both groups equally.
-
-### CU Projections (12 models, 50M timesteps each)
-
-| FPS | Min/model | Total hours | Est. CU (~7/hr) |
-|-----|-----------|-------------|------------------|
-| 7,200 (pre-v2.4) | 116 min | 23.2 hrs | ~162 CU |
-| 14,000 (2x) | 60 min | 11.9 hrs | ~83 CU |
-| 22,000 (3x) | 38 min | 7.6 hrs | ~53 CU |
+### Per-env indexing bug fix
+Old code used `env_ids[0].item()` for ALL envs — wrong observations for recently-reset envs. New code uses per-env index tensors.
 
 ---
 
 ## References
 
-- `scripts/agent_validation_experiment.py` - Experiment runner (v2.0: expanded TrainingResult)
-- `notebooks/agent_validation_analysis.ipynb` - Statistical analysis
-- `alpaca_trading/training/multi_agent.py` - Agent integration code (v2.0: rewritten prompts; v2.1: robust parser, action validation, max_tokens)
-- `alpaca_trading/gpu/vectorized_env.py` - Component metrics + adaptive drawdown (v2.0)
-- `alpaca_trading/gpu/ppo_trainer_native.py` - Metrics pipeline (v2.0)
-- `tests/test_multi_agent.py` - 33 tests: prompt correctness, metrics flow, adaptive drawdown (v2.0), parser robustness, action validation, grace period (v2.1)
+- `scripts/agent_validation_experiment.py` - Experiment runner
+- `notebooks/agent_validation_analysis.ipynb` - Statistical analysis (Welch's t-test + Bonferroni)
+- `alpaca_trading/training/multi_agent.py` - Agent integration (v3.0: guardrails, phase gates, rollback)
+- `alpaca_trading/training/agent_memory.py` - Persistent cross-run learning (v3.0)
+- `alpaca_trading/gpu/vectorized_env.py` - Component metrics + adaptive drawdown + pre-computed obs
+- `alpaca_trading/gpu/ppo_trainer_native.py` - Metrics pipeline, LR scheduler
+- `tests/test_multi_agent.py` - 62 tests: prompt correctness, metrics flow, phase gates, cumulative tracking, fitness-gated checkpoints, rollback, LR disabled, agent memory, institutional knowledge
 - `.skills/plugins/trading/multi-agent-integration/` - Integration documentation
