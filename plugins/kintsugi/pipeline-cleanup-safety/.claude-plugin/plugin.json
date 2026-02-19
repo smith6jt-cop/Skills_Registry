@@ -1,0 +1,10 @@
+{
+  "name": "pipeline-cleanup-safety",
+  "version": "1.0.0",
+  "description": "Specific trigger conditions: (1) deleting intermediate pipeline data (stitched, deconvolved, raw) after processing, (2) implementing safe cleanup with dependency graph validation for multi-consumer data directories, (3) preventing data loss when optional pipeline stages (vessel3d, spillover) consume the same intermediates as required stages, (4) adding staged deletion with trash recovery to batch processing workflows. Verified on KINTSUGI v1.3.0 with Snakemake 9.x on HiPerGator SLURM.",
+  "author": {
+    "name": "smith6jt"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith6jt-cop/Skills_Registry"
+}
