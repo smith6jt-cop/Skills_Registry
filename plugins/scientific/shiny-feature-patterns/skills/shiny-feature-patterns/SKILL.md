@@ -219,10 +219,61 @@ if (length(nd_auc) > 0 && is.finite(nd_auc) && nd_auc != 0) {
 | `git add -A` after sed edit | A malformed sed pattern created a junk file named `pt_size[^"]*"` (906-line HTML dump) which got committed | Always use dedicated Edit tool instead of `sed` for file modifications; inspect `git status` before committing |
 | Testing changes on dev port 7777 while user views production at :8080 | shiny-server on port 3838 (proxied by nginx :8080) serves from symlink; dev server on :7777 is completely separate | Always verify via production URL; kill stale R workers if code updates aren't reflected |
 
+## Phase 7-8: Spatial Neighborhoods + Single-Cell Drill-Down (2026-02-19)
+
+### 12. Neighborhood metrics in existing Plot+Stats workflow
+Add new option groups to composition `selectInput` — the highest-ROI pattern for surfacing new data:
+```r
+# Detect columns dynamically from comp
+peri_prop_cols <- grep("^peri_prop_", comp_cols, value = TRUE)
+immune_metric_cols <- intersect(c("immune_frac_peri", ...), comp_cols)
+choices <- list(
+  "Hormone Fractions" = base_choices,
+  "Cell Type Proportions" = setNames(prop_cols, ...),
+  "Peri-Islet Proportions" = setNames(peri_prop_cols, ...),
+  "Immune Metrics" = setNames(immune_metric_cols, ...)
+)
+```
+This automatically makes all neighborhood metrics available in scatter, distribution, AND Statistics tab with zero changes to mod_statistics_server.R.
+
+### 13. Extracting reusable base plot from segmentation renderer
+```r
+build_segmentation_base_plot(info)  # Returns ggplot with GeoJSON polygons + coord_sf
+  # NO crosshairs, NO title — callers add their own layers
+render_islet_segmentation_plot(info)  # = base_plot + crosshairs + title
+render_islet_drilldown_plot(info, cells, color_by)  # = base_plot + cell scatter
+```
+Key: base plot handles GeoJSON loading, bbox query, polygon layers, clicked islet highlight. Callers compose on top.
+
+### 14. Non-namespaced inputs from inside modules
+Both Plot and Trajectory modules generate the same non-namespaced inputs (`drilldown_view_mode`, `drilldown_color_by`, `drilldown_show_peri`) inside their `renderUI`. These are read by root-level `renderPlot` outputs in app.R. Safe because only one tab is visible at a time — no duplicate ID conflicts.
+
+### 15. Cell coordinate alignment
+Cell centroids in single-cell H5AD are in micrometers (X_centroid, Y_centroid). GeoJSON polygons are in pixels. Convert: `x_px = X_centroid / PIXEL_SIZE_UM`. This matches the existing segmentation coordinate system.
+
+### 16. Phenotype name sanitization for column names
+Single-cell phenotype names have spaces and `+` which are invalid in H5AD obs columns:
+- `Alpha cell` → `Alpha_cell`
+- `ECAD+` → `ECADplus`
+- `SMA+` → `SMAplus`
+Applied consistently in compute_neighborhood_metrics.py via `name.replace(" ", "_").replace("+", "plus")`.
+
+### 17. Dedicated tab with inline controls (no sidebar sharing)
+The Spatial tab uses `spatial_server("spatial", prepared)` with its own inline controls (metric category, feature selector, donor status, diameter range). No `conditionalPanel` sidebar sharing needed — cleaner for independent analysis workflows.
+
+### Phase 7-8 Failed Attempts
+
+| Attempt | Why it Failed | Lesson Learned |
+|---------|---------------|----------------|
+| Using `backed='r'` for the aggregated H5AD (1,015 islets) | Unnecessary — only 47 MB. `backed='r'` matters for the 3.7 GB single-cell file. | Use backed mode only for large files (>500 MB). Small H5ADs load faster without backing. |
+| Column naming with raw phenotype names in CSV (spaces, `+`) | R `read.csv` converts spaces to `.` and `+` to `.`. Inconsistent between Python output and R loading. | Sanitize column names in Python: `_` for space, `plus` for `+`. Match in R grep patterns. |
+| Storing neighborhood metrics directly in `.uns` like groovy data | Too many sparse arrays (62 cols × 1,015 rows). `.obs` columns are the natural fit — already indexed by islet_id. | Use `.obs` for per-observation data (metrics per islet). Use `.uns` for multi-row tabular data (groovy exports). |
+| Total_cells_peri == 0 treated as NaN in CSV | `pd.to_csv` preserves `0` and `NaN` separately. The 66 islets without peri data have `total_cells_peri=0` but `immune_frac_peri=NaN`. | Guard with `total_cells_peri > 0` not `!is.na(total_cells_peri)` since zero is valid but meaningless. |
+
 ## References
 - [Shiny Modules](https://shiny.posit.co/r/articles/improve/modules/)
 - [selectInput with optgroups](https://shiny.posit.co/r/reference/shiny/latest/selectinput)
 - [ggplot2 scale_fill_gradient2](https://ggplot2.tidyverse.org/reference/scale_gradient.html)
-- Islet Explorer: `app/shiny_app/` — `data_loading.R`, `mod_plot_*.R`, `mod_trajectory_*.R`
+- Islet Explorer: `app/shiny_app/` — `data_loading.R`, `mod_plot_*.R`, `mod_trajectory_*.R`, `mod_spatial_*.R`, `drilldown_helpers.R`
 - Related skill: `shiny-modularization` (extraction order, plotly namespacing)
 - Related skill: `h5ad-shiny-data-pipeline` (H5AD loading, .uns storage, Excel fallback)

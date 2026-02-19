@@ -102,7 +102,39 @@ sil_ct_scvi = silhouette_score(X_scVI, celltype_labels, sample_size=10000)
 # Cell-type LISI: lower = better separation (ideal = 1)
 ```
 
-### 4. Trajectory rebuild from fixed pipeline
+### 4. Neighborhood metrics in `.obs` (Phase 7, 2026-02-19)
+Store per-islet neighborhood metrics as additional `.obs` columns rather than `.uns`:
+
+```python
+# scripts/compute_neighborhood_metrics.py → data/neighborhood_metrics.csv
+# Then merged into adata.obs by build_h5ad_for_app.py (step 4.5)
+nbr = pd.read_csv(nbr_path)
+adata.obs['_combined_islet_id'] = (
+    adata.obs['imageid'].astype(str) + '_' + adata.obs['base_islet_id'].astype(str)
+)
+nbr_merge = nbr.set_index('combined_islet_id')[nbr_cols]
+adata.obs = adata.obs.join(nbr_merge, on='_combined_islet_id', how='left')
+```
+
+62 columns across 4 categories: peri-islet composition (`peri_prop_*`, `peri_count_*`), immune infiltration (`immune_frac_*`, `cd8_to_macro_ratio`, `tcell_density_peri`), enrichment z-scores (`enrich_z_*`), and distance metrics (`min_dist_*`). Extract on the R side with `grep("^peri_prop_|^immune_|...", colnames(obs))`.
+
+### 5. Per-islet cell CSVs for drill-down (Phase 8, 2026-02-19)
+Extract individual cells per qualified islet into small CSV files for client-side rendering:
+
+```python
+# scripts/extract_per_islet_cells.py → data/cells/{imageid}_Islet_{N}.csv
+# 949 files, 180K cells, 37 cols (X/Y, phenotype, region, morphology, 31 markers)
+# Read backed H5AD in chunks of 50K cells for memory efficiency
+adata_sc = ad.read_h5ad(sc_path, backed='r')
+chunk_size = 50000
+for start in range(0, adata_sc.n_obs, chunk_size):
+    chunk = adata_sc[start:end].to_memory()
+    # ... filter, extract, write per-islet CSVs
+```
+
+On the R side, use environment-based caching (`drilldown_cache <- new.env()`) to avoid re-reading CSVs on repeated clicks.
+
+### 6. Trajectory rebuild from fixed pipeline
 The fixed aggregation keeps only proteins in `.X` and uses `X_scVI_mean` for neighbors:
 
 ```python
@@ -142,6 +174,10 @@ Validation checks:
 | Missing `combined_islet_id` in rebuilt h5ad | `islets_core_fixed.h5ad` has `islet_id` (e.g., `6505_Islet_284`) but trajectory module references `combined_islet_id` | Add `adata.obs['combined_islet_id'] = adata.obs['islet_id'].copy()` before saving trajectory h5ad |
 | Heatmap `mids` vs `hm` row count mismatch | `mids` computed for all 25 bins but `hm` only has rows for bins with >=3 points → `replacement has 25 rows, data has 24` | Use `match(as.character(hm$pt_bin), bin_levels)` to index `all_mids` so skipped bins are excluded |
 | Diverging colormap for raw expression on UMAP | `scale_color_gradient2(limits=c(-3,3))` assumed z-scored data but `.X` values are raw mean expression — colorbar misleading | Use `scale_color_viridis_c(option="inferno", limits=range(value))` for continuous min/max scaling |
+| Reading full 3.7 GB single-cell H5AD into memory | Python OOM on 16 GB machine. Even `backed='r'` loads `.obs` eagerly (~800 MB) | Use `backed='r'` AND read `.X` in chunks of 50K cells. Pre-filter `.obs` to relevant cells before materializing expression matrix |
+| Storing neighborhood metrics in `.uns` | `.uns` column-by-column convention works for tabular data but is cumbersome for 62+ columns that are per-observation | Use `.obs` for per-observation metrics (1 value per islet). Reserve `.uns` for tabular data that doesn't map 1:1 to observations (like groovy sheets with different row counts) |
+| Column name sanitization: spaces and `+` in phenotype names | `peri_prop_CD8a+ T cell` breaks R column access and H5AD string handling | Sanitize during Python preprocessing: `col.replace(' ', '_').replace('+', 'plus')` → `peri_prop_CD8aplus_T_cell`. Do NOT sanitize at load time in R |
+| 66 islets with zero peri-islet cells | Some islets have no `_exp20um` cells in the single-cell H5AD. Setting `total_cells_peri=0` caused division-by-zero in fraction metrics | Set `total_cells_peri=0` but use `NaN` for fraction/ratio metrics. In R, always use `na.rm=TRUE` and check `!is.na()` in conditional filters |
 
 ## Final Parameters
 
@@ -186,6 +222,10 @@ python_packages: scanpy==1.11.5, anndata==0.12.4, scvi-tools==1.4.0, scib-metric
 - **Donor metadata provenance**: Never assume an external Excel "donor key" matches your data cohort. Build donor metadata from the canonical h5ad obs itself — it already has `donor_status`, `age`, `gender`, and AAb flags from the single-cell phenotyping.
 - **Column name compatibility**: When h5ad obs columns get renamed across pipeline steps (e.g., `islet_id` → `combined_islet_id`), add the expected alias before saving. Check what downstream consumers expect by grepping the app code.
 - **H5AD write gotchas**: Before `adata.write_h5ad()`, iterate all obs columns and convert categoricals → `str` then `fillna('')`. Also check that obs index name doesn't collide with a column name.
+- **`.obs` vs `.uns` decision rule**: Use `.obs` for metrics with 1 value per observation (neighborhood metrics, phenotype proportions). Use `.uns` for tabular data with different row counts (groovy exports with `Case ID` + `islet_key` as join keys).
+- **Backed mode + chunking**: For 3.7 GB single-cell H5ADs, `backed='r'` keeps `.X` on disk. But `.obs` is still loaded eagerly. Read `.X` in chunks of 50K cells to avoid OOM.
+- **Column name sanitization pipeline**: Sanitize in Python (`space→_, +→plus`) during preprocessing, NOT at R load time. This ensures H5AD column names are valid R identifiers. Pattern: `col.replace(' ', '_').replace('+', 'plus')`.
+- **Graceful NaN handling for missing peri data**: 66/1,015 islets lack peri-islet cells. Use `NaN` for fraction metrics, `0` for count metrics. R side: `na.rm=TRUE` everywhere, conditional UI that checks `!all(is.na(x))`.
 
 ## Execution Results (2026-02-17)
 
@@ -201,10 +241,24 @@ python_packages: scanpy==1.11.5, anndata==0.12.4, scvi-tools==1.4.0, scib-metric
 | H5AD vs Excel prep_data | targets=48,438, markers=64,584, comp=5,382 (identical) |
 | Total validation checks | 33/33 passed |
 
+## Execution Results — Phase 7-8 (2026-02-19)
+
+| Metric | Value |
+|--------|-------|
+| Neighborhood metrics CSV | 1,015 rows × 62 columns |
+| Islets with peri data | 949/1,015 (93.5%) |
+| Biological signal (immune_frac_peri) | T1D=0.155, Aab+=0.106, ND=0.069 |
+| Per-islet cell CSVs | 949 files, 180,019 cells, 110.8 MB |
+| Columns per cell CSV | 37 (X/Y, phenotype, region, morphology, 31 markers) |
+| Rebuilt islet_explorer.h5ad | 47.6 MB (+60 .obs columns) |
+| R syntax check | All files pass `parse()` |
+| App smoke test | Loads without errors |
+
 ## References
 
-- [AnnData format](https://anndata.readthedocs.io/) — `.uns` storage for arbitrary metadata
+- [AnnData format](https://anndata.readthedocs.io/) — `.uns` for arbitrary metadata, `.obs` for per-observation metrics
 - [scVI-tools](https://docs.scvi-tools.org/) — Batch correction with biological covariates
 - [scib-metrics](https://scib-metrics.readthedocs.io/) — Batch integration benchmarking
 - [Scanpy trajectory analysis](https://scanpy.readthedocs.io/en/stable/api/tl.html) — DPT, PAGA, diffusion maps
+- [scipy.spatial.cKDTree](https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.cKDTree.html) — Efficient nearest-neighbor distance computation for immune cell distances
 - Islet Explorer: `data/DATA_PROVENANCE.md` for full lineage documentation
