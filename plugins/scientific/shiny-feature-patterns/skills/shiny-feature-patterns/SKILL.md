@@ -162,6 +162,63 @@ height = function() { max(150, 40 + n_markers * 30) }
 - **Marker ordering**: Consistent ordering (hormones → immune → other) across heatmaps aids visual comparison. Use `intersect()` to preserve only markers actually selected.
 - **Dynamic height formula**: `max(150, 40 + n * 30)` gives 30px per marker row with a 40px overhead for axes/title and a 150px minimum so the plot doesn't collapse to nothing.
 
+## Phase 6 Additions (Statistics Tab, Feb 2026)
+
+### 8. Shared sidebar across tabs
+Rather than duplicating sidebar controls, make the existing Plot sidebar visible on the Statistics tab by editing two places in `app.R`:
+- `conditionalPanel` condition: `"input.tabs == 'Plot' || input.tabs == 'Statistics'"`
+- JS `adjustLayout()`: same condition to show sidebar column
+
+The Statistics module consumes `plot_returns$raw_df` and `plot_returns$summary_df` directly — zero data duplication.
+
+### 9. Pseudo-log transform for zero-safe log-scale
+`scale_y_log10()` silently drops zero values (log10(0) = -Infinity). Replace with:
+
+```r
+# Helper for clean axis labels (0, 1, 10, 100, ...)
+pseudo_log_breaks <- function(base = 10) {
+  function(limits) {
+    max_val <- max(limits)
+    if (max_val <= 0) return(0)
+    max_pow <- ceiling(log(max_val, base))
+    min_pow <- if (max_val < 1) floor(log(max_val, base)) else 0
+    brks <- c(0, base^seq(min_pow, max_pow))
+    sort(unique(brks[brks <= max_val * 1.1]))
+  }
+}
+
+# Usage
+p + scale_y_continuous(trans = scales::pseudo_log_trans(base = 10),
+                       breaks = pseudo_log_breaks(10))
+```
+
+Pseudo-log is linear near zero (zeros visible at y=0) and asymptotically log10 for larger values.
+
+### 10. Case ID zero-padding fallback for GeoJSON
+GeoJSON files may use zero-padded IDs (`0112.geojson`) while data uses unpadded (`112`). Fix in all three places:
+- `load_case_geojson()`: try `sprintf("%04d", as.integer(case_id))` as fallback
+- Plot click handler: spatial lookup fallback with padded ID
+- Trajectory click handler: same fallback
+
+### 11. AUC trapezoidal integration with guards
+```r
+auc = if (n() < 2) 0 else sum(diff(diam_mid) * (head(y,-1) + tail(y,-1))) / 2
+
+# Division-by-zero guard for percentage change
+if (length(nd_auc) > 0 && is.finite(nd_auc) && nd_auc != 0) {
+  pct_change <- (t1d_auc - nd_auc) / nd_auc * 100
+}
+```
+
+### Phase 6 Failed Attempts
+
+| Attempt | Why it Failed | Lesson Learned |
+|---------|---------------|----------------|
+| `scale_y_log10()` with zero values | `log10(0) = -Inf`, ggplot2 silently drops these points. Users see missing data with no warning. | Use `scales::pseudo_log_trans(base=10)` which is linear near zero and log for larger values. |
+| `scales::log_breaks(base=10)` with pseudo_log_trans | `log_breaks()` calls `log()` on the data limits; with pseudo_log domain starting at 0, produces `NaN` → crash: "missing value where TRUE/FALSE needed" | Write custom `pseudo_log_breaks()` that explicitly includes 0 and generates powers of 10 from min_pow to max_pow |
+| `git add -A` after sed edit | A malformed sed pattern created a junk file named `pt_size[^"]*"` (906-line HTML dump) which got committed | Always use dedicated Edit tool instead of `sed` for file modifications; inspect `git status` before committing |
+| Testing changes on dev port 7777 while user views production at :8080 | shiny-server on port 3838 (proxied by nginx :8080) serves from symlink; dev server on :7777 is completely separate | Always verify via production URL; kill stale R workers if code updates aren't reflected |
+
 ## References
 - [Shiny Modules](https://shiny.posit.co/r/articles/improve/modules/)
 - [selectInput with optgroups](https://shiny.posit.co/r/reference/shiny/latest/selectinput)

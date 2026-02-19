@@ -1,7 +1,7 @@
 {
   "name": "shiny-feature-patterns",
   "version": "1.0.0",
-  "description": "Patterns for adding interactive features to modular Shiny apps: extracting H5AD .obs data for new UI controls, conditional renderUI with graceful fallback, embedded vs modal segmentation panels, grouped selectInput choices, multi-row heatmaps. Trigger: (1) adding new data-driven filters/selectors to Shiny modules, (2) exposing hidden H5AD .obs columns in UI, (3) replacing modal dialogs with embedded panels, (4) adding multi-feature heatmaps or z-scored visualizations.",
+  "description": "Patterns for adding interactive features to modular Shiny apps: extracting H5AD .obs data for new UI controls, conditional renderUI with graceful fallback, embedded vs modal segmentation panels, grouped selectInput choices, multi-row heatmaps, shared sidebar across tabs, pseudo-log transform for zero-safe log-scale, zero-padded ID fallback for GeoJSON, AUC trapezoidal integration, effect size utilities. Trigger: (1) adding new data-driven filters/selectors to Shiny modules, (2) exposing hidden H5AD .obs columns in UI, (3) replacing modal dialogs with embedded panels, (4) adding multi-feature heatmaps or z-scored visualizations, (5) log-scale plots with zero values, (6) sharing sidebar controls across Shiny tabs, (7) GeoJSON case ID mismatches, (8) statistical analysis cards with effect sizes.",
   "author": {
     "name": "smith6jt"
   },
