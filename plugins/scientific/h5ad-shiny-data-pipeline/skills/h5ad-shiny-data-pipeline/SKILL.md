@@ -140,6 +140,8 @@ Validation checks:
 | `fillna('')` on categorical columns | h5py can't write NaN in string columns, but `.fillna('')` on a Categorical raises `TypeError: Cannot setitem on a Categorical with a new category` | Always `.astype(str)` BEFORE `.fillna('')` for categorical obs columns |
 | Using `CODEX_Pancreas_Donors.xlsx` for donor metadata | The Excel file has a **different donor cohort** (nPOD pilot: 6090, 6171...) than the CODEX data (6505, 6533...) — ALL merges produce NaN | Derive donor metadata (status, age, gender, AAb flags) from the h5ad obs itself, not from external donor key files. Build `donor_key_df` from `adata.obs.groupby('imageid')` |
 | Missing `combined_islet_id` in rebuilt h5ad | `islets_core_fixed.h5ad` has `islet_id` (e.g., `6505_Islet_284`) but trajectory module references `combined_islet_id` | Add `adata.obs['combined_islet_id'] = adata.obs['islet_id'].copy()` before saving trajectory h5ad |
+| Heatmap `mids` vs `hm` row count mismatch | `mids` computed for all 25 bins but `hm` only has rows for bins with >=3 points → `replacement has 25 rows, data has 24` | Use `match(as.character(hm$pt_bin), bin_levels)` to index `all_mids` so skipped bins are excluded |
+| Diverging colormap for raw expression on UMAP | `scale_color_gradient2(limits=c(-3,3))` assumed z-scored data but `.X` values are raw mean expression — colorbar misleading | Use `scale_color_viridis_c(option="inferno", limits=range(value))` for continuous min/max scaling |
 
 ## Final Parameters
 
