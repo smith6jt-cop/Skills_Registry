@@ -1,0 +1,10 @@
+{
+  "name": "shiny-feature-patterns",
+  "version": "1.0.0",
+  "description": "Patterns for adding interactive features to modular Shiny apps: extracting H5AD .obs data for new UI controls, conditional renderUI with graceful fallback, embedded vs modal segmentation panels, grouped selectInput choices, multi-row heatmaps. Trigger: (1) adding new data-driven filters/selectors to Shiny modules, (2) exposing hidden H5AD .obs columns in UI, (3) replacing modal dialogs with embedded panels, (4) adding multi-feature heatmaps or z-scored visualizations.",
+  "author": {
+    "name": "smith6jt"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith-cop/Skills_Registry"
+}
