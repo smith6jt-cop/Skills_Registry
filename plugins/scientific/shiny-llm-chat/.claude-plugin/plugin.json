@@ -1,0 +1,10 @@
+{
+  "name": "shiny-llm-chat",
+  "version": "1.0.0",
+  "description": "Patterns for integrating OpenAI-compatible LLM chat into Shiny apps. Triggers: (1) adding AI chat panel to Shiny, (2) integrating UF Navigator or OpenAI API, (3) handling reasoning model streaming, (4) model fallback and error recovery in LLM APIs, (5) credential management for API keys in Shiny deployment.",
+  "author": {
+    "name": "Jordan Smith"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith-cop/Skills_Registry"
+}
