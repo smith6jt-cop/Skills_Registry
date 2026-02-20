@@ -61,6 +61,9 @@ output$my_panel <- renderUI({
 })
 ```
 
+### 5. Non-namespaced output deconfliction across modules
+When multiple modules emit non-namespaced output IDs (shared root-level renders), pass `active_tab` reactive and guard `renderUI` to prevent duplicate DOM IDs.
+
 ### 4. ggplot2 vs sf Namespace
 ```r
 # WRONG - coord_sf and geom_sf are NOT sf exports
@@ -81,6 +84,8 @@ ggplot2::geom_sf(data = polygons, fill = NA, color = "blue")
 | `sf::coord_sf()` in extracted helper file | `coord_sf` is a ggplot2 function, not sf. Original app used bare `coord_sf()` (ggplot2 was loaded) which worked, but explicit namespacing exposed the wrong package | When adding explicit namespaces during extraction, verify which package actually exports each function |
 | Adding `event_register("plotly_click")` to fix click detection | `plotly_click` is already in default `shinyEvents` so `event_register` wasn't the fix | The real issue was the source string namespacing, not event registration |
 | Debugging with JS `shiny:inputchanged` listener and R `showNotification` | Helpful for confirming click handlers fire, but didn't reveal the downstream rendering issue | Start by comparing with the working original code rather than adding incremental diagnostics |
+| Both modules emit non-namespaced `plotOutput()` IDs | When `selected_islet()` is shared between Plot and Trajectory, both `segmentation_viewer_panel` renderUIs fire simultaneously, creating duplicate DOM elements with the same ID. Shiny can only bind one → other greys out or becomes orphaned | Pass `active_tab` reactive (from `reactive(input$tabs)`) to each module; guard renderUI with `if (active_tab() != "MyTab") return(NULL)` so only the visible tab's panel renders |
+| Assuming only visible tab's renderUI fires | Shiny `renderUI` fires based on reactive dependencies, NOT tab visibility. Even hidden tabs execute renderUI when their inputs change | Never assume tab hiding prevents server-side rendering; use explicit tab-active guards for any output with non-namespaced IDs |
 
 ## Key Insights
 
@@ -89,6 +94,7 @@ ggplot2::geom_sf(data = polygons, fill = NA, color = "blue")
 - `reactiveVal` objects can be passed as module parameters for cross-module communication (e.g., `selected_islet`, `forced_image`).
 - When extracting monolithic code, grep for bare function calls (like `coord_sf`, `geom_sf`) and verify which package exports them before adding `pkg::` prefixes.
 - For diverging data (zero-centered z-scores), use `scale_color_gradient2()` with `limits` and `scales::squish`, not sequential colormaps.
+- **Non-namespaced output deconfliction**: When multiple modules emit the same non-namespaced `plotOutput()` / `tableOutput()` IDs (required for root-level shared renders), pass `active_tab = reactive(input$tabs)` to each module and guard the `renderUI` that emits those IDs. Pattern: `if (active_tab() != "Plot") return(NULL)`. This prevents duplicate DOM IDs that cause Shiny to grey out / orphan one binding.
 
 ## References
 - [Shiny Modules](https://shiny.posit.co/r/articles/improve/modules/)

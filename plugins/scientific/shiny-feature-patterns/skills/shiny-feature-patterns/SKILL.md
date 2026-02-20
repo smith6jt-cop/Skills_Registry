@@ -1,8 +1,8 @@
 ---
 name: shiny-feature-patterns
-description: "Patterns for adding interactive features to modular Shiny apps with H5AD data, conditional UI, embedded panels"
+description: "Patterns for adding interactive features to modular Shiny apps with H5AD data, conditional UI, embedded panels, tissue scatter, Leiden clustering"
 author: smith6jt
-date: 2026-02-19
+date: 2026-02-20
 ---
 
 # Shiny Feature Patterns - Research Notes
@@ -161,6 +161,8 @@ height = function() { max(150, 40 + n_markers * 30) }
 - **Z-score clamping**: `-2.5` to `2.5` prevents a single extreme bin from washing out the colorscale. Combined with `min 3 observations per bin`, this produces clean heatmaps.
 - **Marker ordering**: Consistent ordering (hormones → immune → other) across heatmaps aids visual comparison. Use `intersect()` to preserve only markers actually selected.
 - **Dynamic height formula**: `max(150, 40 + n * 30)` gives 30px per marker row with a 40px overhead for axes/title and a 150px minimum so the plot doesn't collapse to nothing.
+- **CSS overflow for dropdowns in cards**: `selectInput` dropdown menus extend below their container. If the container has `overflow: hidden` (common with gradient backgrounds or `border-radius`), the menu gets clipped. Fix: add `overflow: visible;` to the card's style.
+- **Return structure verification**: Always verify the exact field names returned by utility functions (`cohens_d` → `ci_lo`/`ci_hi`, `pairwise_wilcox` → `group1`/`group2`/`p_value`). Generic Shiny "An error has occurred" often means NULL field access in `sprintf()`.
 
 ## Phase 6 Additions (Statistics Tab, Feb 2026)
 
@@ -269,11 +271,91 @@ The Spatial tab uses `spatial_server("spatial", prepared)` with its own inline c
 | Column naming with raw phenotype names in CSV (spaces, `+`) | R `read.csv` converts spaces to `.` and `+` to `.`. Inconsistent between Python output and R loading. | Sanitize column names in Python: `_` for space, `plus` for `+`. Match in R grep patterns. |
 | Storing neighborhood metrics directly in `.uns` like groovy data | Too many sparse arrays (62 cols × 1,015 rows). `.obs` columns are the natural fit — already indexed by islet_id. | Use `.obs` for per-observation data (metrics per islet). Use `.uns` for multi-row tabular data (groovy exports). |
 | Total_cells_peri == 0 treated as NaN in CSV | `pd.to_csv` preserves `0` and `NaN` separately. The 66 islets without peri data have `total_cells_peri=0` but `immune_frac_peri=NaN`. | Guard with `total_cells_peri > 0` not `!is.na(total_cells_peri)` since zero is valid but meaningless. |
+| `cd$ci_lower` / `cd$ci_upper` in spatial stats | `cohens_d()` returns `list(d, ci_lo, ci_hi)` — NOT `ci_lower`/`ci_upper`. Accessing NULL fields caused `sprintf()` crash, showing generic Shiny error | Always check the actual return structure of utility functions; `cohens_d()` uses `ci_lo`/`ci_hi` |
+| `pairs$p.adj` / `pairs$statistic` for pairwise results | `pairwise_wilcox()` returns columns `group1`, `group2`, `p_value` — NOT `p.adj` or `statistic` | Match column names to what `pairwise_wilcox()` actually returns |
+| selectInput dropdowns hidden behind cards | Bootstrap card `overflow: hidden` (default from gradient background) clips dropdown menus that extend below the card boundary | Add `overflow: visible;` to card container `style` attribute in UI |
+
+## Phase 9: Spatial Tab Overhaul (2026-02-20)
+
+### 18. Large scatter plots with ggplot2 (not plotly)
+For tissue-wide scatter plots with >100K points, plotly's WebGL renderer freezes the browser. Use `ggplot2::renderPlot()` with explicit `height`:
+
+```r
+output$tissue_scatter <- renderPlot({
+  # ~177K cells per donor
+  cells <- donor_cells()
+  ggplot(cells, aes(X_centroid, Y_centroid, color = phenotype)) +
+    geom_point(size = 0.4, alpha = 0.6) +
+    coord_fixed() + scale_y_reverse() +
+    theme_minimal(base_size = 18)
+}, height = 800)
+```
+
+Key decisions:
+- `coord_fixed()` preserves spatial proportions
+- `scale_y_reverse()` matches microscopy convention (y increases downward)
+- `size = 0.15-0.4` and `alpha = 0.3-0.6` for readable density at 177K points
+- Explicit `height = 800` in `renderPlot()` for spatial detail
+
+### 19. Foreground/background layering for tissue scatter
+Show ALL cells for spatial context but highlight the selected region:
+
+```r
+# Background: tissue cells in light grey, very small
+ggplot() +
+  geom_point(data = bg, aes(x, y), color = "#d9d9d9", size = 0.15, alpha = 0.3) +
+  # Foreground: core/peri cells colored by phenotype or leiden
+  geom_point(data = fg, aes(x, y, color = phenotype), size = 0.4, alpha = 0.6)
+```
+
+### 20. Islet-level Leiden → cell-level mapping
+Leiden clustering is at the islet level (1,015 islets). To color individual cells by cluster:
+
+```r
+# Build islet_key → cluster lookup from comp
+comp <- prepared()$comp
+sub <- comp[comp$`Case ID` == donor_id, c("islet_key", leiden_col)]
+lmap <- setNames(as.character(sub[[leiden_col]]), as.character(sub$islet_key))
+
+# Map cells via islet_name column
+cells$cluster <- lmap[cells$islet_name]
+cells$cluster[is.na(cells$cluster)] <- "tissue"  # non-islet cells
+```
+
+### 21. Per-donor tissue CSV extraction
+For tissue scatter, extract ALL cells per donor (not just islet cells):
+
+```python
+# scripts/extract_per_donor_tissue.py
+# 15 files × ~177K cells each = 2.65M total, ~78 MB
+# Columns: X_centroid, Y_centroid, phenotype, cell_region, islet_name
+# cell_region: "core" (Islet_N), "peri" (Islet_N_exp20um), "tissue" (everything else)
+```
+
+Pattern mirrors `extract_per_islet_cells.py` but groups by `imageid` instead of `combined_islet_id`. No expression data needed — just spatial coords + metadata.
+
+### 22. Documentation banners for context-dependent charts
+When charts show metrics that overlap with other tabs, add prominent documentation:
+
+```r
+doc_style <- "background-color: #fff3cd; border: 1px solid #ffc107; border-radius: 5px;
+              padding: 8px 12px; font-size: 13px; color: #856404; margin-bottom: 10px;"
+div(style = doc_style,
+    "These z-scores compare peri-islet proportions against tissue-wide background...")
+```
+
+### Phase 9 Failed Attempts
+
+| Attempt | Why it Failed | Lesson Learned |
+|---------|---------------|----------------|
+| Using plotly for tissue scatter (~177K cells) | Browser tab freezes/crashes with >50K WebGL points in plotly. Even with `toWebGL()`, hover/zoom events process all points. | Use `ggplot2::renderPlot()` for >50K points. Plotly is fine for <5K (like 1,015 islets on Leiden UMAP). |
+| Donor 6533 assumed to have islet annotations | 6533 has 205K cells but 0 core/0 peri — all cells are tissue background. No islet annotations exist for this donor. | Always handle donors with zero islet cells gracefully. Don't assume all donors have core/peri regions. |
+| Storing expression data in per-donor tissue CSVs | 31 marker columns × 177K cells = 30+ MB per file, 450+ MB total. App doesn't need expression for spatial overview. | Only extract the columns actually needed: X/Y coords, phenotype, cell_region, islet_name. Reduces 450+ MB → 78 MB. |
 
 ## References
 - [Shiny Modules](https://shiny.posit.co/r/articles/improve/modules/)
 - [selectInput with optgroups](https://shiny.posit.co/r/reference/shiny/latest/selectinput)
 - [ggplot2 scale_fill_gradient2](https://ggplot2.tidyverse.org/reference/scale_gradient.html)
-- Islet Explorer: `app/shiny_app/` — `data_loading.R`, `mod_plot_*.R`, `mod_trajectory_*.R`, `mod_spatial_*.R`, `drilldown_helpers.R`
+- Islet Explorer: `app/shiny_app/` — `data_loading.R`, `mod_plot_*.R`, `mod_trajectory_*.R`, `mod_spatial_*.R`, `spatial_helpers.R`, `drilldown_helpers.R`
 - Related skill: `shiny-modularization` (extraction order, plotly namespacing)
 - Related skill: `h5ad-shiny-data-pipeline` (H5AD loading, .uns storage, Excel fallback)

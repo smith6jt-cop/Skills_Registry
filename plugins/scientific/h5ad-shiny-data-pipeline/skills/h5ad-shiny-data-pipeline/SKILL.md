@@ -1,8 +1,8 @@
 ---
 name: h5ad-shiny-data-pipeline
-description: "Patterns for H5AD-backed Shiny apps with Excel fallback, groovy data in .uns, scVI QC validation"
+description: "Patterns for H5AD-backed Shiny apps with Excel fallback, groovy data in .uns, scVI QC validation, Leiden clustering merge, per-donor tissue extraction"
 author: smith6jt
-date: 2026-02-17
+date: 2026-02-20
 ---
 
 # H5AD → Shiny Data Pipeline - Research Notes
@@ -241,6 +241,42 @@ python_packages: scanpy==1.11.5, anndata==0.12.4, scvi-tools==1.4.0, scib-metric
 | H5AD vs Excel prep_data | targets=48,438, markers=64,584, comp=5,382 (identical) |
 | Total validation checks | 33/33 passed |
 
+### 7. Merging Leiden clustering from external H5AD (Phase 9, 2026-02-20)
+Merge islet-level Leiden cluster assignments and UMAP coords from a separate clustering H5AD:
+
+```python
+# scripts/build_h5ad_for_app.py — step 4.7
+clust = ad.read_h5ad("islet_analysis/islets_core_clustered.h5ad")
+leiden_cols = [c for c in clust.obs.columns if c.startswith("leiden_")]
+for col in leiden_cols:
+    adata.obs[col] = clust.obs[col].astype(str).reindex(adata.obs.index)
+# UMAP from .obsm['X_umap'] → .obs columns for easy R extraction
+umap_df = pd.DataFrame(clust.obsm['X_umap'], index=clust.obs.index,
+                        columns=['leiden_umap_1', 'leiden_umap_2'])
+for col in umap_df.columns:
+    adata.obs[col] = umap_df[col].reindex(adata.obs.index)
+```
+
+Key: both H5ADs indexed by `islet_id`, so `reindex()` aligns correctly. Categorical Leiden columns → `.astype(str)` for h5py compatibility.
+
+### 8. Per-donor tissue extraction for Spatial tab (Phase 9, 2026-02-20)
+Extract ALL cells per donor (core + peri + tissue background) for whole-tissue scatter visualization:
+
+```python
+# scripts/extract_per_donor_tissue.py → data/donors/{imageid}.csv
+# 15 files, 2.65M total cells, ~78 MB
+# Only 5 columns: X_centroid, Y_centroid, phenotype, cell_region, islet_name
+# cell_region: "core" (Islet_N), "peri" (Islet_N_exp20um), "tissue" (all others)
+obs = sc.obs[["imageid", "Parent", "phenotype", "X_centroid", "Y_centroid"]].copy()
+# Parse Parent → cell_region + islet_name
+# Group by imageid, write per-donor CSVs
+```
+
+Design choices:
+- No expression data (31 markers) — reduces 450+ MB → 78 MB. App only needs spatial coords + metadata for scatter.
+- Not backed-mode since we only read `.obs` (no `.X` access needed) — fast enough.
+- Donor 6533 has 0 core/peri cells (205K tissue-only) — no islet annotations in that sample.
+
 ## Execution Results — Phase 7-8 (2026-02-19)
 
 | Metric | Value |
@@ -253,6 +289,19 @@ python_packages: scanpy==1.11.5, anndata==0.12.4, scvi-tools==1.4.0, scib-metric
 | Rebuilt islet_explorer.h5ad | 47.6 MB (+60 .obs columns) |
 | R syntax check | All files pass `parse()` |
 | App smoke test | Loads without errors |
+
+## Execution Results — Phase 9 (2026-02-20)
+
+| Metric | Value |
+|--------|-------|
+| Per-donor tissue CSVs | 15 files, 2,649,654 total cells, 77.8 MB |
+| Avg cells/donor | 176,644 (range: 131K-218K) |
+| Leiden columns merged | 4 (leiden_0.3: 4 clusters, leiden_0.5: 7, leiden_0.8: 12, leiden_1.0: 14) |
+| UMAP coords added | leiden_umap_1, leiden_umap_2 |
+| Rebuilt islet_explorer.h5ad | 47.6 MB (+6 leiden-related .obs columns) |
+| Donor 6533 (edge case) | 205K cells but 0 core, 0 peri (tissue background only) |
+| R syntax check | All files parse successfully |
+| App HTTP 200 | Confirmed after worker restart |
 
 ## References
 
