@@ -40,13 +40,13 @@ unzip Alpaca_trading_trained_YYYYMMDD_HHMMSS.zip -d training_archives/YYYYMMDD_H
 
 ### Step 2: Model Gating Assessment
 
-Apply v2.4.5 thresholds to classify each model:
+Apply v4.1.0 thresholds to classify each model:
 
 | Classification | Fitness | PF | Consistency | MaxDD |
 |---------------|---------|-----|-------------|-------|
-| **APPROVED** | >= 0.70 | >= 1.8 | >= 85% | <= 8% |
-| **REVIEW** | >= 0.50 | >= 1.3 | >= 65% | <= 15% |
-| **DROP** | < 0.50 | < 1.3 | < 65% | > 15% |
+| **APPROVED** | >= 0.35 | >= 1.4 | >= 70% | <= 10% |
+| **REVIEW** | >= 0.10 | >= 1.1 | >= 50% | <= 20% |
+| **DROP** | Below REVIEW thresholds | | | |
 
 ```python
 from alpaca_trading.training.gating import assess_model_quality

@@ -83,6 +83,7 @@ Key skills for the Alpaca Trading system:
 - `reward-function-v330` - v3.3.0: Rebalanced weights, removed trading_incentive
 - `reward-scaling-calibration` - reward_scale=0.001 calibration
 - `agent-validation-experiment` - v3.0: Phase gates, entropy bounds, fitness-gated checkpoints, rollback, institutional knowledge
+- `agent-validation-review` - End-to-end audit of training-to-live pipeline. Stale thresholds, broken circuit breaker wiring, missing shutdown hooks
 
 ### Risk Management
 - `integrated-risk-manager` - Unified Kelly + GARCH + drawdown sizing
