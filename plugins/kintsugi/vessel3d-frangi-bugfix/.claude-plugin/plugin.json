@@ -1,0 +1,10 @@
+{
+  "name": "vessel3d-frangi-bugfix",
+  "version": "1.0.0",
+  "description": "Frangi vesselness 3D filter bug fixes and GPU VRAM safety: (1) Ra formula correction per Frangi 1998, (2) scikit-image 0.26 deprecation fixes, (3) GPU VRAM guard for small GPUs. Trigger: vessel segmentation, Frangi filter, 3D vesselness, eigenvalue analysis, GPU OOM, scikit-image deprecation, binary_closing, remove_small_objects.",
+  "author": {
+    "name": "KINTSUGI Team"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith6jt-cop/Skills_Registry"
+}
