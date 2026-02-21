@@ -72,15 +72,17 @@ Skills_Registry/
 - **kintsugi/**: KINTSUGI-specific image processing skills (won't trigger for other projects)
 - **templates/**: Example skills and templates for creating new skills
 
-## Trading Skills (v3.9.1)
+## Trading Skills (v4.1.0)
 Key skills for the Alpaca Trading system:
 
 ### Reward Function & Training
+- `reward-function-v410` - v4.1.0: DSR decay, direction floor, normalized curriculum, 3x slippage. Fixes overtrading and DSR dominance
+- `agent-validation-integration` - v4.1.0: Model health monitoring, live feedback loop, gating recalibration, diagnostic overrides
 - `differential-sharpe-ratio` - DSR for risk-adjusted rewards (Moody & Saffell 1998)
 - `discounted-thompson-sampling` - Non-stationary bandit with decay
-- `reward-function-v330` - Rebalanced weights, removed trading_incentive
+- `reward-function-v330` - v3.3.0: Rebalanced weights, removed trading_incentive
 - `reward-scaling-calibration` - reward_scale=0.001 calibration
-- `agent-validation-experiment` - v3.0: Agents HURT performance in v2.4 (fitness -38.2%). Fix: phase gates (no intervention before 30%), cumulative entropy bounds [0.5x-1.5x], fitness-gated checkpoints, rollback, LR disabled, institutional knowledge, agent memory persistence, RE read-only, Welch's t-test + Bonferroni
+- `agent-validation-experiment` - v3.0: Phase gates, entropy bounds, fitness-gated checkpoints, rollback, institutional knowledge
 
 ### Risk Management
 - `integrated-risk-manager` - Unified Kelly + GARCH + drawdown sizing
