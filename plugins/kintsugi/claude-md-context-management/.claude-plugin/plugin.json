@@ -1,0 +1,10 @@
+{
+  "name": "claude-md-context-management",
+  "version": "1.0.0",
+  "description": "Split oversized CLAUDE.md into subdirectory files to stay under 40k char limit. Trigger: CLAUDE.md too large, context window management, documentation splitting, subdirectory CLAUDE.md, auto-loaded context files. Verified on KINTSUGI (40,952 chars reduced to 21,042 + 2 new subdirectory files).",
+  "author": {
+    "name": "KINTSUGI Team"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith6jt-cop/Skills_Registry"
+}
