@@ -94,3 +94,4 @@ Key skills for the Alpaca Trading system:
 - `data-source-priority` - Alpaca API mandatory, yfinance NOT a fallback
 - `colab-notebook-development` - Mandatory notebook structure, API key parsing pattern
 - `persistent-cache-gap-filling` - gap_fill_threshold_days parameter, 401 troubleshooting
+- `notebook-config-drift-detection` - Detect/fix config drift between notebooks and GPUEnvConfig defaults. Silent A/B invalidation, agent memory persistence requirements

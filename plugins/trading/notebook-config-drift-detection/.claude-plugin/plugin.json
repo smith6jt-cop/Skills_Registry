@@ -1,0 +1,10 @@
+{
+  "name": "notebook-config-drift-detection",
+  "version": "1.0.0",
+  "description": "Detect and fix config drift between notebooks and codebase defaults. Triggers when: (1) reviewing Colab notebooks before training, (2) updating GPUEnvConfig defaults, (3) preparing agent validation A/B experiments, (4) debugging unexpected training behavior. Verified on Alpaca Trading v4.1.0.",
+  "author": {
+    "name": "smith6jt"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith6jt-cop/Skills_Registry"
+}
