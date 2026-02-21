@@ -1,0 +1,10 @@
+{
+  "name": "batch-orchestration-script",
+  "version": "1.0.0",
+  "description": "5-phase master orchestration for batch KINTSUGI dataset processing (clean, config, stage, process, report). Trigger: batch processing multiple datasets, process_remaining.sh, multi-dataset pipeline, sequential Snakemake orchestration, stale lock recovery, tmux coordinator, phase resume, idempotent batch pipeline.",
+  "author": {
+    "name": "KINTSUGI Team"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith6jt-cop/Skills_Registry"
+}
