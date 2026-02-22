@@ -41,9 +41,10 @@ Market Hours (9:30-4:00 ET):
 
 After Hours / Weekends (shifted):
   └── CCXT Unified Interface
-        ├── Coinbase (primary - best compliance)
-        ├── Kraken (secondary - lower fees)
-        └── Binance.US (tertiary - if needed)
+        ├── Coinbase International (primary - best compliance)
+        ├── Coinbase (secondary - standard retail)
+        ├── Kraken (tertiary - lower fees)
+        └── Binance.US (quaternary - if needed)
 ```
 
 ### 2. CCXTBroker Class (AlpacaBroker Interface)
@@ -152,20 +153,22 @@ python scripts/live_trader.py --paper 1 --capital-shift 1
 ```python
 # Recommended CCXT configuration
 CCXTBrokerConfig(
-    exchanges=['coinbase', 'kraken'],  # US-regulated only
+    exchanges=['coinbaseinternational', 'coinbase', 'kraken'],  # US-regulated only
     sandbox=False,                      # True for testing
     rate_limit_buffer_ms=100,           # Extra safety margin
     max_retries=3,                      # Before exchange failover
 )
 
-# Exchange priority and fees
+# Exchange priority and fees (4 exchanges)
 EXCHANGE_PRIORITY = {
-    'coinbase': 1,      # Primary - best US compliance
-    'kraken': 2,        # Secondary - lower fees (0.16%)
-    'binanceus': 3,     # Tertiary - regulatory concerns
+    'coinbaseinternational': 1,  # Primary - best US compliance
+    'coinbase': 2,               # Secondary - standard retail
+    'kraken': 3,                 # Tertiary - lower fees (0.16%)
+    'binanceus': 4,              # Quaternary - regulatory concerns
 }
 
 EXCHANGE_FEES = {
+    'coinbaseinternational': {'maker': 0.004, 'taker': 0.006},  # 0.4%/0.6%
     'coinbase': {'maker': 0.004, 'taker': 0.006},  # 0.4%/0.6%
     'kraken': {'maker': 0.0016, 'taker': 0.0026},  # 0.16%/0.26%
     'binanceus': {'maker': 0.001, 'taker': 0.001}, # 0.1%/0.1%
@@ -193,19 +196,31 @@ EXCHANGE_FEES = {
 | `config/requirements.txt` | Modified | Added `ccxt>=4.0.0` |
 | `CLAUDE.md` | Modified | CCXT documentation section |
 
+## Testing
+
+**137 tests** across two test files, using mock ccxt infrastructure (no real exchange connections):
+- `tests/test_ccxt_broker.py` — 102 tests covering CCXTBroker (16 public methods)
+- `tests/test_exchange_selector.py` — 35 tests covering ExchangeSelector (6 public methods)
+
+Uses module-level `sys.modules['ccxt']` mock injection with real exception class hierarchies. See the `optional-dependency-test-mocking` skill for the reusable pattern.
+
+```bash
+python -m pytest tests/test_ccxt_broker.py tests/test_exchange_selector.py -v
+```
+
 ## Testing Checklist
 ```python
 # Verify these scenarios:
-1. [ ] CCXT broker initializes with valid credentials
-2. [ ] Exchange failover on InsufficientFunds
-3. [ ] get_positions() aggregates across exchanges
-4. [ ] submit_order() routes to best exchange
+1. [x] CCXT broker initializes with valid credentials
+2. [x] Exchange failover on InsufficientFunds
+3. [x] get_positions() aggregates across exchanges
+4. [x] submit_order() routes to best exchange
 5. [ ] Capital shift activates CCXT when shifted
 6. [ ] Capital shift uses Alpaca when not shifted
-7. [ ] Symbol mapping works (BTC/USD -> BTC/USDT)
-8. [ ] Sandbox mode prevents live orders during testing
-9. [ ] Position reconciliation across both brokers
-10. [ ] Rate limiting prevents 429 errors
+7. [x] Symbol mapping works (BTC/USD -> BTC/USDT)
+8. [x] Sandbox mode prevents live orders during testing
+9. [x] Position reconciliation across both brokers
+10. [x] Rate limiting prevents 429 errors
 ```
 
 ## References

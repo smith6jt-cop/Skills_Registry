@@ -38,6 +38,7 @@ Skills_Registry/
 │   │   ├── conda-multi-account-hipergator/
 │   │   ├── dependency-deprecation/
 │   │   ├── hpc-dev-testing-workflow/
+│   │   ├── optional-dependency-test-mocking/
 │   │   ├── python-performance-patterns/
 │   │   └── skills-registry-organization/
 │   ├── scientific/           # Scientific computing & GPU patterns
