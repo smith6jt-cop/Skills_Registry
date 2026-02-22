@@ -72,3 +72,27 @@ Skills_Registry/
 - **kintsugi/**: KINTSUGI-specific image processing skills (won't trigger for other projects)
 - **templates/**: Example skills and templates for creating new skills
 
+## Trading Skills (v4.2.0)
+Key skills for the Alpaca Trading system:
+
+### Reward Function & Training
+- `agent-validation-v420` - **v4.2.0 (CURRENT)**: Reward weight overrides, fitness decline gate, tightened entropy bounds [0.75x,1.25x], pinned data, staged experiments. Supersedes v3.0 experiment skills
+- `reward-function-v410` - v4.1.0: DSR decay, direction floor, normalized curriculum, 3x slippage. Fixes overtrading and DSR dominance
+- `agent-validation-integration` - v4.1.0: Model health monitoring, live feedback loop, gating recalibration, diagnostic overrides
+- `differential-sharpe-ratio` - DSR for risk-adjusted rewards (Moody & Saffell 1998)
+- `discounted-thompson-sampling` - Non-stationary bandit with decay
+- `reward-function-v330` - ~~v3.3.0~~ (SUPERSEDED by v4.1.0 curriculum): Rebalanced weights, removed trading_incentive
+- `reward-scaling-calibration` - reward_scale=0.001 calibration (thresholds superseded by v4.1.0 gating)
+- `agent-validation-experiment` - ~~v3.0~~ (SUPERSEDED by v4.2.0): Phase gates, entropy bounds, fitness-gated checkpoints
+- `agent-validation-review` - End-to-end audit of training-to-live pipeline. Stale thresholds, broken circuit breaker wiring, missing shutdown hooks
+
+### Risk Management
+- `integrated-risk-manager` - Unified Kelly + GARCH + drawdown sizing
+- `adaptive-predator-prey` - Regime-aware Lotka-Volterra dynamics
+- `drawdown-guardrails-pattern` - Max drawdown triggers and scaling (v3.9.0: adaptive threshold)
+
+### Data & Infrastructure
+- `data-source-priority` - Alpaca API mandatory, yfinance NOT a fallback
+- `colab-notebook-development` - Mandatory notebook structure, API key parsing pattern
+- `persistent-cache-gap-filling` - gap_fill_threshold_days parameter, 401 troubleshooting
+- `notebook-config-drift-detection` - Detect/fix config drift between notebooks and GPUEnvConfig defaults. Silent A/B invalidation, agent memory persistence requirements

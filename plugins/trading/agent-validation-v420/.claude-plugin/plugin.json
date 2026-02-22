@@ -1,0 +1,24 @@
+{
+  "name": "agent-validation-v420",
+  "version": "1.0.0",
+  "description": "Agent validation v4.2.0: Reward weight overrides, fitness decline gate, tightened entropy bounds, pinned data, staged experiments. Trigger when: (1) running agent A/B experiments, (2) debugging agent validation failures, (3) configuring reward weight overrides, (4) understanding why agents hurt performance, (5) setting up staged experiment execution.",
+  "author": "Claude Code",
+  "skills": [
+    {
+      "name": "agent-validation-v420",
+      "path": "skills/agent-validation-v420"
+    }
+  ],
+  "triggers": [
+    "agent validation",
+    "agent experiment",
+    "reward weight override",
+    "fitness decline gate",
+    "agent A/B test",
+    "agent hurt performance",
+    "pinned data experiment",
+    "staged experiment",
+    "adjust_reward_weights",
+    "entropy bounds"
+  ]
+}
