@@ -1,0 +1,10 @@
+{
+  "name": "old-code-data-detection",
+  "version": "1.0.0",
+  "description": "Trigger: (1) identifying processed data produced with old/buggy code, (2) detecting bulk-copied vs HPC-processed files via timestamp analysis, (3) auditing processed data provenance across KINTSUGI projects, (4) scheduling stale data for deletion and reprocessing. Verified on 48 HuBMAP CODEX projects.",
+  "author": {
+    "name": "smith6jt"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith6jt-cop/Skills_Registry"
+}
