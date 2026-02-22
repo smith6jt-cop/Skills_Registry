@@ -1,0 +1,10 @@
+{
+  "name": "multi-project-batch-isolation",
+  "version": "1.0.0",
+  "description": "Trigger: (1) running signal isolation across multiple projects, (2) cascading recipe resolution from own/learned/template/auto sources, (3) tissue type parsing from project names, (4) cross-project parameter transfer. Verified on 17 HuBMAP CODEX projects (spleen/lymph_node/thymus).",
+  "author": {
+    "name": "smith6jt"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith-cop/Skills_Registry"
+}
