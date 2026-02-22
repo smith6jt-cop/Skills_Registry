@@ -109,8 +109,8 @@ Excludes: DAPI, Blank, Empty, Autofluorescence, generic "Actin" (too ambiguous).
 
 | Metric | Default | high_sensitivity |
 |--------|---------|-----------------|
-| Segments | 207 | **537** (+159%) |
-| Duration | ~25 min | ~27.5 min |
+| Segments | 207 | **619** (+199%) |
+| Duration | ~25 min | ~24 min |
 
 ## Final Parameters
 
