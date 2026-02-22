@@ -1,7 +1,7 @@
 {
   "name": "vessel3d-frangi-bugfix",
-  "version": "1.0.0",
-  "description": "Frangi vesselness 3D filter bug fixes and GPU VRAM safety: (1) Ra formula correction per Frangi 1998, (2) scikit-image 0.26 deprecation fixes, (3) GPU VRAM guard for small GPUs. Trigger: vessel segmentation, Frangi filter, 3D vesselness, eigenvalue analysis, GPU OOM, scikit-image deprecation, binary_closing, remove_small_objects.",
+  "version": "2.0.0",
+  "description": "Frangi vesselness 3D vessel segmentation: (1) Ra formula correction per Frangi 1998, (2) scikit-image 0.26 deprecation fixes, (3) GPU VRAM guard, (4) sensitivity presets (high_sensitivity, CD34), (5) marker discovery (CD34>CD31>SMA priority), (6) multi-channel combination (union/intersection of per-channel masks). Trigger: vessel segmentation, Frangi filter, 3D vesselness, eigenvalue analysis, GPU OOM, vessel preset, CD34, CD31, SMA, multi-channel, marker discovery, sensitivity tuning.",
   "author": {
     "name": "KINTSUGI Team"
   },
