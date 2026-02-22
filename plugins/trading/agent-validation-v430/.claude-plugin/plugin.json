@@ -1,0 +1,25 @@
+{
+  "name": "agent-validation-v430",
+  "version": "1.0.0",
+  "description": "Agent validation v4.3.0: Entropy disabled (cosine only), tiered fitness gate (strict/moderate), auto-best checkpoints, cross-run learning in prompts, phase gate 15%. Trigger when: (1) running agent A/B experiments, (2) agents never acting during training, (3) agents hurting performance with entropy changes, (4) configuring reward weight phase gates, (5) adding cross-run learning to agent prompts, (6) setting up production-length experiments (200M+).",
+  "author": "Claude Code",
+  "skills": [
+    {
+      "name": "agent-validation-v430",
+      "path": "skills/agent-validation-v430"
+    }
+  ],
+  "triggers": [
+    "agent validation",
+    "agent experiment",
+    "entropy disabled",
+    "tiered fitness gate",
+    "auto-best checkpoint",
+    "cross-run learning",
+    "agent memory prompts",
+    "reward weight phase gate",
+    "production experiment",
+    "agent never acts"
+  ],
+  "repository": "https://github.com/smith6jt/Alpaca_trading"
+}
