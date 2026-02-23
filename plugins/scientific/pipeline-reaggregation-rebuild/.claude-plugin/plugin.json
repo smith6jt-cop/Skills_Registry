@@ -1,0 +1,10 @@
+{
+  "name": "pipeline-reaggregation-rebuild",
+  "version": "1.0.0",
+  "description": "Specific trigger conditions: (1) changing min_cells or other aggregation filters in fixed_islet_aggregation.py, (2) rebuilding the full islet pipeline from single-cell H5AD through app data, (3) creating standalone pipeline scripts that consolidate notebook workflows. Verified on scvi-env conda (scanpy 1.10, anndata 0.10).",
+  "author": {
+    "name": "smith6jt"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith-cop/Skills_Registry"
+}
