@@ -1,0 +1,10 @@
+{
+  "name": "mcp-absolute-path-config",
+  "version": "1.0.0",
+  "description": "Fix MCP server 'Executable not found' errors by using absolute paths in .mcp.json. Trigger when: (1) Claude Code can't find MCP server executable, (2) 'Executable not found in $PATH' error, (3) setting up .mcp.json for conda/venv projects, (4) MCP config with kintsugi init or kintsugi mcp config.",
+  "author": {
+    "name": "KINTSUGI Team"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith6jt-cop/Skills_Registry"
+}
