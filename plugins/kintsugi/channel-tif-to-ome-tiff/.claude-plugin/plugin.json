@@ -1,0 +1,10 @@
+{
+  "name": "channel-tif-to-ome-tiff",
+  "version": "1.0.0",
+  "description": "Convert single-channel TIF directories to pyramidal OME-TIFF: (1) HiperGator/CODEX signal-isolated outputs, (2) any directory of per-channel TIF files needing QuPath-compatible pyramidal OME-TIFF. Trigger: channel TIFs, OME-TIFF conversion, pyramidal TIFF, tifffile writing, SubIFD pyramid.",
+  "author": {
+    "name": "SpleenFollicleCounterQP"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith6jt-cop/Skills_Registry"
+}
