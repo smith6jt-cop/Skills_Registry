@@ -71,6 +71,12 @@ Cycle 1's deconvolution starts the moment cycle 1's stitching finishes.
 
 Registration (multi-cycle alignment via VALIS) processes ALL cycles in a single SLURM job. Unlike rules 1-3, it has no `{cycle}` wildcard — resources are static, not lambda-driven.
 
+### Rule 5: Signal Isolation (Aggregate, CPU-Only)
+
+Added 2026-02-24. Signal isolation (autofluorescence subtraction) runs after registration, processing all registered channels. CPU-only (numpy/scipy), uses `_QC_CPU_ASSIGN` for partition routing (same as QC rules). See `snakemake-signal-isolation` skill for details.
+
+Full pipeline: `stitch → decon → edf` (per-cycle) → `registration` → `signal_isolation` (both aggregate) + 5 QC rules.
+
 ```python
 _REG_ASSIGN = _registration_assignment()  # Computed once at DAG creation
 

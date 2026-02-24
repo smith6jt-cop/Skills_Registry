@@ -113,6 +113,10 @@ p_low, p_high = 1.0, 99.0
 # kintsugi workflow isolate qc .
 ```
 
+## Snakemake Pipeline Integration (Feb 2026)
+
+Signal isolation is now **Rule 5** in the Snakemake pipeline, running automatically after registration. The `process_batch()` function is called by `workflow/scripts/signal_isolation.py` as a Snakemake wrapper script. This eliminates manual CLI chaining — `kintsugi workflow batch` now runs the full pipeline through signal isolation. See `snakemake-signal-isolation` skill for implementation details.
+
 ## Environment
 
 - Python 3.11, NumPy <2.0, SciPy, scikit-image, tifffile, matplotlib, PyYAML

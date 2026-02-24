@@ -1,0 +1,10 @@
+{
+  "name": "snakemake-signal-isolation",
+  "version": "1.0.0",
+  "description": "Signal isolation as Snakemake pipeline rule: CPU-only aggregate rule after registration, wrapper script calling process_batch(), QC dispatch, batch completion sentinel change. Trigger: signal isolation pipeline, Snakemake signal isolation rule, workflow batch completion, end-to-end pipeline, autofluorescence subtraction automation.",
+  "author": {
+    "name": "KINTSUGI Team"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith-cop/Skills_Registry"
+}
