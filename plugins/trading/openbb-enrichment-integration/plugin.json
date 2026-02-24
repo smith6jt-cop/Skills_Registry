@@ -1,0 +1,40 @@
+{
+  "name": "openbb-enrichment-integration",
+  "version": "1.0.0",
+  "description": "OpenBB Platform integration as parallel enrichment layer for fundamentals, FRED macro data, earnings calendar, news, and options IV. NEVER for OHLCV. Use when: adding non-price data sources, replacing yfinance sector lookups, integrating FRED economic data, fetching company news or earnings dates.",
+  "author": "Claude Code",
+  "category": "trading",
+  "tags": ["openbb", "enrichment", "fundamentals", "fred", "macro", "v4.4.0"],
+  "triggers": [
+    "OpenBB",
+    "openbb provider",
+    "fundamentals data",
+    "FRED data",
+    "earnings calendar",
+    "company news",
+    "options IV",
+    "enrichment layer",
+    "sector lookup replacement",
+    "yfinance replacement"
+  ],
+  "skills": [
+    {
+      "name": "openbb-enrichment-integration",
+      "path": "skills/openbb-enrichment-integration/SKILL.md"
+    }
+  ],
+  "dependencies": {
+    "openbb-core": ">=4.3.0",
+    "openbb-equity": ">=4.3.0",
+    "openbb-economy": ">=4.3.0",
+    "openbb-news": ">=4.3.0",
+    "openbb-derivatives": ">=4.3.0"
+  },
+  "relatedSkills": [
+    "data-source-priority",
+    "persistent-sector-caching",
+    "integrated-risk-manager",
+    "vix-scaled-risk-management",
+    "macro-calendar-modulation"
+  ]
+}

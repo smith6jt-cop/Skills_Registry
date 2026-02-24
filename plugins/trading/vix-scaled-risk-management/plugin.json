@@ -1,0 +1,28 @@
+{
+  "name": "vix-scaled-risk-management",
+  "version": "1.0.0",
+  "description": "VIX-based position sizing, circuit breakers, and capital shift suppression for macro-aware risk management. Use when: adding macro awareness to risk controls, scaling positions by volatility regime, implementing VIX circuit breakers, suppressing capital shifts during panic.",
+  "author": "Claude Code",
+  "category": "trading",
+  "tags": ["vix", "risk-management", "position-sizing", "circuit-breaker", "macro", "v4.4.0"],
+  "triggers": [
+    "VIX scaling",
+    "VIX circuit breaker",
+    "macro risk",
+    "volatility regime",
+    "panic position sizing",
+    "capital shift suppression",
+    "vix_suppressed"
+  ],
+  "skills": [
+    {
+      "name": "vix-scaled-risk-management",
+      "path": "skills/vix-scaled-risk-management/SKILL.md"
+    }
+  ],
+  "relatedSkills": [
+    "integrated-risk-manager",
+    "openbb-enrichment-integration",
+    "drawdown-guardrails-pattern"
+  ]
+}

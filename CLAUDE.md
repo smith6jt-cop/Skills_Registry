@@ -73,7 +73,7 @@ Skills_Registry/
 - **kintsugi/**: KINTSUGI-specific image processing skills (won't trigger for other projects)
 - **templates/**: Example skills and templates for creating new skills
 
-## Trading Skills (v4.3.0)
+## Trading Skills (v4.4.0)
 Key skills for the Alpaca Trading system:
 
 ### Reward Function & Training
@@ -90,11 +90,14 @@ Key skills for the Alpaca Trading system:
 
 ### Risk Management
 - `integrated-risk-manager` - Unified Kelly + GARCH + drawdown sizing
+- `vix-scaled-risk-management` - **v4.4.0**: VIX-based position sizing (1.0x→0.4x), circuit breakers (VIX≥30/40), capital shift suppression
 - `adaptive-predator-prey` - Regime-aware Lotka-Volterra dynamics
 - `drawdown-guardrails-pattern` - Max drawdown triggers and scaling (v3.9.0: adaptive threshold)
 
 ### Data & Infrastructure
-- `data-source-priority` - Alpaca API mandatory, yfinance NOT a fallback
+- `openbb-enrichment-integration` - **v4.4.0**: OpenBB Platform as parallel enrichment layer (fundamentals, FRED, earnings, news). NEVER OHLCV
+- `macro-calendar-modulation` - **v4.4.0**: CPI/GDP/retail sales date awareness + VIX regime scaling for hour_weight
+- `data-source-priority` - Alpaca API mandatory, yfinance NOT a fallback (v4.4.0: OpenBB preferred for sectors)
 - `colab-notebook-development` - Mandatory notebook structure, API key parsing pattern
 - `persistent-cache-gap-filling` - gap_fill_threshold_days parameter, 401 troubleshooting
 - `notebook-config-drift-detection` - Detect/fix config drift between notebooks and GPUEnvConfig defaults. Silent A/B invalidation, agent memory persistence requirements
