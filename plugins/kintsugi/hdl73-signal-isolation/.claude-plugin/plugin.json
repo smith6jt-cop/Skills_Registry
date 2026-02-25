@@ -1,0 +1,10 @@
+{
+  "name": "hdl73-signal-isolation",
+  "version": "1.0.0",
+  "description": "Signal isolation for Phenocycler spleen samples with matched blank pairs: (1) processing remaining channels after partial manual processing, (2) auto-analyzing subtraction parameters when no param file exists. Verified on HDL73 spleen sample with kintsugi.signal module.",
+  "author": {
+    "name": "smith6jt"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith6jt-cop/Skills_Registry"
+}
