@@ -113,6 +113,7 @@ The **batch completion sentinel** changed from `registered/.snakemake_complete` 
 | Not updating `_discover_batch_projects()` sentinel | Tests failed — projects with only registration marked as "completed" | Batch completion check must match `rule all` target |
 | Not updating `_cleanup_safe_inputs()` | registered/ data could be deleted before signal isolation runs | Add signal_isolation sentinel as cleanup gate input |
 | Not adding `qc_signal_isolation` to `all_qc_sentinels()` | Signal isolation QC would never run as part of default pipeline | All QC sentinels must be listed in `all_qc_sentinels()` |
+| `qc_report.py` not deployed to existing projects | `workflow config` only copies scripts if they DON'T exist — old copies lack `signal_isolation` handler, QC fails with exit 1 | Bulk-copy updated scripts after any source change; or delete old copies and re-run `workflow config` |
 
 ## Key Insights
 
@@ -122,14 +123,16 @@ The **batch completion sentinel** changed from `registered/.snakemake_complete` 
 - **Sentinel change ripples through** — batch eligibility, stage detection, rule all, QC sentinels, cleanup gate ALL need updating
 - **Recipe auto-discovery** makes the rule zero-config — searches standard paths, falls back to auto-analysis
 - **Tissue type auto-detection** in `generate_workflow_config()` means users don't need to manually configure tissue type
-- **Re-config propagates via `workflow config`** — always overwrites Snakefile + profiles; adds new scripts per-file
+- **Re-config propagates via `workflow config`** — always overwrites Snakefile + profiles; adds new scripts per-file. **BUT existing scripts are NOT updated** — must bulk-copy after source changes
 
 ## Verified On
 
 - 35 projects re-configured via `kintsugi workflow config .` (Feb 24, 2026)
 - All tissue types correctly auto-detected (spleen, lymph_node, thymus)
 - 92/92 tests pass (26 workflow batch + 66 batch signal isolation)
-- Two in-progress projects (1901CC2A, 1901CC3C) will pick up signal isolation after registration completes
+- 1901CC3C completed full pipeline through Snakemake (SI + QC)
+- 1901CC2A: SI succeeded, QC failed due to stale `qc_report.py` in project (missing SI handler). Fixed by bulk-copying updated script (Feb 25, 2026)
+- 25 batch-processed projects validated and promoted via `scripts/create_si_sentinels.py` (see `sentinel-validation-promotion` skill)
 
 ## References
 

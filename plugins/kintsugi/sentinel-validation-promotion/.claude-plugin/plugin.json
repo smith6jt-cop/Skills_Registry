@@ -1,0 +1,10 @@
+{
+  "name": "sentinel-validation-promotion",
+  "version": "1.0.0",
+  "description": "Validate pipeline output from non-Snakemake processing and create missing sentinel files to promote projects to completed status. Trigger: missing sentinel, batch-processed projects invisible to workflow batch, promote project stage, validate signal isolation output, create .snakemake_complete.",
+  "author": {
+    "name": "KINTSUGI Team"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith-cop/Skills_Registry"
+}
