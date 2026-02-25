@@ -97,7 +97,7 @@ Key skills for the Alpaca Trading system:
 ### Data & Infrastructure
 - `openbb-enrichment-integration` - **v4.4.0**: OpenBB Platform as parallel enrichment layer (fundamentals, FRED, earnings, news). NEVER OHLCV
 - `macro-calendar-modulation` - **v4.4.0**: CPI/GDP/retail sales date awareness + VIX regime scaling for hour_weight
-- `data-source-priority` - Alpaca API mandatory, yfinance NOT a fallback (v4.4.0: OpenBB preferred for sectors)
+- `data-source-priority` - Alpaca API mandatory for OHLCV, OpenBB for enrichment, yfinance removed entirely (v4.4.0)
 - `colab-notebook-development` - Mandatory notebook structure, API key parsing pattern
 - `persistent-cache-gap-filling` - gap_fill_threshold_days parameter, 401 troubleshooting
 - `notebook-config-drift-detection` - Detect/fix config drift between notebooks and GPUEnvConfig defaults. Silent A/B invalidation, agent memory persistence requirements

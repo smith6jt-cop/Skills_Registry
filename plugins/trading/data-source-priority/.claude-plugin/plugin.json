@@ -1,7 +1,7 @@
 {
   "name": "data-source-priority",
   "version": "2.0.0",
-  "description": "CRITICAL: Alpaca API is MANDATORY for all OHLCV data. yfinance is NOT a valid fallback - EVER. Trigger when: (1) any code proposes yfinance fallback for price/volume, (2) crypto volume filter fails, (3) zero-volume bars detected, (4) 'Alpaca data enabled: False' in logs, (5) API key configuration issues, (6) MCP server data source questions.",
+  "description": "CRITICAL: Alpaca API is MANDATORY for all OHLCV data. yfinance is NOT used anywhere (removed v4.4.0). OpenBB for enrichment only. Trigger when: (1) any code proposes non-Alpaca source for price/volume, (2) crypto volume filter fails, (3) zero-volume bars detected, (4) 'Alpaca data enabled: False' in logs, (5) API key configuration issues, (6) MCP server data source questions.",
   "author": {
     "name": "Claude Code"
   },
