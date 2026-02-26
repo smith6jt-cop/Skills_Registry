@@ -1,0 +1,10 @@
+{
+  "name": "genotype-hypothesis-analysis",
+  "version": "1.0.0",
+  "description": "Trigger: (1) comparing measurements across genotype groups with small n, (2) multi-hypothesis analysis of spatial biology data, (3) vessel/region density analysis in multiplex imaging. Verified on QuPath spleen Phenocycler data with pandas/scipy/seaborn.",
+  "author": {
+    "name": "smith6jt"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith6jt-cop/Skills_Registry"
+}
