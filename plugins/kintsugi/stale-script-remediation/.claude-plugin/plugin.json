@@ -1,0 +1,10 @@
+{
+  "name": "stale-script-remediation",
+  "version": "1.0.0",
+  "description": "Trigger: (1) workflow scripts not propagating to projects, (2) qc_report.py or log_utils.py failures in deployed projects, (3) bulk-updating Snakemake workflow scripts across KINTSUGI_Projects, (4) stale Snakemake locks blocking batch processing, (5) batch processing stalls after workflow/scripts updates. Verified on 35 configured projects (Feb 2026).",
+  "author": {
+    "name": "smith6jt"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith6jt-cop/Skills_Registry"
+}
