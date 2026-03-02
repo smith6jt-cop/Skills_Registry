@@ -73,11 +73,12 @@ Skills_Registry/
 - **kintsugi/**: KINTSUGI-specific image processing skills (won't trigger for other projects)
 - **templates/**: Example skills and templates for creating new skills
 
-## Trading Skills (v4.4.0)
+## Trading Skills (v5.0.0)
 Key skills for the Alpaca Trading system:
 
 ### Reward Function & Training
-- `agent-validation-v430` - **v4.3.0 (CURRENT)**: Entropy disabled (cosine only), tiered fitness gate (strict/moderate), auto-best checkpoints, cross-run learning in prompts, phase gate 15%. Supersedes v4.2.0
+- `skilled-agent-v500` - **v5.0.0 (CURRENT)**: Single tool-augmented agent replaces multi-agent system. Claude Agent SDK, simulate-verify loop, prompt evolution, knowledge base graduation. Supersedes all agent-validation-* skills
+- `agent-validation-v430` - ~~v4.3.0~~ (SUPERSEDED by v5.0.0): Entropy disabled (cosine only), tiered fitness gate (strict/moderate), auto-best checkpoints, cross-run learning in prompts, phase gate 15%
 - `agent-validation-v420` - ~~v4.2.0~~ (SUPERSEDED by v4.3.0): Reward weight overrides, fitness decline gate, tightened entropy bounds [0.75x,1.25x], pinned data, staged experiments
 - `reward-function-v410` - v4.1.0: DSR decay, direction floor, normalized curriculum, 3x slippage. Fixes overtrading and DSR dominance
 - `agent-validation-integration` - v4.1.0: Model health monitoring, live feedback loop, gating recalibration, diagnostic overrides
