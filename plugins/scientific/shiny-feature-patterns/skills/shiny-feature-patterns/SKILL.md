@@ -423,6 +423,41 @@ HTML-based legends (Boundaries mode): minimum 16px font-size on container, indiv
 | Placing `column(2, ai_chat)` as sibling after `plot_main_ui()` tagList in fluidRow | Bootstrap column wrapping puts col-2 next to col-10 (seg panel) at the bottom, not next to col-5+col-5 (cards) | DOM order determines Bootstrap column flow. Insert col-2 BETWEEN the cards and seg panel so 5+5+2=12 fills a row. |
 | Adding individual points after summary geom_line/geom_point | Individual scatter points render ON TOP of summary lines, obscuring the trend | ggplot2 layers render in addition order. Add individual points FIRST so summary lines draw on top. |
 
+## Phase 12.5: Deferred Heavy File Loading (2026-03-05)
+
+### 28. Lazy-load large fallback data files
+When a large file (e.g., 72 MB annotations.tsv) is only needed as a rarely-hit fallback, defer loading using an environment cache:
+
+```r
+# At file scope: initialize empty
+.seg_lazy <- new.env(parent = emptyenv())
+.seg_lazy$data <- NULL
+.seg_lazy$loaded <- FALSE
+
+# In the function that needs it: load on first access
+get_islet_annotations <- function(case_id, islet_key) {
+  # Try fast path first (spatial lookup)
+  if (!is.null(islet_spatial_lookup)) {
+    match <- lookup(case_id, islet_key)
+    if (found) return(match)
+  }
+  # Fallback: lazy load the heavy file
+  if (!.seg_lazy$loaded) {
+    .seg_lazy$data <- load_segmentation_data()  # 72 MB, 3s
+    .seg_lazy$loaded <- TRUE
+  }
+  # ... use .seg_lazy$data
+}
+```
+
+Key: Use `new.env()` instead of `<<-` — environment mutation is scope-independent and works reliably across `source()` boundaries with different `local` settings.
+
+### Phase 12.5 Failed Attempts
+
+| Attempt | Why it Failed | Lesson Learned |
+|---------|---------------|----------------|
+| `<<-` for lazy-load flag | `<<-` assigns to the *defining* environment, which may differ from the *reading* environment across `source()` calls | Use `new.env(parent=emptyenv())` with named fields for lazy state. Environment objects are reference-semantic. |
+
 ## Phase 12: Cell-Count-Weighted Trajectory Visualization (2026-03-05)
 
 ### 26. Cell-count-aware point sizing and weighted LOESS

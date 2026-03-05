@@ -63,6 +63,34 @@ reconstruct_groovy_df <- function(ad, sheet) {
 }
 ```
 
+### 1b. CRITICAL: Cache `ad$uns` before column access (Mar 2026 optimization)
+
+Every `ad$uns[[key]]` call crosses the reticulate Python→R bridge (~221ms each). With 62+ groovy columns × 3 sheets, this creates a **16-second bottleneck**. Fix: cache the entire `.uns` dict as an R list in a single bridge crossing:
+
+```r
+# WRONG (16s): 186 individual bridge crossings
+targets <- reconstruct_groovy_df(ad, "targets")  # calls ad$uns[[key]] 62 times
+
+# RIGHT (0.2s): single bridge crossing, then R list indexing
+uns <- ad$uns  # one crossing, returns full R list
+targets <- reconstruct_groovy_df_from_list(uns, "targets")  # indexes R list (instant)
+```
+
+```r
+reconstruct_groovy_df_from_list <- function(uns_list, sheet) {
+  prefix <- paste0("groovy_", sheet, "_")
+  col_names <- uns_list[[paste0("groovy_", sheet, "_columns")]]
+  n_rows <- as.integer(uns_list[[paste0("groovy_", sheet, "_n_rows")]])
+  if (is.null(col_names) || n_rows == 0) return(NULL)
+  df <- data.frame(row.names = seq_len(n_rows))
+  for (col in col_names) df[[col]] <- uns_list[[paste0(prefix, col)]]
+  if ("Case ID" %in% names(df)) df[["Case ID"]] <- suppressWarnings(as.integer(df[["Case ID"]]))
+  df
+}
+```
+
+This applies to ANY reticulate accessor: `ad$obs[[col]]`, `ad$var[[col]]`, `ad$obsm[["key"]]`. Always cache the parent object as an R object first, then index from the R side.
+
 ### 2. H5AD → Excel fallback in Shiny data loading
 Design the H5AD loader to return the **same list structure** as the existing Excel loader. This means `prep_data()` needs zero changes.
 
@@ -170,6 +198,9 @@ Validation checks:
 | Old pipeline: n_neighbors=5 | Too few neighbors created disconnected/noisy graphs, especially with <1000 islets | Use n_neighbors=15 (standard) for islet-level data; 5 is only appropriate for very dense single-cell data |
 | Old pipeline: PCA-based neighbors (no batch correction) | Donor-specific technical effects drove the UMAP clustering, obscuring disease biology | Use `X_scVI_mean` with cosine metric for batch-corrected neighbor computation |
 | Storing DataFrames directly in `.uns` | H5AD serialization doesn't handle pandas DataFrames well in `.uns` (type conversion issues) | Store each column as a separate numpy array with a naming convention prefix; reconstruct on the R side |
+| Per-key `ad$uns[[col]]` in R loop | Each `ad$uns[[key]]` call crosses reticulate Python→R bridge (~221ms). With 62 cols × 3 sheets = 186 calls = **16 seconds**. Profiled as the #1 startup bottleneck | Cache `uns <- ad$uns` as R list (0.2s single crossing), then index from R side. Applies to ALL reticulate accessors (`ad$obs`, `ad$var`, `ad$obsm`) |
+| `reticulate::py$adata <- ad` in `source(f, local=TRUE)` | `py` is a special active binding that fails with `object 'reticulate' not found` when sourced locally. Even `requireNamespace("reticulate")` doesn't help — `py$` needs the package on the search path | Avoid `reticulate::py$` entirely for this use case. Cache R objects (`ad$uns`, `ad$obs`) instead of round-tripping through Python namespace |
+| `<<-` for lazy-load flag across `source()` boundaries | `<<-` assigns to the defining environment, which may not match the reading environment when files are sourced with different `local` args | Use `new.env(parent=emptyenv())` with `$loaded` flag for lazy state. Environment mutation is scope-independent |
 | Defining slash commands in CLAUDE.md | Claude Code only discovers skills from `.claude/skills/<name>/SKILL.md` files — CLAUDE.md is loaded as documentation context only, NOT for skill registration | Always create skill files in `.claude/skills/`; git submodule CLAUDE.md files are not searched for skills |
 | `adata.obs.reset_index()` when index name matches column | `islets_core_fixed.h5ad` has `islet_id` as both the index name AND a column → pandas raises `ValueError: cannot insert islet_id, already exists` | Check `if idx_name in adata.obs.columns: reset_index(drop=True)` before any merge that uses reset_index |
 | `fillna('')` on categorical columns | h5py can't write NaN in string columns, but `.fillna('')` on a Categorical raises `TypeError: Cannot setitem on a Categorical with a new category` | Always `.astype(str)` BEFORE `.fillna('')` for categorical obs columns |
@@ -243,6 +274,17 @@ python_packages: scanpy==1.11.5, anndata==0.12.4, scvi-tools==1.4.0, scib-metric
 | islet_explorer.h5ad | 47 MB |
 | H5AD vs Excel prep_data | targets=48,438, markers=64,584, comp=5,382 (identical) |
 | Total validation checks | 33/33 passed |
+
+## Performance Optimization Results (2026-03-05)
+
+| Metric | Before | After |
+|--------|--------|-------|
+| `reconstruct_groovy_df()` × 3 | 16s (186 bridge crossings) | 0.2s (1 crossing + R list) |
+| `annotations.tsv` eager load | 3s (72 MB TSV) | 0s (deferred, never loaded) |
+| File sourcing | ~4s | ~1.5s |
+| `anndata::read_h5ad()` | 1.3s | 1.3s (unchanged) |
+| `prep_data()` | 0.6s | 0.7s (unchanged) |
+| **Total to first plot** | **~22s** | **~3.5s** |
 
 ### 7. Merging Leiden clustering from external H5AD (Phase 9, 2026-02-20)
 Merge islet-level Leiden cluster assignments and UMAP coords from a separate clustering H5AD:
