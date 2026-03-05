@@ -423,6 +423,40 @@ HTML-based legends (Boundaries mode): minimum 16px font-size on container, indiv
 | Placing `column(2, ai_chat)` as sibling after `plot_main_ui()` tagList in fluidRow | Bootstrap column wrapping puts col-2 next to col-10 (seg panel) at the bottom, not next to col-5+col-5 (cards) | DOM order determines Bootstrap column flow. Insert col-2 BETWEEN the cards and seg panel so 5+5+2=12 fills a row. |
 | Adding individual points after summary geom_line/geom_point | Individual scatter points render ON TOP of summary lines, obscuring the trend | ggplot2 layers render in addition order. Add individual points FIRST so summary lines draw on top. |
 
+## Phase 12: Cell-Count-Weighted Trajectory Visualization (2026-03-05)
+
+### 26. Cell-count-aware point sizing and weighted LOESS
+When aggregated data has variable sample sizes per observation (e.g., islet-level means from 1-1,902 cells), give visual weight proportional to measurement quality:
+
+```r
+# Point sizing: sqrt for area-proportional display
+df$size_cells <- sqrt(df$total_cells)
+aes_mapping$size <- as.name("size_cells")
+scale_size_continuous(range = c(0.3 * base, 3.0 * base), guide = "none")
+
+# LOESS weighting: log1p to prevent extreme values from dominating
+df$loess_weight <- log1p(df$total_cells)
+geom_smooth(aes(weight = loess_weight), method = "loess", span = 0.75)
+```
+
+**Critical**: Raw counts as LOESS weights cause catastrophic overfitting. With median=9 and max=1,902, a few large islets get 200× the weight of typical ones, producing wild trend curves (e.g., diving to -150 on the y-axis). `log1p()` compresses the 1,902:1 ratio to ~11:1 — still meaningful upweighting but safe.
+
+### 27. Hover tooltip with data quality indicator
+Add a text aesthetic to ggplot that passes through to plotly tooltip:
+
+```r
+df$hover_cells <- paste0("Cells: ", df$total_cells)
+aes_mapping <- aes(x = pt, y = value, text = hover_cells)
+p <- ggplotly(g, tooltip = c("x", "y", "colour", "text"), source = ns("scatter"))
+```
+
+### Phase 12 Failed Attempts
+
+| Attempt | Why it Failed | Lesson Learned |
+|---------|---------------|----------------|
+| `weight = total_cells` (raw) in LOESS | A few islets with 1,000+ cells dominated the fit, causing the trend line to swing wildly (e.g., -150 on y-axis) despite all data being near 0 | Raw counts too skewed (median=9, max=1,902). Use `log1p(total_cells)` to compress the ratio from 1,902:1 to ~11:1. |
+| Point size by raw `total_cells` | A few extreme islets were massive dots obscuring all neighbors | Use `sqrt(total_cells)` so area (not radius) is proportional to count. Moderate visual range [0.3×, 3.0×] of base size. |
+
 ## References
 - [Shiny Modules](https://shiny.posit.co/r/articles/improve/modules/)
 - [selectInput with optgroups](https://shiny.posit.co/r/reference/shiny/latest/selectinput)
