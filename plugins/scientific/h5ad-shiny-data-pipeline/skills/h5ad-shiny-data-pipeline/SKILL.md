@@ -102,6 +102,9 @@ sil_ct_scvi = silhouette_score(X_scVI, celltype_labels, sample_size=10000)
 # Cell-type LISI: lower = better separation (ideal = 1)
 ```
 
+### 3b. scVI covariate validation (2026-02-23)
+The canonical model uses `categorical_covariate_keys=["Age", "Gender"]` with NO `batch_key`. Since each donor has a unique Age value, this effectively provides soft donor correction. A full retraining comparison confirmed the original model wins 4/5 key metrics vs a no-covariate alternative (donor silhouette: -0.04 vs +0.25; PC0 pseudotime r: 0.71 vs 0.10). See the dedicated **scvi-covariate-validation** skill for full methodology, metrics, and failed attempts.
+
 ### 4. Neighborhood metrics in `.obs` (Phase 7, 2026-02-19)
 Store per-islet neighborhood metrics as additional `.obs` columns rather than `.uns`:
 

@@ -10,8 +10,8 @@ date: 2026-02-20
 ## Experiment Overview
 | Item | Details |
 |------|---------|
-| **Date** | 2026-02-19 |
-| **Goal** | Add three new interactive features (phenotype composition explorer, demographic filters, multi-feature heatmap) to a modular Shiny app backed by H5AD data with Excel fallback |
+| **Date** | 2026-02-19 (updated 2026-02-20) |
+| **Goal** | Interactive Shiny feature patterns: composition explorer, demographics, embedded panels, tissue scatter, Leiden, UI alignment, layer ordering, font standards |
 | **Environment** | R 4.x, Shiny 1.12.1, plotly 4.12.0, ggplot2, anndata (R pkg), H5AD with `.obs` containing `prop_*` columns, `age`, `gender` |
 | **Status** | Success |
 
@@ -351,6 +351,77 @@ div(style = doc_style,
 | Using plotly for tissue scatter (~177K cells) | Browser tab freezes/crashes with >50K WebGL points in plotly. Even with `toWebGL()`, hover/zoom events process all points. | Use `ggplot2::renderPlot()` for >50K points. Plotly is fine for <5K (like 1,015 islets on Leiden UMAP). |
 | Donor 6533 assumed to have islet annotations | 6533 has 205K cells but 0 core/0 peri — all cells are tissue background. No islet annotations exist for this donor. | Always handle donors with zero islet cells gracefully. Don't assume all donors have core/peri regions. |
 | Storing expression data in per-donor tissue CSVs | 31 marker columns × 177K cells = 30+ MB per file, 450+ MB total. App doesn't need expression for spatial overview. | Only extract the columns actually needed: X/Y coords, phenotype, cell_region, islet_name. Reduces 450+ MB → 78 MB. |
+
+## Session 2026-02-20: UI Alignment, Layer Ordering, Font Standards
+
+### 23. Injecting extra UI between module cards via `extra_panel` parameter
+When a module's `tagList` output needs external content (e.g., AI chat) inserted at a specific position in the Bootstrap column flow, add an optional parameter rather than restructuring the caller:
+
+```r
+# Module UI: accept optional panel injection
+plot_main_ui <- function(id, extra_panel = NULL) {
+  ns <- NS(id)
+  tagList(
+    column(10, tip_banner),       # 10 cols, wraps
+    column(5, left_card),         # 5 cols
+    column(5, right_card),        # 10 cols total
+    extra_panel,                  # e.g., column(2, ai_chat) → 12 cols, same row as cards
+    column(12, seg_panel)         # wraps to next row, full width
+  )
+}
+
+# Caller in app.R:
+plot_main_ui("plot", extra_panel = column(2, ai_assistant_ui("ai")))
+```
+
+Bootstrap column flow: col-10 wraps because >12; then col-5 + col-5 + col-2 = 12 → same visual row. The AI chat card top aligns with the plot cards automatically.
+
+### 24. ggplot2 layer ordering: lines on top of individual points
+In ggplot2, layers render in the order they're added. To show summary lines ON TOP of individual scatter points, add individual points FIRST:
+
+```r
+p <- ggplot(sm, aes(x, y, color = group))
+
+# Individual points FIRST (drawn underneath)
+if (show_points) {
+  p <- p + geom_point(data = raw, aes(x, y, color = group, key = click_key),
+                      position = position_jitter(...), size = pt_size, alpha = pt_alpha,
+                      inherit.aes = FALSE)
+}
+
+# Summary lines + error bars ON TOP
+p <- p + geom_line() + geom_point() + geom_errorbar(aes(ymin, ymax))
+
+# Color scale AFTER all layers (last scale_color_manual wins)
+if (has_donor_colors) {
+  p <- p + scale_color_manual(values = c(status_colors, donor_colors), breaks = donor_breaks)
+} else {
+  p <- p + scale_color_manual(values = status_colors, breaks = status_levels)
+}
+```
+
+Key: Extract `donor_colors` and `donor_id_breaks` inside the if-block, store in outer-scope variables, apply scale after all layers.
+
+### 25. Font size standards for scientific visualization plots
+Established minimums for readability across the app's visualization contexts:
+
+| Context | base_size | legend.text | legend.title | legend.key.size | plot.title |
+|---------|-----------|-------------|--------------|-----------------|------------|
+| Drilldown (islet viewer) | 12 | 14px | 16px bold | 0.9cm | 14px |
+| Cell Composition bar | 16 | — | — | — | — |
+| Tissue Scatter (800px) | 18 | 15px | 18px bold | 0.7cm | 22px |
+| Scatter plot (plotly) | 14 | — | — | — | — |
+
+Phenotype dots in the islet viewer: `size = 3.0` (was 1.8). Fallback gray dots: `size = 2.5`.
+
+HTML-based legends (Boundaries mode): minimum 16px font-size on container, individual items 16px.
+
+### Session 2026-02-20 Failed Attempts
+
+| Attempt | Why it Failed | Lesson Learned |
+|---------|---------------|----------------|
+| Placing `column(2, ai_chat)` as sibling after `plot_main_ui()` tagList in fluidRow | Bootstrap column wrapping puts col-2 next to col-10 (seg panel) at the bottom, not next to col-5+col-5 (cards) | DOM order determines Bootstrap column flow. Insert col-2 BETWEEN the cards and seg panel so 5+5+2=12 fills a row. |
+| Adding individual points after summary geom_line/geom_point | Individual scatter points render ON TOP of summary lines, obscuring the trend | ggplot2 layers render in addition order. Add individual points FIRST so summary lines draw on top. |
 
 ## References
 - [Shiny Modules](https://shiny.posit.co/r/articles/improve/modules/)

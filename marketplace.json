@@ -900,6 +900,16 @@
       },
       "category": "scientific",
       "path": "plugins/scientific/shiny-llm-chat"
+    },
+    {
+      "name": "scvi-covariate-validation",
+      "version": "1.0.0",
+      "description": "Validate scVI batch correction covariate choices by comparing latent space quality metrics. Triggers: (1) choosing between batch_key and categorical_covariate_keys in scVI, (2) evaluating whether demographic covariates effectively act as donor identifiers, (3) comparing scVI models with vs without covariates, (4) quantifying donor vs biology signal in latent spaces, (5) generating supplemental figures for batch correction validation. Verified on scvi-tools 1.4.0, CODEX multiplexed imaging (2.6M cells, 15 donors).",
+      "author": {
+        "name": "smith6jt"
+      },
+      "category": "scientific",
+      "path": "plugins/scientific/scvi-covariate-validation"
     }
   ]
 }
