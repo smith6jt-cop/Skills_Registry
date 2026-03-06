@@ -492,6 +492,81 @@ p <- ggplotly(g, tooltip = c("x", "y", "colour", "text"), source = ns("scatter")
 | `weight = total_cells` (raw) in LOESS | A few islets with 1,000+ cells dominated the fit, causing the trend line to swing wildly (e.g., -150 on y-axis) despite all data being near 0 | Raw counts too skewed (median=9, max=1,902). Use `log1p(total_cells)` to compress the ratio from 1,902:1 to ~11:1. |
 | Point size by raw `total_cells` | A few extreme islets were massive dots obscuring all neighbors | Use `sqrt(total_cells)` so area (not radius) is proportional to count. Moderate visual range [0.3×, 3.0×] of base size. |
 
+## Phase 15: Spatial Neighborhood Analysis Cards (2026-03-06)
+
+### 29. Conditional card sections via renderUI in modules
+When a module needs to show additional card sections only when specific data exists, use `renderUI` in the server to emit full `tagList` blocks:
+
+```r
+# UI: single uiOutput at the bottom
+tagList(
+  fluidRow(...),   # existing content
+  uiOutput(ns("extra_cards"))  # conditionally rendered
+)
+
+# Server: only emit when data exists
+output$extra_cards <- renderUI({
+  if (!has_neighborhood()) return(NULL)
+  tagList(
+    fluidRow(column(12, sec_heading("A", "Title", "Subtitle"))),
+    fluidRow(
+      column(6, div(class = "card", ..., plotlyOutput(ns("plot_a")))),
+      column(6, div(class = "card", ..., plotlyOutput(ns("plot_b"))))
+    )
+  )
+})
+```
+
+Key: `section_heading()` must be redefined inside `renderUI` since it can't access the UI function's local helper. Or define it at module-server scope.
+
+### 30. Shared reactive for filtered data across multiple outputs
+When multiple renderPlotly outputs all need the same filtered data:
+
+```r
+nbr_comp <- reactive({
+  pd <- prepared()
+  req(pd$comp)
+  comp <- pd$comp
+  if (!is.null(input$groups) && "Donor Status" %in% colnames(comp))
+    comp <- comp[comp$`Donor Status` %in% input$groups, , drop = FALSE]
+  comp
+})
+```
+
+All 6 outputs call `nbr_comp()` — Shiny's reactive caching ensures the filter runs once per invalidation cycle.
+
+### 31. Plotly categorical axis ordering
+Plotly defaults to alphabetical ordering for categorical x-axes. For disease progression (ND → Aab+ → T1D), alphabetical puts "Aab+" first. Fix:
+
+```r
+layout(
+  xaxis = list(title = "", categoryorder = "array",
+               categoryarray = c("ND", "Aab+", "T1D"))
+)
+```
+
+This applies to violin plots, box plots, and grouped bar charts — any plot where x is a categorical factor.
+
+### 32. Intermediate summary reactive for grouped aggregations
+When a bar chart and heatmap share the same summarized data (e.g., enrichment z-scores per cell type × disease stage), compute once in a dedicated reactive:
+
+```r
+enrich_summary <- reactive({
+  comp <- nbr_comp()
+  # ... aggregate 7 enrich_z_* columns per cell_type × donor_status
+  # Returns: data.frame(col, cell_type, donor_status, z_summary, z_lo, z_hi, n)
+})
+```
+
+Bar chart and heatmap both call `enrich_summary()` — no duplicated aggregation.
+
+### Phase 15 Failed Attempts
+
+| Attempt | Why it Failed | Lesson Learned |
+|---------|---------------|----------------|
+| Relying on factor levels for plotly x-axis order | Plotly ignores R factor levels for categorical axes and defaults to alphabetical. "Aab+" sorts before "ND". | Must explicitly set `categoryorder = "array"` + `categoryarray` in `layout(xaxis = ...)`. Factor levels only affect ggplot2, not plotly. |
+| Defining `section_heading()` in UI function and calling from `renderUI` in server | `renderUI` runs in server scope where the UI function's local helper isn't accessible. | Redefine the helper inside `renderUI` or at module-server scope. Alternatively, use a shared utility function. |
+
 ## References
 - [Shiny Modules](https://shiny.posit.co/r/articles/improve/modules/)
 - [selectInput with optgroups](https://shiny.posit.co/r/reference/shiny/latest/selectinput)
