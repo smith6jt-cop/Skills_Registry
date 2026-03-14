@@ -24,10 +24,11 @@ CX_19-001_SP_CC2-A28 (13 cycles, 28 signal markers, spleen) was first processed 
 
 **Three new dataclasses**: `SubtractionParams`, `CleanParams`, `MarkerRecipe`
 
-**Blank name resolution chain**:
+**Blank name resolution chain** (4 steps):
 1. `_normalize_blank_name()`: `Blank1b` → `Blank_1b`, `Blank13c` → `Blank_13c`
 2. Exact match in location map (all channel names → paths)
 3. Fuzzy match: strip hyphens/underscores, case-insensitive (e.g., `HLADR` → `HLA-DR`)
+4. Positional fallback: `_extract_blank_position()` gets suffix (a/b/c), tries `Blank_1{suffix}` — remaps higher-cycle blanks (e.g., `Blank_13b` → `Blank_1b`) when target project only has cycle 1 blanks
 
 **`clean_background(image, params)`** — pure numpy reimplementation of `Kutils.clean()`:
 1. Zero pixels below `background_threshold`
@@ -75,6 +76,10 @@ CX_19-001_SP_CC2-A28 (13 cycles, 28 signal markers, spleen) was first processed 
 | `compute_weighted_subtraction_quality()` → flat dict | Returns `{"global": {...}, "per_range": [...]}` | Extract `quality["global"]` for flat quality_score access |
 | Blank names from param files don't match filenames | `Blank1b` vs `Blank_1b`, `HLADR` vs `HLA-DR` | Normalize + fuzzy match resolution chain |
 | `dask.array<...>` lines in param files | `ast.literal_eval` fails on them | Skip lines with dask/datetime prefixes, return None |
+| Template blank names reference higher cycles | `Blank13b` from template doesn't exist in target project (only has `Blank_1a/b/c`) | Positional fallback: extract a/b/c suffix, remap to `Blank_1{suffix}` |
+| Self-referential secondary blank (CD20→CD20) | Signal subtracts itself → 99.7% zeroed | `_validate_secondary_blank()` checks before AND after name resolution |
+| Over-subtracted images saved with only a warning | 98%+ zeros, data effectively destroyed | Quality gate + auto fallback: `_check_over_subtraction()` detects, `_auto_fallback()` retries without recipe |
+| Hot pixels stretch histogram to 50000+ | Detector artifacts survive subtraction (blank is normal at those pixels) | `clip_outliers(percentile=99.5)` clips to p99.5 of non-zero distribution |
 
 ## Key Files
 
@@ -85,7 +90,7 @@ CX_19-001_SP_CC2-A28 (13 cycles, 28 signal markers, spleen) was first processed 
 | `src/kintsugi/cli.py` | CLI: `@workflow.group("isolate")` → plan, run, qc, status; `--recipe-dir`, `--learn/--no-learn` |
 | `src/kintsugi/signal/__init__.py` | Exports for batch + isolation_qc modules |
 | `src/kintsugi/claude/parameter_learning.py` | `ParameterLearningEngine` for recording outcomes |
-| `tests/test_batch_signal_isolation.py` | 66 tests across 14 test classes |
+| `tests/test_batch_signal_isolation.py` | 94 tests across 20 test classes |
 
 ## Final Parameters
 
@@ -93,6 +98,10 @@ CX_19-001_SP_CC2-A28 (13 cycles, 28 signal markers, spleen) was first processed 
 # Recipe-driven processing (default path with --recipe-dir)
 # No blank smoothing — recipes provide exact parameters
 tile_smooth_sigma = 0.0
+
+# Quality gate (over-subtraction detection + auto fallback)
+quality_gate = 0.6          # Minimum quality score; 0 to disable
+clip_percentile = 99.5      # Outlier clipping; 0 to disable
 
 # Method selection thresholds (for markers without recipes)
 BLANK_DOMINANCE_RATIO = 1.2
@@ -123,7 +132,7 @@ Signal isolation is now **Rule 5** in the Snakemake pipeline, running automatica
 - HiPerGator SLURM cluster (login nodes, no GPU required for signal isolation)
 - Images: ~189 MB per channel (7479x12662 px), uint16
 - Processing with recipes: ~30 sec/channel (was ~8 min with sigma=500)
-- Test suite: 66 tests, <7 seconds
+- Test suite: 94 tests, <7 seconds
 
 ## Verified On
 

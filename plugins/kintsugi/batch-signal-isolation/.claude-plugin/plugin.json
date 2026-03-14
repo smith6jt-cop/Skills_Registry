@@ -1,7 +1,7 @@
 {
   "name": "batch-signal-isolation",
-  "version": "2.0.0",
-  "description": "Recipe-driven and auto-analyzed batch signal isolation with multi-step subtraction, background cleaning, blank name resolution, parameter learning DB, and self-normalized QC. Trigger: batch autofluorescence subtraction, signal isolation workflow, per-marker optimization, tile artifact compensation, blank smoothing, signal isolation QC, method selection (global vs weighted), recipe param files, legacy parameter import, clean_background, second subtraction, kintsugi workflow isolate CLI.",
+  "version": "3.0.0",
+  "description": "Recipe-driven and auto-analyzed batch signal isolation with multi-step subtraction, background cleaning, blank name resolution, quality gate with auto fallback, outlier clipping, parameter learning DB, and self-normalized QC. Trigger: batch autofluorescence subtraction, signal isolation workflow, per-marker optimization, tile artifact compensation, blank smoothing, signal isolation QC, method selection (global vs weighted), recipe param files, legacy parameter import, clean_background, second subtraction, self-referential blank validation, over-subtraction detection, hot pixel clipping, kintsugi workflow isolate CLI.",
   "author": {
     "name": "KINTSUGI Team"
   },
