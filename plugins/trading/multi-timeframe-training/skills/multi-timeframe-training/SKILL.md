@@ -1,6 +1,6 @@
 ---
 name: multi-timeframe-training
-description: "Train RL models across multiple timeframes with resampling. Trigger when: (1) multi-timeframe training, (2) resampling data, (3) creating 1Hour/4Hour models."
+description: "Train RL models across multiple timeframes (15Min/1Hour/4Hour). Trigger when: (1) multi-timeframe training, (2) resampling data, (3) sub-hourly PDT scaling, (4) timeframe-aware selection."
 author: Claude Code
 date: 2024-12-29
 ---
@@ -184,14 +184,64 @@ volume: 'sum'                 # Total volume in period
 | 4Hour     | 500                 | ~2,500 bars          |
 | 1Day      | 125                 | ~1,000 bars          |
 
-## Multi-TF Strategy (future)
+## v5.2.0 Update: 15Min + 1Hour Dual-Timeframe (2026-03-14)
 
-Once models exist for multiple timeframes:
-1. Use `MultiTimeframePricePredictor` for signal aggregation
-2. Higher timeframes get more weight (filter noise)
-3. Require alignment (e.g., 1Hour + 4Hour both bullish) for entries
+### Sub-Hourly Training (15Min)
+When adding sub-hourly timeframes (e.g., 15Min), additional adjustments are needed:
+
+#### PDT Window Scaling
+```python
+_bars_per_hour = {'15Min': 4, '30Min': 2, '1Hour': 1}
+pdt_window_scaled = int(1200 * _bars_per_hour.get(training_tf, 1))
+
+# Use dataclass_replace for per-iteration env config override
+env_config_tf = dataclass_replace(
+    env_config,
+    timeframe=training_tf,
+    pdt_window_bars=pdt_window_scaled,
+)
+```
+
+#### Selectivity Boost for Sub-Hourly
+```python
+# Counter overtrading risk from 4x more bars/day
+if _bars_per_hour.get(training_tf, 1) > 1:
+    env.set_reward_weight_override('selectivity', 0.05)
+```
+
+#### Selection at Finest Timeframe
+```python
+# Selection runs at finest TF — symbols viable at 15Min have enough data for 1Hour
+from alpaca_trading.signals.multi_timeframe import TIMEFRAME_HIERARCHY
+_tf_order = {tf: i for i, tf in enumerate(TIMEFRAME_HIERARCHY)}
+SELECTION_TIMEFRAME = min(TRAINING_TIMEFRAMES, key=lambda tf: _tf_order.get(tf, 99))
+```
+
+#### Timeframe-Aware PDT Detection (vectorized_env.py)
+```python
+_bars_per_day_map = {'15Min': 26, '30Min': 13, '1Hour': 7, '4Hour': 2, '1Day': 1}
+self._bars_per_trading_day = _bars_per_day_map.get(self.config.timeframe, 7)
+# Replaces hardcoded `bars_since_entry <= 7` with `<= self._bars_per_trading_day`
+```
+
+### Key Differences from Higher-TF Resampling
+| Aspect | Higher TF (4Hour from 1Hour) | Lower TF (15Min) |
+|--------|------------------------------|-------------------|
+| Data source | Resample from 1Hour cache | Fetch directly from API at 15Min |
+| PDT window | Standard (1200 bars) | Scaled (4800 bars for 15Min) |
+| Selectivity | No boost needed | +0.05 boost to counter overtrading |
+| Bars/day | Fewer (2 for 4Hour) | More (26 for 15Min) |
+
+## Multi-TF Strategy (ACTIVE as of v5.2.0)
+
+Models exist for 15Min + 1Hour:
+1. `MultiTimeframePricePredictor` aggregates signals from both timeframes
+2. Live trader auto-discovers models by filename pattern (`SYMBOL_TIMEFRAME.pt`)
+3. No live trader code changes needed — existing multi-TF infrastructure handles both
 
 ## References
 - `notebooks/training.ipynb`: TRAINING_TIMEFRAMES configuration
 - `alpaca_trading/signals/multi_timeframe.py`: resample_to_timeframe()
 - `scripts/live_trader.py`: Multi-TF model loading pattern
+- `alpaca_trading/gpu/vectorized_env.py`: `_bars_per_trading_day` for timeframe-aware PDT
+- `scripts/run_backtest.py`: Auto-detects timeframe from model filename
