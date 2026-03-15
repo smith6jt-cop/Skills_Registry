@@ -232,6 +232,18 @@ self._bars_per_trading_day = _bars_per_day_map.get(self.config.timeframe, 7)
 | Selectivity | No boost needed | +0.05 boost to counter overtrading |
 | Bars/day | Fewer (2 for 4Hour) | More (26 for 15Min) |
 
+## v5.2.1 Bug Fixes (2026-03-15)
+
+### Bugs Found and Fixed
+| Bug | Root Cause | Fix |
+|-----|-----------|-----|
+| 15Min timeframe silently ignored | `env_config` always used `timeframe='1Hour'` — per-TF `dataclass_replace()` was documented in this skill but missing from notebook | Added `env_config_tf = dataclass_replace(env_config, timeframe=training_tf, pdt_window_bars=scaled)` to cells 32+37 |
+| PDT hardcoded in active path | `_execute_actions_with_sizing` (line ~2283) had `bars_since_entry <= 7` — the non-sizing path (line ~2177) was already fixed | Changed to `<= self._bars_per_trading_day` |
+| Selection used single `TIMEFRAME` | `SelectionRunnerConfig(timeframe=TIMEFRAME)` ignored `TRAINING_TIMEFRAMES` | Changed to `timeframe=_finest_training_tf` using `TIMEFRAME_HIERARCHY` ordering |
+
+### Key Lesson
+**Document != Implement**: This skill documented the per-TF `dataclass_replace()` pattern and selectivity boost in v5.2.0, but the notebook cells were never updated. The skill was correct — the notebook was wrong. Always verify notebook cells match skill documentation after codebase changes.
+
 ## Multi-TF Strategy (ACTIVE as of v5.2.0)
 
 Models exist for 15Min + 1Hour:

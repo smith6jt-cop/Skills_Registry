@@ -81,6 +81,7 @@ assert 'slippage_weight=0.04' not in src
 | Inline Python verification via Bash on Windows | Special characters (`'` inside `"`) cause quoting hell in Windows bash | Write a temp .py script file and run it instead |
 | Relying on notebook version headers | Headers said v1.5.0 but actual config values were stale | Always check the actual parameter values, not just version strings |
 | Assuming all notebooks have same config | RunPod had missing `symbol=symbol`, Colab already had it | Check each notebook independently |
+| Documenting per-TF env_config in skill but not in notebook | v5.2.0 `multi-timeframe-training` skill had correct `dataclass_replace()` pattern, but notebook cells still used bare `env_config` | Always verify notebook cells match skill documentation after codebase changes (v5.2.1 fix) |
 
 ## Final Parameters
 ```yaml

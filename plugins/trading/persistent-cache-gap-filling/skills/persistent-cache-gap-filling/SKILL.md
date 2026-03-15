@@ -165,6 +165,25 @@ If gap-fill shows `401 Authorization Required` from nginx:
 2. **Check key validity** - Paper trading keys expire if the account is deactivated.
 3. **The cache still works** - Gap-fill failure is graceful; stale cache is returned with `(Xd old)` message. Training can proceed with slightly older data.
 
+## v5.2.1 Update: Gap-Fill Warning Suppression
+
+**Problem:** When pickle cache is current but SQLite cache is empty (common across Colab sessions), gap-fill triggers and the `is_incremental` flag stays `False`. The API returns empty (data is up-to-date), and `_fetch_remote()` logs "No data returned from Alpaca" — a misleading warning.
+
+**Solution:** Added `is_incremental` parameter to `DataFetcher.get_bars()`:
+```python
+def get_bars(self, ..., is_incremental: bool = False):
+    # Caller can signal gap-fill context
+    # Removed the `is_incremental = False` reset at line 222
+    # SQLite detection can still set it True independently
+```
+
+`CachingDataFetcher.get_bars()` now passes `is_incremental=True` in the gap-fill path:
+```python
+new_df = self._fetch_bars(symbol, ..., is_incremental=True, **kwargs)
+```
+
+Flow: `CachingDataFetcher.get_bars()` → `_fetch_bars(**kwargs)` → `DataFetcher.get_bars(is_incremental=True)` → `_fetch_remote(is_incremental=True)` → warning suppressed.
+
 ## Key Insights
 
 1. **Historical data is immutable** - Past candles never change, so there's no reason to re-fetch them
