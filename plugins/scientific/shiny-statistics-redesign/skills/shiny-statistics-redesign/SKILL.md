@@ -187,3 +187,24 @@ tags$small(style = "color: #666; font-size: 12px; display: block; margin-top: -5
 - Related skill: `shiny-feature-patterns` (pseudo-log, AUC, effect sizes, shared sidebar)
 - Related skill: `shiny-modularization` (module extraction, namespacing)
 - Islet Explorer: `app/shiny_app/R/mod_statistics_server.R`, `app/shiny_app/R/mod_statistics_ui.R`, `app/shiny_app/R/utils_stats.R`
+
+### Demographics Card Redesign (2026-03-16)
+
+**Verified Patterns:**
+- Islet-level age scatter (`alpha=0.4, size=1.5`) with Pearson r subtitle noting "correlated within donors" — more informative than 15 donor-mean points
+- Sex box plot (`facet_wrap(~ gender)`) replaces p-value table — shows distribution shape, not just significance
+- AAb analysis (Aab+ only): `n_aab = rowSums(sapply(aab_avail, ...))` counts positive autoantibodies per islet; box plot by AAb count with Kruskal-Wallis test
+- Full-width demographics card with side-by-side age + sex plots via `fluidRow(column(6), column(6))` inside renderUI
+- AUC card belongs in Primary Results (Section 2), not Confounders — it's a primary outcome metric
+
+**Layout Lessons:**
+- 3-column equal-height: `fluidRow(style = "display: flex; flex-wrap: wrap;")` with `column(4)` + `height: 100%` cards
+- Trend plot must match heatmap card height — use `height: 100%` on both card divs + same plotlyOutput height
+- Trend plot legend: remove ggplot `legend.position = "none"` suppression, add plotly `showlegend = TRUE` with `legend(orientation = "h", y = -0.15)`
+
+**Failed Approaches:**
+| What failed | Why | Fix |
+|------------|-----|-----|
+| Global Kendall τ arrow in per-bin trend title | Misleading — single global τ doesn't represent per-bin variation | Remove title entirely; explain disease coding (ND=0, Aab+=1, T1D=2) in card description |
+| "Wider bins recommended" in UI text | Implementation jargon, not interpretive guidance | Replace with explanation of what τ values mean |
+| Gender terminology | "Gender" is a social construct; donor metadata records biological sex | Use "Sex" in all user-facing labels; keep `gender` as internal variable name |
