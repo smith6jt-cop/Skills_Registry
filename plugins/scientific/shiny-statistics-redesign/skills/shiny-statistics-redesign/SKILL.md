@@ -208,3 +208,27 @@ tags$small(style = "color: #666; font-size: 12px; display: block; margin-top: -5
 | Global Kendall τ arrow in per-bin trend title | Misleading — single global τ doesn't represent per-bin variation | Remove title entirely; explain disease coding (ND=0, Aab+=1, T1D=2) in card description |
 | "Wider bins recommended" in UI text | Implementation jargon, not interpretive guidance | Replace with explanation of what τ values mean |
 | Gender terminology | "Gender" is a social construct; donor metadata records biological sex | Use "Sex" in all user-facing labels; keep `gender` as internal variable name |
+
+### Mixed-Effects Model Fix (2026-03-17)
+
+**Problem:** `lmer_test_donor()` used `car::Anova(fit, type="III")` to extract the mixed-effects p-value, looking for `"Pr(>Chisq)"` in the result table. This silently returned NULL → p-value always N/A. The donor-level ANOVA worked fine, making it appear the mixed-effects test was broken.
+
+**Root Cause:** `car::Anova` with Type III on `lmerMod` objects uses Wald chi-square tests and the column name `Pr(>Chisq)`. With only one fixed effect (`donor_status`), Type I = Type III, making `car` unnecessary.
+
+**Fix:** Replace `car::Anova(fit, type="III")` with `lmerTest::anova(fit)` which uses Satterthwaite F-tests and the standard `Pr(>F)` column. Also wrap the model fit itself in `tryCatch` and return an `error_msg` field so failures are visible in the UI (yellow warning banner) instead of silently producing N/A.
+
+**Additional Fix:** `lmerTest` 3.2-1 was listed as a dependency but not actually installed. Always verify package availability, not just configuration.
+
+**Verified Patterns:**
+- Trend plot legend: `margin(b=100)` + `legend(y=-0.3)` prevents overlap with x-axis title (previous `b=70, y=-0.15` was too tight)
+- Demographics card equal spacing: wrap sub-sections in `div(style="margin-bottom:18px")` instead of using `hr` dividers
+- AAb table + plot side-by-side: `fluidRow(column(6, table), column(6, plot))` instead of stacking vertically
+- Hypothesis table labels: avoid R package names ("lmer", "emmeans") in user-facing text. Use descriptive labels: "mixed-effects, donor random intercept", "mixed-effects pairwise", "donor-level means"
+
+**Failed Approaches (2026-03-17):**
+| What failed | Why | Fix |
+|------------|-----|-----|
+| `car::Anova(fit, type="III")` for mixed-effects p-value | Column name mismatch (`Pr(>Chisq)` vs expected), and Type III unnecessary with one fixed effect | Use `lmerTest::anova(fit)` which returns `Pr(>F)` via Satterthwaite F-test |
+| Silent N/A for model failures | `tryCatch(lmer_test_donor(rdf), error=function(e) NULL)` swallows all errors, user sees only "N/A" | Return `error_msg` field from function, display yellow warning banner in UI |
+| R package jargon in table labels ("lmer", "emmeans", "Sensitivity") | Users don't know what "lmer" means or why something is called "sensitivity" | Use plain descriptions: "Overall (mixed-effects, donor random intercept)", "Donor-level means (ANOVA, N=15 donors)" |
+| Trend plot legend at `y=-0.15, margin(b=70)` | Still overlaps x-axis title text on narrow viewports | Increase to `y=-0.3, margin(b=100)` |
