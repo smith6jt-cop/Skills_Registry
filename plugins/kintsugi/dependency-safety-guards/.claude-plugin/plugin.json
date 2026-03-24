@@ -1,0 +1,10 @@
+{
+  "name": "dependency-safety-guards",
+  "version": "1.0.0",
+  "description": "Preventing dependency conflicts in Python projects with optional install groups. Trigger: (1) conflicting numpy/torch/cupy versions, (2) CPU-only torch installed instead of CUDA, (3) missing CUDA runtime libs for CuPy, (4) pip constraints file enforcement, (5) pre-install and post-install validation guards.",
+  "author": {
+    "name": "KINTSUGI Team"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith6jt-cop/KINTSUGI"
+}
