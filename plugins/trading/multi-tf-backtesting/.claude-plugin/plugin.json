@@ -1,0 +1,11 @@
+{
+  "name": "multi-tf-backtesting",
+  "version": "1.0.0",
+  "description": "Multi-timeframe backtesting combining 15Min + 1Hour model signals. Trigger when: (1) multi-TF backtest, (2) combining timeframe signals in backtest, (3) validating multi-TF strategy, (4) --multi-tf CLI flag.",
+  "author": {
+    "name": "Claude Code"
+  },
+  "skills": "./skills",
+  "tags": ["backtesting", "multi-timeframe", "walk-forward", "signal-aggregation", "15Min", "1Hour"],
+  "repository": "https://github.com/smith6jt-cop/Skills_Registry"
+}
