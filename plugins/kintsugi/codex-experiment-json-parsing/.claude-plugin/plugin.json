@@ -1,0 +1,21 @@
+{
+  "name": "codex-experiment-json-parsing",
+  "version": "1.0.0",
+  "description": "CODEX/Akoya experiment.json uses different field names and flat wavelength lists that must be translated to KINTSUGI format",
+  "author": "Claude Code",
+  "category": "kintsugi",
+  "tags": [
+    "kintsugi",
+    "codex",
+    "experiment-json",
+    "wavelengths",
+    "metadata"
+  ],
+  "skills": "./skills",
+  "trigger_conditions": [
+    "Parsing CODEX/Akoya experiment.json files",
+    "Wavelengths showing duplicated excitation==emission values",
+    "ExperimentConfig fields are None despite experiment.json existing",
+    "Batch project setup from CODEX raw data"
+  ]
+}

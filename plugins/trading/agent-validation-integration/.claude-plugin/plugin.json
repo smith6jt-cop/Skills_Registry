@@ -1,0 +1,27 @@
+{
+  "name": "agent-validation-integration",
+  "version": "1.0.0",
+  "description": "v4.1.0 agent validation integration: model health monitoring, live feedback loop, backtest diagnostics, gating recalibration. Bridges training diagnostics to live trading and back. Trigger when adding live monitoring, health checks, or feedback loops between training and deployment.",
+  "author": "Claude Code",
+  "category": "trading",
+  "tags": [
+    "agent-validation",
+    "model-health",
+    "live-bridge",
+    "gating",
+    "diagnostics",
+    "v4.1.0"
+  ],
+  "skills": "./skills",
+  "triggers": [
+    "model health monitoring",
+    "overtrading detection",
+    "direction collapse",
+    "live feedback loop",
+    "gating thresholds",
+    "backtest diagnostics",
+    "agent memory",
+    "circuit breaker model health",
+    "diagnostic overrides"
+  ]
+}

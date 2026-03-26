@@ -1,0 +1,26 @@
+{
+  "name": "reward-function-v330",
+  "version": "1.0.0",
+  "description": "v3.3.0 reward function changes: removed trading_incentive, rebalanced weights (pnl 0.40, direction 0.15), fixed P&L gradient saturation. Trigger when tuning reward weights or fixing reward hacking.",
+  "author": "Claude Code",
+  "category": "trading",
+  "tags": [
+    "reward-function",
+    "ppo",
+    "training",
+    "reward-hacking",
+    "gradient-flow",
+    "v3.3.0"
+  ],
+  "skills": "./skills",
+  "triggers": [
+    "reward function weights",
+    "trading incentive",
+    "reward hacking",
+    "overtrading",
+    "P&L gradient",
+    "tanh saturation",
+    "entropy coefficient",
+    "gamma discount"
+  ]
+}

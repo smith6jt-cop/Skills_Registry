@@ -1,0 +1,16 @@
+{
+  "name": "bimodal-score-diagnosis",
+  "version": "1.0.0",
+  "description": "Diagnosing and fixing bimodal matching score distributions in MaxFuse integration",
+  "triggers": [
+    "bimodal scores",
+    "two modes",
+    "matching score distribution",
+    "score peaks",
+    "bad matches",
+    "GMM analysis",
+    "tissue mismatch",
+    "cross-tissue matching"
+  ],
+  "skills": "./skills"
+}

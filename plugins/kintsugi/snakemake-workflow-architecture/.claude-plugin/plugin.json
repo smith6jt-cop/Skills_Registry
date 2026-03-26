@@ -1,0 +1,9 @@
+{
+  "name": "snakemake-workflow-architecture",
+  "version": "1.0.0",
+  "description": "Snakemake Workflow Architecture skill",
+  "author": {
+    "name": "KINTSUGI Team"
+  },
+  "skills": "./skills"
+}

@@ -1,0 +1,9 @@
+{
+  "name": "tissuumaps-export-pipeline",
+  "version": "1.0.0",
+  "description": "Tissuumaps Export Pipeline skill",
+  "author": {
+    "name": "KINTSUGI Team"
+  },
+  "skills": "./skills"
+}

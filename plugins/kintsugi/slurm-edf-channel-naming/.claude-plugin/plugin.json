@@ -1,0 +1,9 @@
+{
+  "name": "slurm-edf-channel-naming",
+  "version": "1.0.0",
+  "description": "Slurm Edf Channel Naming skill",
+  "author": {
+    "name": "KINTSUGI Team"
+  },
+  "skills": "./skills"
+}

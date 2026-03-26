@@ -3,5 +3,13 @@
   "version": "1.0.0",
   "description": "Statistics tab redesign patterns: 5-section narrative layout, BH correction for stratified tests, plotly legend positioning, synthetic union row density fix, test type UX guidance",
   "category": "scientific",
-  "triggers": ["statistics", "hypothesis testing", "per-bin analysis", "BH correction", "plotly legend overlap", "stratified analysis"]
+  "triggers": [
+    "statistics",
+    "hypothesis testing",
+    "per-bin analysis",
+    "BH correction",
+    "plotly legend overlap",
+    "stratified analysis"
+  ],
+  "skills": "./skills"
 }

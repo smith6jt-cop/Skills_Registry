@@ -1,0 +1,9 @@
+{
+  "name": "qc-plot-pdf-export",
+  "version": "1.0.0",
+  "description": "Qc Plot Pdf Export skill",
+  "author": {
+    "name": "KINTSUGI Team"
+  },
+  "skills": "./skills"
+}

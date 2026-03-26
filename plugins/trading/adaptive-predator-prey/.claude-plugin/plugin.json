@@ -1,0 +1,25 @@
+{
+  "name": "adaptive-predator-prey",
+  "version": "1.0.0",
+  "description": "Adaptive Lotka-Volterra coefficients for predator-prey regime detection. Trigger when tuning regime detection, cooldown mechanisms, or macro influence weights.",
+  "author": "Claude Code",
+  "category": "trading",
+  "tags": [
+    "regime-detection",
+    "predator-prey",
+    "markov",
+    "lotka-volterra",
+    "cooldown",
+    "v3.3.0"
+  ],
+  "skills": "./skills",
+  "triggers": [
+    "predator-prey dynamics",
+    "adaptive coefficients",
+    "cooldown mechanism",
+    "exponential decay cooldown",
+    "macro influence",
+    "regime detection tuning",
+    "Lotka-Volterra"
+  ]
+}

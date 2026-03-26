@@ -1,0 +1,30 @@
+{
+  "name": "macro-calendar-modulation",
+  "version": "1.0.0",
+  "description": "CPI/GDP/retail sales date awareness and VIX regime scaling for calendar features. Modulates existing hour_weight without changing obs_dim. Use when: adding economic event awareness to features, modulating activity around macro releases, integrating FRED VIX data into feature engineering.",
+  "author": "Claude Code",
+  "category": "trading",
+  "tags": [
+    "calendar-features",
+    "macro",
+    "cpi",
+    "gdp",
+    "vix",
+    "feature-engineering",
+    "v4.4.0"
+  ],
+  "triggers": [
+    "macro event",
+    "CPI release",
+    "GDP release",
+    "retail sales",
+    "economic calendar",
+    "hour_weight modulation",
+    "calendar feature enhancement"
+  ],
+  "skills": "./skills",
+  "relatedSkills": [
+    "openbb-enrichment-integration",
+    "vix-scaled-risk-management"
+  ]
+}

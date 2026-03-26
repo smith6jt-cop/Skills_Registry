@@ -1,0 +1,9 @@
+{
+  "name": "unified-install-resolution",
+  "version": "1.0.0",
+  "description": "Unified Install Resolution skill",
+  "author": {
+    "name": "KINTSUGI Team"
+  },
+  "skills": "./skills"
+}

@@ -1,0 +1,9 @@
+{
+  "name": "agent-validation-experiment",
+  "version": "1.0.0",
+  "description": "Agent Validation Experiment skill",
+  "author": {
+    "name": "KINTSUGI Team"
+  },
+  "skills": "./skills"
+}

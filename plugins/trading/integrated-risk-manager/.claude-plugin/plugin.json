@@ -1,0 +1,25 @@
+{
+  "name": "integrated-risk-manager",
+  "version": "1.0.0",
+  "description": "Unified position sizing combining GARCH, Capital Manager, and Portfolio Risk with Kelly criterion. Trigger when implementing position sizing, combining risk systems, or using Kelly-inspired sizing.",
+  "author": "Claude Code",
+  "category": "trading",
+  "tags": [
+    "risk-management",
+    "position-sizing",
+    "kelly-criterion",
+    "garch",
+    "capital-manager",
+    "v3.3.0"
+  ],
+  "skills": "./skills",
+  "triggers": [
+    "unified position sizing",
+    "Kelly criterion",
+    "combine risk systems",
+    "IntegratedRiskManager",
+    "drawdown scaling",
+    "correlation penalty",
+    "dynamic volatility thresholds"
+  ]
+}

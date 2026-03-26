@@ -1,0 +1,21 @@
+{
+  "name": "slurm-workflow-guide",
+  "version": "1.0.0",
+  "description": "Complete 10-step SLURM workflow from raw data to processed results in KINTSUGI",
+  "author": "Claude Code",
+  "category": "kintsugi",
+  "tags": [
+    "kintsugi",
+    "slurm",
+    "hpc",
+    "workflow",
+    "processing"
+  ],
+  "skills": "./skills",
+  "trigger_conditions": [
+    "User asks how to run SLURM processing",
+    "User setting up new project for HPC",
+    "User confused about SLURM workflow order",
+    "Questions about experiment.json or CHANNELNAMES.txt"
+  ]
+}

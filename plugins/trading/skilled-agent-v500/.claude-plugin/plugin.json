@@ -1,0 +1,9 @@
+{
+  "name": "skilled-agent-v500",
+  "version": "1.0.0",
+  "description": "Skilled Agent V500 skill",
+  "author": {
+    "name": "KINTSUGI Team"
+  },
+  "skills": "./skills"
+}

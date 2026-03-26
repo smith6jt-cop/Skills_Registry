@@ -1,0 +1,9 @@
+{
+  "name": "backtest-observation-mismatch",
+  "version": "1.0.0",
+  "description": "Backtest Observation Mismatch skill",
+  "author": {
+    "name": "KINTSUGI Team"
+  },
+  "skills": "./skills"
+}

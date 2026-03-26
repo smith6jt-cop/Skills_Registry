@@ -39,7 +39,13 @@ def validate_plugin(plugin_dir: Path) -> list[str]:
             errors.append(f"Missing required field '{field}' in {plugin_json_path}")
 
     # Check that skills directory exists
-    skills_path = plugin_data.get("skills", "./skills")
+    skills_field = plugin_data.get("skills", "./skills")
+    # Handle "skills" as either a string path or an array of skill objects
+    if isinstance(skills_field, str):
+        skills_path = skills_field
+    else:
+        # Array format (e.g., ["skill-name"] or [{"name": ..., "path": ...}])
+        skills_path = "./skills"
     skills_dir = plugin_dir / skills_path.lstrip("./")
     if not skills_dir.is_dir():
         errors.append(f"Skills directory not found: {skills_dir}")
