@@ -1,0 +1,11 @@
+{
+  "name": "live-trader-action-decoder",
+  "version": "1.0.0",
+  "description": "Fix 8-action model decoder in live prediction pipeline. Triggers when: live trader shows inverted or dropped signals, models produce permanent HOLD, confidence thresholds block all trades, or multi-TF predictor returns wrong directions.",
+  "skills": [
+    {
+      "name": "live-trader-action-decoder",
+      "path": "skills/live-trader-action-decoder/SKILL.md"
+    }
+  ]
+}
