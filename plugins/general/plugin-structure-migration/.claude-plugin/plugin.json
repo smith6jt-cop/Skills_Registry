@@ -1,0 +1,10 @@
+{
+  "name": "plugin-structure-migration",
+  "version": "1.0.0",
+  "description": "Migrate improperly structured Skills Registry plugins to correct .claude-plugin/ layout. Trigger: (1) plugin validation failures, (2) plugin.json at root level instead of .claude-plugin/, (3) SKILL.md at root level, (4) 'skills' field as array instead of string. Verified on Skills_Registry (2026-03-26).",
+  "author": {
+    "name": "KINTSUGI Team"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith6jt-cop/Skills_Registry"
+}

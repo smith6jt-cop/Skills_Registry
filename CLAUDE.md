@@ -21,6 +21,29 @@ Save learnings from the current session as a new skill.
 ## Skill Template
 Use templates/experiment-skill-template/ as the base for new skills. Copy the entire folder structure and rename TEMPLATE_NAME to your skill name.
 
+## Plugin Structure (Required)
+
+Every skill **must** follow this directory layout:
+
+```
+plugins/{category}/{skill-name}/
+├── .claude-plugin/
+│   └── plugin.json       # Required: name, description, skills, version, author
+└── skills/
+    └── {skill-name}/
+        └── SKILL.md       # Required: frontmatter + experiment sections
+```
+
+**Common mistakes** (will fail CI validation):
+- `plugin.json` at root level instead of inside `.claude-plugin/` — WRONG
+- `SKILL.md` at root level instead of inside `skills/{name}/` — WRONG
+- `"skills"` field as array instead of string path `"./skills"` — WRONG
+- Missing `"skills"` field in `plugin.json` — WRONG
+
+**Migration script**: Run `python3 scripts/fix_plugin_structure.py --dry-run` to detect and fix structural issues across all plugins.
+
+**Validation**: `python3 scripts/validate_plugins.py` checks all plugins for correct structure.
+
 ## Rules
 - Every skill needs a specific description field with trigger conditions
 - Always include a "Failed Attempts" table - this is the most valuable section
@@ -59,9 +82,14 @@ Skills_Registry/
 │       └── example-skill/
 ├── templates/
 │   └── experiment-skill-template/
+│   ├── maxfuse/              # MaxFuse cross-modal integration skills
+│   │   ├── bimodal-score-diagnosis/
+│   │   ├── cross-modal-normalization/
+│   │   └── parameter-scaling/
 ├── scripts/
 │   ├── validate_plugins.py
-│   └── generate_marketplace.py
+│   ├── generate_marketplace.py
+│   └── fix_plugin_structure.py
 ├── marketplace.json
 └── CLAUDE.md
 ```
@@ -71,6 +99,7 @@ Skills_Registry/
 - **scientific/**: Scientific computing patterns (GPU, data pipelines, architecture)
 - **trading/**: Alpaca Trading system skills (RL training, risk management, reward functions, signals)
 - **kintsugi/**: KINTSUGI-specific image processing skills (won't trigger for other projects)
+- **maxfuse/**: MaxFuse cross-modal integration skills (RNA-protein matching)
 - **templates/**: Example skills and templates for creating new skills
 
 ## Trading Skills (v5.0.0)
