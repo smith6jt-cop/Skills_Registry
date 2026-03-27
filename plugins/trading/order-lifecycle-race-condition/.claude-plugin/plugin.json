@@ -1,0 +1,6 @@
+{
+  "name": "order-lifecycle-race-condition",
+  "version": "1.0.0",
+  "description": "Post-trade reconciliation race condition causing flatten loops and double-buys. Fix: 60s per-symbol cooldown, return statements in exit exception handlers.",
+  "skills": ["order-lifecycle-race-condition"]
+}
