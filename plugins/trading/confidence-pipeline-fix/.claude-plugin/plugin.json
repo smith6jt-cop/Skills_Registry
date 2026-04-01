@@ -1,0 +1,7 @@
+{
+  "name": "confidence-pipeline-fix",
+  "description": "Diagnosed and fixed zero-trade paper trading caused by predator-prey confidence penalties, regime bar train/inference mismatch, vol_probs init, duplicate entry orders, and asset type misclassification",
+  "skills": "./skills",
+  "version": "1.0.0",
+  "author": "Claude Code"
+}

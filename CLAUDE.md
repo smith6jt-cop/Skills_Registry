@@ -124,7 +124,9 @@ Key skills for the Alpaca Trading system:
 - `adaptive-predator-prey` - Regime-aware Lotka-Volterra dynamics
 - `drawdown-guardrails-pattern` - Max drawdown triggers and scaling (v3.9.0: adaptive threshold)
 
-### Data & Infrastructure
+### Training Data & Infrastructure
+- `training-data-lifecycle` - **v5.4.2**: Run manifests, checkpoint pruning, deployment packaging, retention policy. Replaces manual zip download with structured deploy workflow
+- `crypto-training-pipeline-review` - v5.4.1: Crypto detection via _infer_asset(), CCXT routing, symbol path sanitization
 - `openbb-enrichment-integration` - **v4.4.0**: OpenBB Platform as parallel enrichment layer (fundamentals, FRED, earnings, news). NEVER OHLCV
 - `macro-calendar-modulation` - **v4.4.0**: CPI/GDP/retail sales date awareness + VIX regime scaling for hour_weight
 - `data-source-priority` - Alpaca API mandatory for OHLCV, OpenBB for enrichment, yfinance removed entirely (v4.4.0)

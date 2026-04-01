@@ -1,0 +1,6 @@
+{
+  "name": "crypto-training-pipeline-review",
+  "version": "5.4.1",
+  "description": "Crypto training pipeline audit: false-positive crypto detection, missing CCXT routing in prefetch, crypto-only Colab workflow",
+  "triggers": ["crypto training", "crypto detection", "crypto pipeline", "crypto symbols", "_is_crypto", "_infer_asset"]
+}

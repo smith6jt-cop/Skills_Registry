@@ -1,0 +1,7 @@
+{
+  "name": "training-data-lifecycle",
+  "description": "Training data lifecycle management: run manifests, checkpoint pruning, deployment packaging, retention policy. Trigger: training artifacts, model deployment, checkpoint cleanup, Drive storage, model lineage, deploy_from_archive.",
+  "skills": "./skills",
+  "version": "5.4.2",
+  "author": "smith"
+}
