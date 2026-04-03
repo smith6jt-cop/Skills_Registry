@@ -1,0 +1,17 @@
+{
+  "name": "inverse-etf-proxy",
+  "version": "1.0.0",
+  "description": "Route crypto short signals to inverse ETF proxies when direct shorting is unavailable",
+  "skills": [
+    {
+      "name": "inverse-etf-proxy",
+      "description": "Pattern for routing crypto SELL signals to inverse ETFs (BITI, SETH) instead of shorting directly. Includes position lifecycle management, market hours constraints, and gate status reporting.",
+      "triggerConditions": [
+        "Crypto short selling blocked",
+        "Inverse ETF trading",
+        "Proxy symbol routing",
+        "BITI SETH inverse crypto ETF"
+      ]
+    }
+  ]
+}

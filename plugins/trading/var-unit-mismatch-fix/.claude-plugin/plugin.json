@@ -1,0 +1,17 @@
+{
+  "name": "var-unit-mismatch-fix",
+  "version": "1.0.0",
+  "description": "Fix for VaR dollar-vs-percentage unit mismatch in risk_monitor.py that caused 209 false circuit breaker activations",
+  "skills": [
+    {
+      "name": "var-unit-mismatch-fix",
+      "description": "Portfolio VaR calculated in dollars was compared against a percentage limit, causing 742x false breach ratios. Fixed by normalizing with account value divisor. Pattern: always verify units match between calculated risk metrics and configured thresholds.",
+      "triggerConditions": [
+        "VaR calculation bug",
+        "Circuit breaker false positives",
+        "Risk monitor unit mismatch",
+        "Portfolio VaR exceeded extreme values"
+      ]
+    }
+  ]
+}
