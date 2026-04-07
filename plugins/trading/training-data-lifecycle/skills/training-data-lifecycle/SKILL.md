@@ -17,6 +17,21 @@ Colab training runs produce ~20 GB of artifacts (100 checkpoints + models + logs
 3. **Manual zip download**: Downloading entire Colab_Projects/ directory (15-35 GB) when only 2-4 GB of models was needed.
 4. **Ad-hoc local archive dirs**: `models_old/`, `checkpoints/mar18/`, `rl_symbols_hold/crypto_drop/` — no metadata, no standard naming.
 5. **Crypto symbol `/` in paths** (root cause of first failure): `BTC/USD` treated as directory separator. Always use `sanitize_symbol()`.
+6. **Stale verification cell after migration (2026-04-07)**: The notebook's `cf7wloyhe3t` "DISCONNECT COLAB RUNTIME" cell still hard-coded `drive_model_dir = '/content/drive/MyDrive/Colab_Projects/trained_models'` after the v5.4.2 layout migration. After a successful run it printed `[!] WARNING: No models found on Google Drive!` (false alarm) or listed pre-migration leftovers, making the user believe v5.4.2 archival was broken. The actual training and packaging worked correctly — only the verification was lying. **Lesson**: when migrating a folder layout in a long-lived notebook, grep the entire notebook for the old path strings and audit every match — verification/disconnect/cleanup cells are easy to miss because they don't appear to participate in training. The historical comment in cell `jw1po5eou4q` ("# This replaces the old flat trained_models/ and checkpoints/ layout.") is the *only* legitimate remaining reference; everything else is a bug.
+
+## Post-Migration Cleanup Checklist
+After v5.4.2 (or any layout migration), the following pre-migration folders may remain on Drive and locally. They are safe to delete after verifying the new `runs/{RUN_ID}/` layout has the data:
+
+**On Drive** (`MyDrive/Colab_Projects/`):
+- `trained_models/` — pre-v5.4.2 flat model dump
+- `checkpoints/` — pre-v5.4.2 flat checkpoint dump
+- `training_archives/` — pre-v5.4.2 archive dir (NOT the same as the local one — see below)
+
+**Locally** (`/home/smith/Alpaca_trading/`):
+- `training_archives/*.tar.gz` — pre-v5.4.2 archives. **Keep the folder + `index.json`** (still used by `scripts/deploy_from_archive.py:35` and `alpaca_trading/training/archive.py:67`).
+- `checkpoints/` — top-level, usually empty after migration
+- `models/checkpoints/{date}/` — old per-run checkpoint dumps
+- `models/rl_symbols_staging/{date}/trained_models/` — old nested staging (v5.4.2+ stages flat at `rl_symbols_staging/{file}.pt`)
 
 ## Recommended Approach
 
