@@ -1,0 +1,10 @@
+{
+  "name": "live-aware-account-routing",
+  "version": "1.0.0",
+  "description": "KINTSUGI live-aware SLURM account routing: route around accounts saturated by other users on the same QOS investment pool. Trigger: QOSGrpMemLimit, QOSGrpCpuLimit, jobs stuck pending, noisy neighbor on shared QOS, multi-account routing, BLOCKED_ACCOUNTS, account throttling, _build_cycle_assignment, --config live_accounts. Verified Apr 8 2026 on HiPerGator after clive QOS was throttled.",
+  "author": {
+    "name": "KINTSUGI Team"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith6jt-cop/Skills_Registry"
+}

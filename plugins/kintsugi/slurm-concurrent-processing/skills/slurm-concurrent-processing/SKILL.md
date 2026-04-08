@@ -7,6 +7,10 @@ date: 2026-02-12
 
 # SLURM Concurrent GPU+CPU Processing (Multi-Account Architecture)
 
+> **Update Apr 8 2026** — `clive` has been added to `BLOCKED_ACCOUNTS` in `hpc.py`. The clive QOS was silently throttled from `3 GPU / 812 GB / 104 CPUs` to `1 GPU / 312.5 GB / 40 CPUs` and is regularly saturated by other group members, leading to chronic `QOSGrpMemLimit` blockages. KINTSUGI now uses `maigan` exclusively. The dual-pool calculation in this skill still applies to any future multi-account configuration; the specific 3+11/2+8 numbers below are historical.
+>
+> Live-aware routing was also added so future noisy-neighbor incidents are routed around automatically — see the new `live-aware-account-routing` skill for the implementation.
+
 ## Experiment Overview
 | Item | Details |
 |------|---------|
