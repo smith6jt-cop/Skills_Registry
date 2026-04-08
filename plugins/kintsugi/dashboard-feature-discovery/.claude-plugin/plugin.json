@@ -1,0 +1,10 @@
+{
+  "name": "dashboard-feature-discovery",
+  "version": "1.0.0",
+  "description": "Surface a shipped-but-undocumented CLI feature in the user-facing docs (README + readthedocs). Trigger: user reports a known feature missing from README/docs, CLI command exists but is not advertised, CLAUDE.md and --help are the only references. Verified on KINTSUGI workflow status / workflow run --dashboard (Apr 2026): the dashboard module, CLI command, and tests all existed in src/kintsugi/dashboard.py + cli.py + tests/test_dashboard.py, but README.md and docs/ had zero mentions.",
+  "author": {
+    "name": "KINTSUGI Team"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith6jt-cop/Skills_Registry"
+}
