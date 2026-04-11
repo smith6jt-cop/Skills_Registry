@@ -150,14 +150,35 @@ Cell 32 (loop): No change — already iterates over `(symbol, training_tf)` pair
 | Doubling obs_dim with full dual window | First layer would balloon to 10.4M params (12.6M total) on ~140K crypto bars — overfitting risk | Add features only as broadcast scalars, keep first layer ≤ ~6M params |
 | Trusting `target_features >= 56` checks for backward compat | v5.5.0 (51) was NEVER backtested, so the always-write-7-base-features bug went undetected | Use exact `target_features in (51, 58)` checks rather than `>= N` thresholds |
 | Forgetting reversal probs in BacktestObservationBuilder | v5.5.0/v5.6.0 expect 3 reversal prob features, but builder skipped straight to extended indicators | Match training env feature layout exactly — add reversal probs for `target_features in (51, 58, 65)` |
+| **Initial v5.6.0: index-based hourly grouping (`h_end = (t // bph) * bph`)** | **Correct for crypto 24/7, broken for equity sessions. ~14% of equity h1_* features were cross-session contaminated; position_in_hour drifted from clock-minute alignment after day 1.** | **Always use `pd.DatetimeIndex.floor('h')` clock-hour IDs + `searchsorted` for time-aligned features. NEVER use bar-index modulo for any feature that has a calendar interpretation.** |
+| **Recommending BTC-only as Phase 1 "PoC"** | **N=1 cannot validate an architecture. User correctly pushed back: "whatever you are thinking about dropping stock trading is hugely wrong." Single-asset-class testing cannot distinguish architecture from regime.** | **Phase 1 = smoke test (single symbol, code-runs check). Phase 2 = multi-asset PoC (4 crypto + 4-5 equity, 50-100M each). Always include WST and CNM as deliberate re-tests of the prior "dead" symbols to isolate the architecture variable.** |
+| **Reading `self.timestamps` instead of `self._timestamps` in `_precompute_hourly_context`** | AttributeError on env init. The training env stores timestamps with leading underscore. Test caught it locally before Colab. | After adding new methods that read instance attributes, `grep -n "self\._\?timestamps" file.py` to verify attribute name. |
 
-## Pre-existing Bug Discovered During v5.6.0 Work
+## Pre-existing Bugs Discovered During v5.6.0 Work
 
+### Bug A: BacktestObservationBuilder hardcoded 7 base + 4 intraday features
 `BacktestObservationBuilder.get_obs_at_bar()` always wrote 7 base + 4 intraday features (53 total) regardless of `target_features`. For v5.5.0 (51 features), this caused `IndexError: index 51 out of bounds`. The bug was latent because v5.5.0 models were never backtested before v5.6.0 work — the system jumped from v5.3.0 (65 features, builder works) to v5.6.0 (forced the bug to surface).
 
 **Fix**: Conditional skip of volume_proxy and intraday for `target_features in (51, 58)`. Also added reversal probs (3 features) for `target_features in (51, 58, 65)`.
 
-**Lesson**: After feature reductions, ALWAYS run a smoke test through `BacktestObservationBuilder.precompute() + get_obs_at_bar()` with the new feature count. Don't trust that "if training compiles, backtest will too" — they have separate observation pipelines.
+### Bug B: Trainer `checkpoint_interval=0` ZeroDivisionError (v5.6.0 Phase 1, commit 9ffa9e7)
+`NativePPOTrainer.train()` did `n_updates % self.config.checkpoint_interval` without guarding against `checkpoint_interval=0`. The `quick_test` mode in `get_auto_config()` (line 1957) explicitly sets it to 0 to mean "disabled," but the trainer never honored that intent.
+
+**Latent because**: production/standard/thorough/extended modes all set `checkpoint_interval` to 50/75/100. Quick_test was rarely run until v5.6.0 Phase 1.
+
+**Fix**: Added `self.config.checkpoint_interval > 0 and` to the modulo guard.
+
+### Bug C: Trainer buffer floor-vs-iterator-ceil off-by-one (v5.6.0 Phase 1, commit a495b2a)
+Buffer pre-allocation used `_batches_per_epoch = batch_size // minibatch_size` (floor), but `ReplayBuffer.get_batches()` iterates with `range(0, batch_size, minibatch_size)` which yields `ceil(batch_size / minibatch_size)` batches (last batch is partial when sizes don't divide evenly).
+
+**Concrete trip**: `n_envs=1024 × n_steps=256 = 262144 / 12288 = 21.33` → buffer for `21*10=210` slots, iterator does `22*10=220` writes → `IndexError: index 210 out of bounds for dimension 0 with size 210`.
+
+**Latent because**: production/standard/thorough configs use `(n_envs, n_steps, minibatch_size)` combinations that happen to divide evenly. Quick_test landed on 21.33.
+
+**Fix**: Use ceil division `(_batch_size + minibatch_size - 1) // minibatch_size` for buffer allocation. The `_active = _gpu_policy_losses[:_batch_idx]` slice at line ~1027 ensures unused tail slots don't pollute aggregates.
+
+### Lesson
+**Every feature-count, network-shape, or schedule-knob change should be smoke-tested with `quick_test` mode before launching production.** Quick_test exercises corners of the configuration space (small n_updates, edge-case batch divisibility) that production runs never reach. The cost of running a 5-minute smoke test is negligible compared to the cost of finding these bugs after a 4-hour production run crashes.
 
 ## Final Parameters
 
@@ -192,9 +213,35 @@ hourly_context = 7        # NEW: h1_return, h1_vol, h1_trend, h1_momentum, h1_rs
 - **Output shape tests**: `(n_envs, 100, 58)` for env, `(100, 58)` for builders
 - **Train/inference parity**: Same prices → same hourly context values across env / inference builder / backtest builder
 - **Backward compat**: v5.5.0 models (obs_dim=5100) still load and infer correctly
-- **Quick training smoke test** on synthetic data (10M steps)
+- **Equity calendar tests** (added after Phase 1): synthetic 26-bar/day equity timestamps with overnight gaps. Verify `position_in_hour` follows clock minute, h1 features masked at session boundaries.
+- **Quick training smoke test** on real BTC/USD data (Phase 1, 10M steps on H100)
 
-18 new tests in `tests/test_hourly_context.py`. All 18 pass plus 13 updated `test_model_version.py`.
+25 tests in `tests/test_hourly_context.py` (18 baseline + 7 equity calendar). All pass.
+
+## Phase 1 Smoke Test Results (2026-04-11)
+
+**What worked end-to-end**: precompute, obs assembly, the new `mm(1024×5800, 5800×512)` first-layer shape live in the policy network, `torch.compile + CUDA graphs + FP8 + AMP`, deploy zip, manifest, disconnect verification.
+
+**What needed fixing** (3 bugs surfaced):
+1. **Trainer Bug B above** (`checkpoint_interval=0`) — 1-line fix
+2. **Trainer Bug C above** (buffer off-by-one) — 1-line fix
+3. **Equity calendar bug** in own hourly context implementation — clock-aligned via `compute_hourly_window_indices()` helper, requires `pd.DatetimeIndex.floor('h')` and `searchsorted`
+
+**Validation trajectory**: Model learned then unlearned. PF climbed 0.12 → 0.94 over 6 validations, crashed to 0.50 at validation 7. HOLD% peaked at 61% then reverted to 26%. Direction reward briefly went positive (+0.07 at validation 4). Architecture works; 10M steps is far below convergence threshold for crypto.
+
+**Verdict**: DROP (correct for a smoke test). Goal was "did the code run?" not "is there edge?"
+
+**Phase 2 step count revision based on Phase 1 trajectory**:
+- Crypto: thorough mode (100M each) instead of standard (50M). Memory says crypto peaks at 50-100M for v5.3.0; the trajectory shows BTC was still climbing at validation 6 of 10M, so 50M is borderline.
+- Equity: standard mode (50M each). Equity has fewer bars per year, so 50M provides more passes over the data.
+
+## Workflow Pitfall (v5.6.0 Phase 1)
+
+The training notebook extracts the project from a Drive zip (`cell-6`). After every code change, the zip must be rebuilt and re-uploaded — `git pull` does NOT work because the extracted directory isn't a git repo. This caused multiple Phase 1 iterations where the user re-ran the notebook and got the same error because the zip was stale.
+
+**Long-term fix**: replace `cell-6` with `git clone --branch=stable` from GitHub. Eliminates the sync problem permanently.
+
+**Short-term hotfix pattern**: in-notebook Python overrides applied INSIDE the cell that uses the affected variable, NOT in a separate hotfix cell (which can be skipped or reordered).
 
 ## References
 - `alpaca_trading/gpu/vectorized_env.py`: `_precompute_hourly_context()`, `_get_observations()` lines ~1846-1853, `_calculate_obs_features()` line ~1067
