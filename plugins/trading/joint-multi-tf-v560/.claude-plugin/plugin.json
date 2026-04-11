@@ -1,0 +1,10 @@
+{
+  "name": "joint-multi-tf-v560",
+  "version": "1.0.0",
+  "description": "v5.6.0: Single joint model per symbol with broadcast 1Hour context features replaces dual 15Min/1Hour models. Trigger when: (1) replacing weighted-voting aggregation, (2) extending observation features broadcast-style, (3) backtest builder feature count compatibility, (4) avoiding network capacity bloat with limited training data.",
+  "author": {
+    "name": "Claude Code"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith-cop/Skills_Registry"
+}

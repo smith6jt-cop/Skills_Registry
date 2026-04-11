@@ -1,11 +1,20 @@
 ---
 name: multi-timeframe-training
-description: "Train RL models across multiple timeframes (15Min/1Hour/4Hour). Trigger when: (1) multi-timeframe training, (2) resampling data, (3) sub-hourly PDT scaling, (4) timeframe-aware selection."
+description: "DEPRECATED in v5.6.0 — see joint-multi-tf-v560 skill. Documents the v5.2.0 dual-model approach (train separate 15Min/1Hour models, combine via weighted voting). Still relevant for: (1) loading legacy v5.5.0 dual models, (2) understanding the historical aggregation layer, (3) resampling pattern via origin='start'."
 author: Claude Code
 date: 2024-12-29
 ---
 
-# Multi-Timeframe Training Pattern
+# Multi-Timeframe Training Pattern (v5.2.0)
+
+> **DEPRECATED in v5.6.0**: Replaced by single joint model per symbol with broadcast 1Hour context features. See [`joint-multi-tf-v560`](../../joint-multi-tf-v560/skills/joint-multi-tf-v560/SKILL.md) for the current architecture.
+>
+> **Why deprecated**: The Mar-25 evaluation (see "Multi-TF Strategy" section below) showed dual-model + weighted voting was NOT universally better — only CLSK improved, while CNM/MOH/PSTG degraded. The aggregation layer added combinatorial uncertainty (direction threshold, agreement boost, weight ratios) without letting the models learn to complement each other.
+>
+> **What this skill is still useful for**:
+> - Loading and inferring with legacy v5.5.0 and earlier dual models (still supported via `MultiTimeframePricePredictor`)
+> - Understanding the `resample_to_timeframe()` `origin='start'` pattern for bar alignment (still used for any data resampling)
+> - Historical context on the PDT window scaling pattern
 
 ## Experiment Overview
 | Item | Details |

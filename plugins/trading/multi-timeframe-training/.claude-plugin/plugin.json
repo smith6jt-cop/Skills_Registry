@@ -1,7 +1,7 @@
 {
   "name": "multi-timeframe-training",
   "version": "1.0.0",
-  "description": "Train RL models across multiple timeframes with data resampling. Trigger when: (1) training on multiple timeframes, (2) resampling data from base timeframe, (3) creating models for 1Hour, 4Hour, etc., (4) multi-TF model deployment.",
+  "description": "DEPRECATED in v5.6.0 — see joint-multi-tf-v560. Train separate RL models per timeframe with data resampling. Trigger only for: (1) loading legacy v5.5.0 dual models, (2) data resampling via origin='start', (3) historical PDT window scaling pattern.",
   "author": {
     "name": "Claude Code"
   },
