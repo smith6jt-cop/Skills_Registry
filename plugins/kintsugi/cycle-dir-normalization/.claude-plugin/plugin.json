@@ -1,0 +1,10 @@
+{
+  "name": "cycle-dir-normalization",
+  "version": "1.0.0",
+  "description": "Normalize long-form CODEX cycle folders (e.g. cyc004_reg001_211206_201615 -> cyc004) before notebooks run. Trigger: CODEX cycle naming, cyc001_reg001, long-form cycle folders, find_raw_cycles, hard-coded cyc paths breaking, notebook data discovery failures, staged CODEX raw data.",
+  "author": {
+    "name": "KINTSUGI Team"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith6jt-cop/Skills_Registry"
+}
