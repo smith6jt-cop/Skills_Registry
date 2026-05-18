@@ -1,0 +1,10 @@
+{
+  "name": "finance-stack-validation-fixes",
+  "version": "1.0.0",
+  "description": "Trigger when working in a self-hosted personal-finance stack (SQLCipher + Plaid + Anthropic SDK) and (1) editing CSV/OFX ingestion, (2) designing dedup keys or sign-convention handling, (3) building a deterministic rules layer in front of an LLM categorizer, or (4) tightening a 'catch-all' category. Verified on /srv/finance (Ubuntu, Python 3.12) 2026-05-18.",
+  "author": {
+    "name": "smith6jt-cop"
+  },
+  "skills": "./skills",
+  "repository": "https://github.com/smith6jt-cop/Skills_Registry"
+}
